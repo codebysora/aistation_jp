@@ -1224,25 +1224,67 @@ button.cpybtn:hover {
 .c-advanced-toggle {
     cursor: pointer;
     user-select: none;
-    background-color: var(--rd-bg-subtle);
     padding: 0.875rem 1.5rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-top: 1px solid var(--bs-border-color-translucent, #eee);
-    border-bottom: 1px solid var(--bs-border-color-translucent, #eee);
-    font-weight: 700;
+    font-weight: 600;
     font-size: 0.875rem;
-    transition: background-color var(--rd-transition);
+    color: var(--bs-primary);
+    background: linear-gradient(
+        90deg,
+        rgba(var(--bs-primary-rgb), 0.07) 0%,
+        rgba(var(--bs-secondary-rgb), 0.05) 50%,
+        rgba(var(--bs-primary-rgb), 0.03) 100%
+    );
+    border-top: 1px solid rgba(var(--bs-primary-rgb), 0.12);
+    border-bottom: 1px solid rgba(var(--bs-primary-rgb), 0.12);
+    transition: background var(--rd-transition), border-color var(--rd-transition);
 }
 
 .c-advanced-toggle:hover {
-    background-color: var(--rd-border-subtle);
+    background: linear-gradient(
+        90deg,
+        rgba(var(--bs-primary-rgb), 0.1) 0%,
+        rgba(var(--bs-secondary-rgb), 0.07) 50%,
+        rgba(var(--bs-primary-rgb), 0.05) 100%
+    );
+    border-top-color: rgba(var(--bs-primary-rgb), 0.18);
+    border-bottom-color: rgba(var(--bs-primary-rgb), 0.18);
+}
+
+.c-advanced-toggle--open {
+    background: linear-gradient(
+        90deg,
+        rgba(var(--bs-primary-rgb), 0.11) 0%,
+        rgba(var(--bs-secondary-rgb), 0.08) 50%,
+        rgba(var(--bs-primary-rgb), 0.05) 100%
+    );
+    border-bottom-color: rgba(var(--bs-primary-rgb), 0.22);
+}
+
+.c-advanced-toggle .bi {
+    color: var(--bs-primary);
+    transition: transform var(--rd-transition);
 }
 
 /* Section header inside the form (e.g., Parameters / Model definition) */
 .c-form-row--section-header {
     background: var(--rd-bg-subtle);
+}
+
+.c-form-row--section-separated {
+    margin-top: 0.25rem;
+    border-top: 2px solid rgba(var(--bs-primary-rgb), 0.14);
+    background: linear-gradient(
+        180deg,
+        rgba(var(--bs-primary-rgb), 0.05) 0%,
+        var(--rd-bg-subtle) 100%
+    );
+}
+
+.c-form-row--section-separated .c-form-row__label {
+    color: var(--bs-body-color);
 }
 
 .c-form-row--section-header .c-form-row__label,

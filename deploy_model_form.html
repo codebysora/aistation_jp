@@ -89,7 +89,7 @@
           </div>
 
           <!-- Engine header -->
-          <div class="rd-form-model-header">
+          <div class="rd-form-model-header" id="deploy-form-header">
             Deploy for vllm v0.14.0
           </div>
 
@@ -134,15 +134,44 @@
                    aria-controls="advanced-settings"
                    id="advanced-toggle">
                 <span>Advanced settings</span>
-                <i class="bi bi-chevron-down" id="advanced-chevron"></i>
+                <i class="bi bi-chevron-down" id="advanced-chevron" aria-hidden="true"></i>
               </div>
 
               <div class="collapse" id="advanced-settings">
 
-                <!-- CPU count -->
+                <!-- ===== Resources ===== -->
+                <div class="c-form-row c-form-row--section-header">
+                  <div class="c-form-row__label">
+                    <div class="fw-bold">Resources</div>
+                  </div>
+                  <div class="c-form-row__field">
+                    <div class="c-form-annotation">Compute resources to allocate for the deployment.</div>
+                  </div>
+                </div>
+
+                <!-- type -->
                 <div class="c-form-row">
                   <div class="c-form-row__label">
-                    <div class="fw-bold">cpu count</div>
+                    <div class="fw-semibold" id="resource-type-label">type</div>
+                  </div>
+                  <div class="c-form-row__field">
+                    <div class="d-flex gap-4 py-1" role="radiogroup" aria-labelledby="resource-type-label">
+                      <div class="form-check">
+                        <input class="form-check-input" type="radio" name="resource_type" id="resource-type-cpu" value="CPU" checked>
+                        <label class="form-check-label ms-1" for="resource-type-cpu">CPU</label>
+                      </div>
+                      <div class="form-check">
+                        <input class="form-check-input" type="radio" name="resource_type" id="resource-type-gpu" value="GPU">
+                        <label class="form-check-label ms-1" for="resource-type-gpu">GPU</label>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- count -->
+                <div class="c-form-row">
+                  <div class="c-form-row__label">
+                    <label for="resource_count" class="fw-semibold">count</label>
                   </div>
                   <div class="c-form-row__field">
                     <input type="text" class="c-form-field" id="resource_count" name="resource_count" value="1" placeholder="resource_count">
@@ -150,10 +179,10 @@
                   </div>
                 </div>
 
-                <!-- CPU memory -->
+                <!-- memory(gb) -->
                 <div class="c-form-row">
                   <div class="c-form-row__label">
-                    <div class="fw-bold">cpu memory(gb)</div>
+                    <label for="resource_memory_gb" class="fw-semibold">memory(gb)</label>
                   </div>
                   <div class="c-form-row__field">
                     <input type="text" class="c-form-field" id="resource_memory_gb" name="resource_memory_gb" value="2" placeholder="resource_memory_gb">
@@ -162,7 +191,7 @@
                 </div>
 
                 <!-- ===== Parameters ===== -->
-                <div class="c-form-row c-form-row--section-header">
+                <div class="c-form-row c-form-row--section-header c-form-row--section-separated">
                   <div class="c-form-row__label">
                     <div class="fw-bold">Parameters</div>
                   </div>
@@ -220,7 +249,7 @@
                 <textarea name="parameters" id="parameters-json" hidden></textarea>
 
                 <!-- ===== Model Definition ===== -->
-                <div class="c-form-row c-form-row--section-header">
+                <div class="c-form-row c-form-row--section-header c-form-row--section-separated">
                   <div class="c-form-row__label">
                     <div class="fw-bold">Model definition</div>
                   </div>
@@ -349,6 +378,7 @@
   <script src="./static/js/jquery-3.7.1.min.js"></script>
   <script src="./static/js/bootstrap.bundle.min.js"></script>
   <script src="./static/js/bootstrap-table.min.js"></script>
+  <script src="./static/js/preset_data.js"></script>
   <script src="./static/js/app.js"></script>
 
   <script>
@@ -531,12 +561,17 @@
     // ---- chevron toggle on advanced settings ----
     const advCollapse = document.getElementById('advanced-settings');
     const advChevron = document.getElementById('advanced-chevron');
-    if (advCollapse && advChevron) {
+    var advToggle = document.getElementById('advanced-toggle');
+    if (advCollapse && advChevron && advToggle) {
       advCollapse.addEventListener('show.bs.collapse', function() {
         advChevron.classList.add('rd-rotate-180');
+        advToggle.classList.add('c-advanced-toggle--open');
+        advToggle.setAttribute('aria-expanded', 'true');
       });
       advCollapse.addEventListener('hide.bs.collapse', function() {
         advChevron.classList.remove('rd-rotate-180');
+        advToggle.classList.remove('c-advanced-toggle--open');
+        advToggle.setAttribute('aria-expanded', 'false');
       });
     }
 
@@ -575,9 +610,69 @@
       serializeModelDefinition();
     });
 
-    // ---- bootstrap from preset ----
-    initParametersUI(PRESET_PARAMETERS);
-    initModelDefinitionUI(PRESET_MODEL_DEFINITION);
+    function setResourceType(type) {
+      var cpu = document.getElementById('resource-type-cpu');
+      var gpu = document.getElementById('resource-type-gpu');
+      if (type === 'GPU') {
+        gpu.checked = true;
+      } else {
+        cpu.checked = true;
+      }
+    }
+
+    function applyResources(res) {
+      res = res || {};
+      var block = res.gpu || res.cpu || {};
+      setResourceType(res.gpu ? 'GPU' : 'CPU');
+      document.getElementById('resource_count').value = block.count != null ? block.count : 1;
+      document.getElementById('resource_memory_gb').value = block.memory_gb != null ? block.memory_gb : '';
+    }
+
+    function bootstrapScratch() {
+      document.getElementById('deploy-form-header').textContent = 'Deploy model';
+      document.getElementById('model_source').value = '';
+      document.getElementById('model_name').value = '';
+      applyResources({ cpu: { count: 1, memory_gb: '' } });
+      initParametersUI({ args: [], kwargs: {}, env: {} });
+      initModelDefinitionUI({});
+    }
+
+    function bootstrapFromPreset(presetId, raw) {
+      var backend = raw.inference_backend || 'vllm';
+      var version = raw.engine_version || '';
+      document.getElementById('deploy-form-header').textContent =
+        'Deploy for ' + backend + (version ? ' ' + version : '');
+      document.getElementById('model_source').value = raw.model_source || '';
+      document.getElementById('model_name').value = presetId || '';
+      applyResources(raw.required_resources || {});
+      var params = raw.parameters || {};
+      initParametersUI({
+        args: params.args || [],
+        kwargs: params.kwargs || {},
+        env: params.env || {}
+      });
+      initModelDefinitionUI(PRESET_MODEL_DEFINITION);
+    }
+
+    // ---- bootstrap from URL or defaults ----
+    var urlParams = new URLSearchParams(window.location.search);
+    var isScratch = urlParams.get('scratch') === '1';
+    var modelId = urlParams.get('model');
+
+    if (isScratch) {
+      bootstrapScratch();
+    } else if (modelId && window.PresetData && PresetData.raw[modelId]) {
+      bootstrapFromPreset(modelId, PresetData.raw[modelId]);
+    } else {
+      var fallbackRaw = (window.PresetData && PresetData.raw['qwen3-0.6b-cpu']) || {
+        inference_backend: 'vllm',
+        engine_version: 'v0.14.0',
+        model_source: 'Qwen/Qwen3-0.6B',
+        required_resources: { cpu: { count: 1, memory_gb: 2 }, gpu: null },
+        parameters: PRESET_PARAMETERS
+      };
+      bootstrapFromPreset('qwen3-0.6b-cpu', fallbackRaw);
+    }
   })();
   </script>
 </body>
