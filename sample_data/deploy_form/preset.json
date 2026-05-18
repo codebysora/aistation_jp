@@ -1,0 +1,106 @@
+{
+    "qwen3-0.6b-cpu": {
+        "inference_backend": "vllm",
+        "engine_version": "v0.14.0",
+        "model_source": "Qwen/Qwen3-0.6B",
+        "parameters": {
+            "args": [
+                "enable-auto-tool-choice"
+            ],
+            "kwargs": {
+                "reasoning-parser": "qwen3",
+                "tool-call-parser": "hermes",
+                "max-model-len": "4096"
+            },
+            "env": {}
+        },
+        "required_resources": {
+            "cpu": {
+                "count": 1,
+                "memory_gb": 2
+            },
+            "gpu": null
+        },
+        "model_definition": {
+            "capabilities": {
+                "function_calling": true,
+                "tool_choice": true,
+                "structured_output": true,
+                "stream": true,
+                "reasoning": true
+            },
+            "pricing": {
+                "input": 0.0,
+                "output": 0.0
+            },
+            "context": {
+                "max_input_tokens": 4096,
+                "max_output_tokens": 4096
+            },
+            "interfaces": {
+                "/v1/chat/completions": {
+                    "input_modalities": [
+                        "text"
+                    ],
+                    "output_modalities": [
+                        "text"
+                    ]
+                }
+            }
+        }
+    },
+    "qwen3-0.6b-gpu-long": {
+        "inference_backend": "vllm",
+        "engine_version": "latest",
+        "model_source": "Qwen/Qwen3-0.6B",
+        "parameters": {
+            "args": [
+                "enable-auto-tool-choice"
+            ],
+            "kwargs": {
+                "reasoning-parser": "qwen3",
+                "tool-call-parser": "hermes",
+                "hf-overrides": {
+                    "rope_scaling": {
+                        "rope_type": "yarn",
+                        "factor": 4.0,
+                        "original_max_position_embeddings": 32768
+                    }
+                },
+                "max-model-len": "131072"
+            },
+            "env": {
+                "VLLM_ALLOW_LONG_MAX_MODEL_LEN": "1"
+            }
+        },
+        "required_resources": {
+            "cpu": null,
+            "gpu": {
+                "count": 1,
+                "memory_gb": 24
+            }
+        },
+        "model_definition": {
+            "capabilities": {
+                "function_calling": true,
+                "tool_choice": true,
+                "structured_output": true,
+                "stream": true,
+                "reasoning": true
+            },
+            "context": {
+                "max_input_tokens": 131072
+            },
+            "interfaces": {
+                "/v1/chat/completions": {
+                    "input_modalities": [
+                        "text"
+                    ],
+                    "output_modalities": [
+                        "text"
+                    ]
+                }
+            }
+        }
+    }
+}

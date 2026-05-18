@@ -1,0 +1,489 @@
+{% extends "layout.html" %}
+
+{% block content %}
+{% set menu="models" %}
+{% include "sidemenu.html" %}
+<main class="rd-content bg-body">
+  <div class="rd-card">
+    <div class="rd-card__header">
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb mb-0">
+          <li class="breadcrumb-item">
+            <a href="{{ url_for('models') }}">Model management</a>
+          </li>
+          <li class="breadcrumb-item">
+            <a href="{{ url_for('model_select') }}">Select model</a>
+          </li>
+          <li class="breadcrumb-item active" aria-current="page">Deploy model</li>
+        </ol>
+      </nav>
+    </div>
+    <div class="rd-card__body d-flex flex-column overflow-hidden">
+      {% for message in get_flashed_messages() %}
+      {% if message.startswith('Error') %}
+      <div class="alert alert-damger alert-dismissible m-3 fade show" role="alert">
+        <span class="p-2">{{ message }}</span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+      {% else %}
+      <div class="alert alert-success alert-dismissible m-3 fade show" role="alert">
+        <span class="p-2">{{ message }}</span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+      {% endif %}
+      {% endfor %}
+      <!-- Model name header -->
+      <div class="rd-form-model-header">
+        Deploy for {{ form.inference_backend.data }} {{ form.engine_version.data }}
+      </div>
+      <form  class="d-flex flex-column rd-form-min-h-0" style="min-height: 0;" action="{{ url_for('model_start') }}" method="POST" novalidate="novalidate" id="deploy-form">
+        {{ form.hidden_tag() }}
+        <!-- Scrollable form area -->
+        <div class="overflow-y-auto rd-form-scroll">
+          <div class="c-form-row">
+            <div class="c-form-row__label">
+              <label for="model_source" class="fw-bold">model_source</label>
+              <div class="text-danger small mt-1">*Required</div>
+            </div>
+            <div class="c-form-row__field">
+              {% for error in form.model_source.errors %}
+              <span style="color: red;">{{ error }}</span>
+              {% endfor %}
+              <input type="text" name="model_source" class="c-form-field" value="{{ form.model_source.data }}" placeholder="model_source">
+              <div class="c-form-annotation">Model source URI (e.g., 'Qwen/Qwen3-0.6B').</div>
+            </div>
+          </div>
+          <div class="c-form-row">
+            <div class="c-form-row__label">
+              <label for="model_source" class="fw-bold">model_name</label>
+              <div class="text-danger small mt-1">*Required</div>
+            </div>
+            <div class="c-form-row__field">
+              {% for error in form.model_name.errors %}
+              <span style="color: red;">{{ error }}</span>
+              {% endfor %}
+              <input type="text" name="model_name" class="c-form-field" value="{{ form.model_name.data }}" placeholder="model_name">
+              <div class="c-form-annotation">Display name for the model. Defaults to preset name, please makes it unique.</div>
+            </div>
+          </div>
+          <!-- Advanced settings accordion -->
+          <div class="c-advanced-toggle"
+                data-bs-toggle="collapse"
+                data-bs-target="#advanced-settings"
+                aria-expanded="false"
+                aria-controls="advanced-settings"
+                id="advanced-toggle">
+            <span>Advanced settings</span>
+            <i class="bi bi-chevron-down" id="advanced-chevron"></i>
+          </div>
+
+          <div class="collapse" id="advanced-settings">
+            <!-- Advanced rows -->
+            <div class="c-form-row">
+              <div class="c-form-row__label">
+                <div class="fw-bold">{{ form.resource_type.data}} count</div>
+              </div>
+              <div class="c-form-row__field">
+                <input type="text" name="resource_count" class="c-form-field" value="{{ form.resource_count.data }}" placeholder="resource_count">
+                <div class="c-form-annotation">Number of cores or GPUs to allocate. Default is 1.</div>
+              </div>
+            </div>
+            <div class="c-form-row">
+              <div class="c-form-row__label">
+                <div class="fw-bold">{{ form.resource_type.data}} memory(gb)</div>
+              </div>
+              <div class="c-form-row__field">
+                <input type="text" name="resource_memory_gb" class="c-form-field" value="{{ form.resource_memory_gb.data }}" placeholder="resource_memory_gb">
+                <div class="c-form-annotation">Memory limit in GB (CPU: KV cache size, GPU: VRAM size constraint).</div>
+              </div>
+            </div>
+
+            <!-- ===== Parameters ===== -->
+            <div class="c-form-row c-form-row--section-header">
+              <div class="c-form-row__label">
+                <div class="fw-bold">Parameters</div>
+              </div>
+              <div class="c-form-row__field">
+                <div class="c-form-annotation">Engine-specific launch parameters.</div>
+              </div>
+            </div>
+
+            <!-- args -->
+            <div class="c-form-row">
+              <div class="c-form-row__label">
+                <div class="fw-semibold text-secondary">args</div>
+              </div>
+              <div class="c-form-row__field">
+                <div id="args-container" class="c-tag-list mb-2"></div>
+                <div class="input-group input-group-sm c-add-row">
+                  <input type="text" id="new-arg-input" class="form-control" placeholder="e.g. enable-auto-tool-choice">
+                  <button type="button" class="btn btn-outline-secondary js-add-arg">
+                    <i class="bi bi-plus"></i> Add flag
+                  </button>
+                </div>
+                <div class="c-form-annotation">Flag-style arguments (without leading <code>--</code>).</div>
+              </div>
+            </div>
+
+            <!-- kwargs -->
+            <div class="c-form-row">
+              <div class="c-form-row__label">
+                <div class="fw-semibold text-secondary">kwargs</div>
+              </div>
+              <div class="c-form-row__field">
+                <div id="kwargs-container" class="c-kv-list mb-2"></div>
+                <button type="button" class="btn btn-sm btn-outline-secondary js-add-kwarg">
+                  <i class="bi bi-plus"></i> Add option
+                </button>
+                <div class="c-form-annotation">Key-value options (e.g. <code>max-model-len</code> = <code>4096</code>).</div>
+              </div>
+            </div>
+
+            <!-- env -->
+            <div class="c-form-row">
+              <div class="c-form-row__label">
+                <div class="fw-semibold text-secondary">env</div>
+              </div>
+              <div class="c-form-row__field">
+                <div id="env-container" class="c-kv-list mb-2"></div>
+                <button type="button" class="btn btn-sm btn-outline-secondary js-add-env">
+                  <i class="bi bi-plus"></i> Add env var
+                </button>
+                <div class="c-form-annotation">Environment variables for the engine container.</div>
+              </div>
+            </div>
+
+            <!-- hidden field consumed by backend -->
+            <textarea name="parameters" id="parameters-json" hidden></textarea>
+
+            <!-- ===== Model Definition ===== -->
+            <div class="c-form-row c-form-row--section-header">
+              <div class="c-form-row__label">
+                <div class="fw-bold">Model definition</div>
+              </div>
+              <div class="c-form-row__field">
+                <div class="c-form-annotation">Metadata for router registration.</div>
+              </div>
+            </div>
+
+            <!-- capabilities -->
+            <div class="c-form-row">
+              <div class="c-form-row__label">
+                <div class="fw-semibold text-secondary">capabilities</div>
+              </div>
+              <div class="c-form-row__field">
+                <div class="d-flex flex-wrap gap-3">
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="cap-function-calling">
+                    <label class="form-check-label" for="cap-function-calling">function_calling</label>
+                  </div>
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="cap-structured-output">
+                    <label class="form-check-label" for="cap-structured-output">structured_output</label>
+                  </div>
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="cap-tool-choice">
+                    <label class="form-check-label" for="cap-tool-choice">tool_choice</label>
+                  </div>
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="cap-reasoning">
+                    <label class="form-check-label" for="cap-reasoning">reasoning</label>
+                  </div>
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="cap-stream">
+                    <label class="form-check-label" for="cap-stream">stream</label>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- pricing -->
+            <div class="c-form-row">
+              <div class="c-form-row__label">
+                <div class="fw-semibold text-secondary">pricing</div>
+              </div>
+              <div class="c-form-row__field">
+                <div class="d-flex gap-3 align-items-center flex-wrap">
+                  <div class="input-group input-group-sm" style="width:180px">
+                    <span class="input-group-text">input</span>
+                    <input type="number" id="pricing-input" class="form-control" step="any" min="0" placeholder="0.0">
+                  </div>
+                  <div class="input-group input-group-sm" style="width:180px">
+                    <span class="input-group-text">output</span>
+                    <input type="number" id="pricing-output" class="form-control" step="any" min="0" placeholder="0.0">
+                  </div>
+                  <div class="input-group input-group-sm" style="width:130px">
+                    <span class="input-group-text">currency</span>
+                    <input type="text" id="pricing-currency" class="form-control" placeholder="USD">
+                  </div>
+                </div>
+                <div class="c-form-annotation">Price per 1M tokens.</div>
+              </div>
+            </div>
+
+            <!-- context -->
+            <div class="c-form-row">
+              <div class="c-form-row__label">
+                <div class="fw-semibold text-secondary">context</div>
+              </div>
+              <div class="c-form-row__field">
+                <div class="d-flex gap-3 align-items-center flex-wrap">
+                  <div class="input-group input-group-sm" style="width:220px">
+                    <span class="input-group-text">max input tokens</span>
+                    <input type="number" id="context-max-input" class="form-control" min="0" placeholder="—">
+                  </div>
+                  <div class="input-group input-group-sm" style="width:230px">
+                    <span class="input-group-text">max output tokens</span>
+                    <input type="number" id="context-max-output" class="form-control" min="0" placeholder="—">
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- interfaces (advanced / collapsed) -->
+            <div class="c-form-row">
+              <div class="c-form-row__label">
+                <div class="fw-semibold text-secondary">interfaces</div>
+              </div>
+              <div class="c-form-row__field">
+                <a class="small text-secondary" data-bs-toggle="collapse" href="#interfaces-collapse" role="button" aria-expanded="false">
+                  Edit interfaces (advanced) <i class="bi bi-chevron-down"></i>
+                </a>
+                <div class="collapse mt-2" id="interfaces-collapse">
+                  <textarea id="interfaces-json" rows="6" class="c-form-textarea font-monospace" placeholder='{"\/v1\/chat\/completions": {"input_modalities": ["text"], "output_modalities": ["text"]}}'></textarea>
+                  <div class="c-form-annotation">JSON map of endpoint path → modality config.</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- hidden field consumed by backend -->
+            <textarea name="model_definition" id="model-definition-json" hidden></textarea>
+
+          </div>
+        </div>
+        <!-- Submit button -->
+        <div class="d-flex justify-content-end gap-3 py-4 pe-4 border-top flex-shrink-0">
+          <button type="submit" class="btn btn-success rd-btn-action border-0">
+            <i class="bi bi-plus-circle"></i> Submit
+          </button>
+          {% set location = url_for("model_select") %}
+          <button type="button" class="btn btn-light rd-btn-action border-0 js-back-to-model-select"
+            onclick="location.href='{{ location }}'">
+            <i class="bi bi-x"></i> Cancel
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</main>
+
+<script>
+(function () {
+  // ---- helpers ----
+
+  function makeArgTag(value) {
+    const wrap = document.createElement('div');
+    wrap.className = 'c-tag-item';
+    wrap.dataset.value = value;
+    wrap.innerHTML = `<span class="c-tag-item__text">${escHtml(value)}</span>`
+      + `<button type="button" class="c-tag-item__remove js-remove-arg" aria-label="Remove"><i class="bi bi-x"></i></button>`;
+    return wrap;
+  }
+
+  function makeKvRow(key, value, containerClass) {
+    const wrap = document.createElement('div');
+    wrap.className = 'c-kv-row';
+    let valHtml;
+    if (typeof value === 'object' && value !== null) {
+      valHtml = `<input type="text" class="form-control form-control-sm c-kv-row__value" value="${escAttr(JSON.stringify(value))}" placeholder="value">`;
+    } else {
+      valHtml = `<input type="text" class="form-control form-control-sm c-kv-row__value" value="${escAttr(String(value ?? ''))}" placeholder="value">`;
+    }
+    wrap.innerHTML = `<input type="text" class="form-control form-control-sm c-kv-row__key" value="${escAttr(key)}" placeholder="key">`
+      + valHtml
+      + `<button type="button" class="btn btn-sm btn-outline-danger c-kv-row__remove js-remove-kv" aria-label="Remove"><i class="bi bi-x"></i></button>`;
+    return wrap;
+  }
+
+  function escHtml(s) {
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+  function escAttr(s) {
+    return String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;');
+  }
+
+  // ---- init ----
+
+  function initParametersUI(json) {
+    let data = {};
+    if (json) {
+      try { data = JSON.parse(json); } catch(e) {}
+    }
+    const argsContainer = document.getElementById('args-container');
+    argsContainer.innerHTML = '';
+    (data.args || []).forEach(function(v) {
+      argsContainer.appendChild(makeArgTag(v));
+    });
+
+    const kwargsContainer = document.getElementById('kwargs-container');
+    kwargsContainer.innerHTML = '';
+    Object.entries(data.kwargs || {}).forEach(function([k, v]) {
+      kwargsContainer.appendChild(makeKvRow(k, v));
+    });
+
+    const envContainer = document.getElementById('env-container');
+    envContainer.innerHTML = '';
+    Object.entries(data.env || {}).forEach(function([k, v]) {
+      envContainer.appendChild(makeKvRow(k, v));
+    });
+  }
+
+  function initModelDefinitionUI(json) {
+    let data = {};
+    if (json) {
+      try { data = JSON.parse(json); } catch(e) {}
+    }
+    const cap = data.capabilities || {};
+    document.getElementById('cap-function-calling').checked = !!cap.function_calling;
+    document.getElementById('cap-structured-output').checked = !!cap.structured_output;
+    document.getElementById('cap-tool-choice').checked = !!cap.tool_choice;
+    document.getElementById('cap-reasoning').checked = !!cap.reasoning;
+    document.getElementById('cap-stream').checked = !!cap.stream;
+
+    const pricing = data.pricing || {};
+    if (pricing.input != null) document.getElementById('pricing-input').value = pricing.input;
+    if (pricing.output != null) document.getElementById('pricing-output').value = pricing.output;
+    if (pricing.currency) document.getElementById('pricing-currency').value = pricing.currency;
+
+    const context = data.context || {};
+    if (context.max_input_tokens != null) document.getElementById('context-max-input').value = context.max_input_tokens;
+    if (context.max_output_tokens != null) document.getElementById('context-max-output').value = context.max_output_tokens;
+
+    const interfaces = data.interfaces;
+    if (interfaces && Object.keys(interfaces).length > 0) {
+      document.getElementById('interfaces-json').value = JSON.stringify(interfaces, null, 2);
+    }
+  }
+
+  // ---- serialize ----
+
+  function serializeParameters() {
+    const args = Array.from(document.querySelectorAll('#args-container .c-tag-item'))
+      .map(function(el) { return el.dataset.value; });
+
+    const kwargs = {};
+    document.querySelectorAll('#kwargs-container .c-kv-row').forEach(function(row) {
+      const k = row.querySelector('.c-kv-row__key').value.trim();
+      const v = row.querySelector('.c-kv-row__value').value.trim();
+      if (k) {
+        let parsed = v;
+        try { parsed = JSON.parse(v); } catch(e) {}
+        kwargs[k] = parsed;
+      }
+    });
+
+    const env = {};
+    document.querySelectorAll('#env-container .c-kv-row').forEach(function(row) {
+      const k = row.querySelector('.c-kv-row__key').value.trim();
+      const v = row.querySelector('.c-kv-row__value').value.trim();
+      if (k) env[k] = v;
+    });
+
+    document.getElementById('parameters-json').value = JSON.stringify({ args, kwargs, env });
+  }
+
+  function serializeModelDefinition() {
+    const capabilities = {};
+    const capFields = [
+      ['cap-function-calling', 'function_calling'],
+      ['cap-structured-output', 'structured_output'],
+      ['cap-tool-choice', 'tool_choice'],
+      ['cap-reasoning', 'reasoning'],
+      ['cap-stream', 'stream'],
+    ];
+    capFields.forEach(function([id, key]) {
+      const el = document.getElementById(id);
+      if (el.checked) capabilities[key] = true;
+    });
+
+    const pricing = {};
+    const pIn = document.getElementById('pricing-input').value;
+    const pOut = document.getElementById('pricing-output').value;
+    const pCur = document.getElementById('pricing-currency').value.trim();
+    if (pIn !== '') pricing.input = parseFloat(pIn);
+    if (pOut !== '') pricing.output = parseFloat(pOut);
+    if (pCur) pricing.currency = pCur;
+
+    const context = {};
+    const cIn = document.getElementById('context-max-input').value;
+    const cOut = document.getElementById('context-max-output').value;
+    if (cIn !== '') context.max_input_tokens = parseInt(cIn, 10);
+    if (cOut !== '') context.max_output_tokens = parseInt(cOut, 10);
+
+    let interfaces = {};
+    const ifText = document.getElementById('interfaces-json').value.trim();
+    if (ifText) {
+      try { interfaces = JSON.parse(ifText); } catch(e) {}
+    }
+
+    const def = {};
+    if (Object.keys(capabilities).length) def.capabilities = capabilities;
+    if (Object.keys(pricing).length) def.pricing = pricing;
+    if (Object.keys(context).length) def.context = context;
+    if (Object.keys(interfaces).length) def.interfaces = interfaces;
+
+    document.getElementById('model-definition-json').value = JSON.stringify(def);
+  }
+
+  // ---- event handlers ----
+
+  // Add arg
+  document.querySelector('.js-add-arg').addEventListener('click', function() {
+    const input = document.getElementById('new-arg-input');
+    const val = input.value.trim();
+    if (!val) return;
+    document.getElementById('args-container').appendChild(makeArgTag(val));
+    input.value = '';
+  });
+  document.getElementById('new-arg-input').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') { e.preventDefault(); document.querySelector('.js-add-arg').click(); }
+  });
+
+  // Add kwarg
+  document.querySelector('.js-add-kwarg').addEventListener('click', function() {
+    document.getElementById('kwargs-container').appendChild(makeKvRow('', ''));
+  });
+
+  // Add env
+  document.querySelector('.js-add-env').addEventListener('click', function() {
+    document.getElementById('env-container').appendChild(makeKvRow('', ''));
+  });
+
+  // Remove arg (event delegation)
+  document.getElementById('args-container').addEventListener('click', function(e) {
+    const btn = e.target.closest('.js-remove-arg');
+    if (btn) btn.closest('.c-tag-item').remove();
+  });
+
+  // Remove kv row (event delegation on both containers)
+  ['kwargs-container', 'env-container'].forEach(function(id) {
+    document.getElementById(id).addEventListener('click', function(e) {
+      const btn = e.target.closest('.js-remove-kv');
+      if (btn) btn.closest('.c-kv-row').remove();
+    });
+  });
+
+  // Serialize on submit
+  document.getElementById('deploy-form').addEventListener('submit', function() {
+    serializeParameters();
+    serializeModelDefinition();
+  });
+
+  // ---- initialize from preset data ----
+  const initParams = {{ form.parameters.data | tojson if form.parameters.data else 'null' }};
+  const initModelDef = {{ form.model_definition.data | tojson if form.model_definition.data else 'null' }};
+  initParametersUI(initParams);
+  initModelDefinitionUI(initModelDef);
+})();
+</script>
+{% endblock %}

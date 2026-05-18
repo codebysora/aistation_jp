@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="../static/css/bootstrap.min.css">
+  <link rel="stylesheet" href="../static/font/bootstrap-icons.css">
+  <link rel="stylesheet" href="../static/css/style.css">
+  <title>案A (こちら案) — Model Select Mock</title>
+  <style>
+    body { background: var(--bs-body-bg); }
+    .mock-shell { max-width: 1200px; margin: 0 auto; padding: 1.5rem 1.5rem 4rem; }
+    .mock-banner {
+      background: rgba(40, 167, 69, 0.08);
+      border-left: 3px solid #28a745;
+      padding: 0.75rem 1rem; border-radius: 6px;
+      margin-bottom: 1.25rem; font-size: 0.85rem;
+    }
+    .mock-banner b { color: #28a745; }
+
+    /* Filter group reuse */
+    .filter-row { display: flex; flex-wrap: wrap; gap: 1.5rem; margin: 0.75rem 0 1rem; }
+    .filter-row__group { display: flex; flex-direction: column; gap: 0.4rem; }
+    .filter-row__label { font-size: 0.75rem; font-weight: 600; color: var(--bs-secondary-color); }
+    .filter-row__chips { display: flex; flex-wrap: wrap; gap: 0.25rem; }
+
+    /* Card additions specific to 案A (extend existing catalog-card) */
+    .catalog-card__resource-badge {
+      flex-shrink: 0; font-size: 0.68rem; font-weight: 700;
+      padding: 0.18rem 0.55rem; border-radius: 4px; letter-spacing: 0.04em;
+    }
+    .catalog-card__model-id {
+      font-family: var(--bs-font-monospace); font-size: 0.72rem;
+      color: var(--bs-secondary-color); margin-top: 0.1rem;
+    }
+    .catalog-card__perf {
+      display: flex; gap: 0.75rem; flex-wrap: wrap;
+      margin-top: 0.5rem; padding-top: 0.5rem;
+      border-top: 1px dashed var(--rd-border-subtle);
+      font-size: 0.7rem; color: var(--bs-secondary-color);
+    }
+    .catalog-card__perf-item { display: inline-flex; align-items: baseline; gap: 0.25rem; }
+    .catalog-card__perf-label { font-weight: 700; letter-spacing: 0.04em; }
+    .catalog-card__perf-value { color: var(--bs-body-color); font-weight: 600; font-variant-numeric: tabular-nums; }
+    .catalog-card__caps-row {
+      display: flex; flex-wrap: wrap; gap: 0.3rem; margin-top: 0.25rem;
+    }
+
+    /* Make catalog-card clickable as anchor (mock) */
+    a.catalog-card {
+      display: block; text-decoration: none; color: inherit;
+      transition: transform 0.12s ease, box-shadow 0.12s ease, border-color 0.12s ease;
+    }
+    a.catalog-card:hover {
+      transform: translateY(-1px);
+      border-color: var(--bs-primary);
+      box-shadow: 0 4px 14px rgba(13, 110, 253, 0.08);
+    }
+
+    /* Attribution: source line above grid (②) */
+    .attr-source-line {
+      display: flex; align-items: center; gap: 0.4rem;
+      font-size: 0.75rem; color: var(--bs-secondary-color);
+      margin: -0.25rem 0 0.75rem;
+    }
+    .attr-source-line i.bi-info-circle { font-size: 0.85rem; opacity: 0.7; }
+    .attr-source-line a {
+      color: var(--bs-secondary-color); text-decoration: underline;
+      text-underline-offset: 2px;
+    }
+    .attr-source-line a:hover { color: var(--bs-primary); }
+
+    /* Attribution: page footer (①) */
+    .attr-footer {
+      margin-top: 2rem; padding-top: 1rem;
+      border-top: 1px solid var(--rd-border-subtle, rgba(0,0,0,0.08));
+      font-size: 0.72rem; color: var(--bs-secondary-color);
+      text-align: center;
+    }
+    .attr-footer a { color: var(--bs-secondary-color); text-decoration: underline; }
+  </style>
+</head>
+<body>
+
+<div class="mock-shell">
+
+  <div class="mock-banner">
+    <b>案A (こちら案モック)</b> — 既存の <code>catalog-card</code> 系統を踏襲。
+    Plan D modality (IN→OUT) + 横バー (Int/Cod/Math) + Top metric ハイライト + 下段に Spd/TTFT。
+    <span class="ms-2"><i class="bi bi-cursor-fill"></i> カード全体クリックで <strong>詳細ページ</strong>へ。</span>
+    <a href="./_model_select_compare.html" class="ms-2">← 比較に戻る</a>
+  </div>
+
+  <!-- Filter row (mock-only, no JS wiring) -->
+  <div class="filter-row">
+    <div class="filter-row__group">
+      <div class="filter-row__label">Context</div>
+      <div class="filter-row__chips">
+        <button class="btn btn-sm btn-outline-secondary active">Any</button>
+        <button class="btn btn-sm btn-outline-secondary">32k+</button>
+        <button class="btn btn-sm btn-outline-secondary">128k+</button>
+        <button class="btn btn-sm btn-outline-secondary">256k+</button>
+      </div>
+    </div>
+    <div class="filter-row__group">
+      <div class="filter-row__label">Input modality</div>
+      <div class="filter-row__chips">
+        <button class="btn btn-sm btn-outline-secondary active">Any</button>
+        <button class="btn btn-sm btn-outline-secondary"><i class="bi bi-fonts"></i> text</button>
+        <button class="btn btn-sm btn-outline-secondary"><i class="bi bi-image"></i> image</button>
+        <button class="btn btn-sm btn-outline-secondary"><i class="bi bi-mic"></i> audio</button>
+        <button class="btn btn-sm btn-outline-secondary"><i class="bi bi-camera-video"></i> video</button>
+      </div>
+    </div>
+    <div class="filter-row__group">
+      <div class="filter-row__label">Publisher</div>
+      <div class="filter-row__chips" id="filter-developers"></div>
+    </div>
+    <div class="filter-row__group">
+      <div class="filter-row__label">License</div>
+      <div class="filter-row__chips" id="filter-licenses"></div>
+    </div>
+  </div>
+
+  <!-- Output modality tabs -->
+  <ul class="nav nav-tabs gap-1 mb-3">
+    <li class="nav-item">
+      <button class="nav-link active px-3 py-2" data-output="text">Text</button>
+    </li>
+    <li class="nav-item">
+      <button class="nav-link px-3 py-2" data-output="embedding">Embedding</button>
+    </li>
+  </ul>
+
+  <!-- Attribution: source line (② primary) -->
+  <div class="attr-source-line">
+    <i class="bi bi-info-circle"></i>
+    <span>ベンチマーク値（Int / Cod / Math / Spd / TTFT）の出典:</span>
+    <a href="https://artificialanalysis.ai/" target="_blank" rel="noopener">
+      Artificial Analysis <i class="bi bi-box-arrow-up-right"></i>
+    </a>
+  </div>
+
+  <!-- Card grid (catalog-card grid style) -->
+  <div class="catalog-card-grid" id="card-grid"></div>
+
+  <!-- Attribution: footer (① secondary) -->
+  <footer class="attr-footer">
+    Performance data provided by
+    <a href="https://artificialanalysis.ai/" target="_blank" rel="noopener">Artificial Analysis ↗</a>
+  </footer>
+
+</div>
+
+<script src="./_preset_data.js"></script>
+<script>
+function escapeHtml(s) { return String(s).replace(/[&<>"']/g, function(c){
+  return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+}); }
+
+function formatInt(n) { return Number(n).toLocaleString(); }
+function formatContext(ctx) {
+  if (ctx == null) return '—';
+  if (ctx >= 1048576) return (ctx / 1048576).toFixed(1).replace(/\.0$/, '') + 'M';
+  if (ctx >= 1024) return (ctx / 1024).toFixed(0) + 'K';
+  return String(ctx);
+}
+
+// Plan D modality group (移植: static/js/catalog.js renderModalityGroup)
+var MODALITY_ICONS = {
+  text: 'bi-fonts', vision: 'bi-image', image: 'bi-image',
+  audio: 'bi-mic', video: 'bi-camera-video', embeddings: 'bi-bezier2'
+};
+var MODALITY_LABELS = {
+  text: 'Text', vision: 'Image', image: 'Image',
+  audio: 'Audio', video: 'Video', embeddings: 'Embeddings'
+};
+function modalityIcon(m) { return MODALITY_ICONS[m] || 'bi-circle'; }
+function modalityLabel(m) { return MODALITY_LABELS[m] || m; }
+
+function renderModalityGroup(p) {
+  var ins = p.input_modalities, outs = p.output_modalities;
+  var inLabel = ins.map(modalityLabel).join(', ');
+  var outLabel = outs.map(modalityLabel).join(', ');
+  var html = '<span class="pd-mod-group" title="Input: ' + inLabel + ' → Output: ' + outLabel + '">';
+  html += '<span class="pd-mod-group__label">IN</span>';
+  for (var i = 0; i < ins.length; i++) {
+    html += '<i class="bi ' + modalityIcon(ins[i]) + '" title="' + modalityLabel(ins[i]) + '"></i>';
+  }
+  html += '<span class="pd-mod-group__arrow"><i class="bi bi-arrow-right"></i></span>';
+  html += '<span class="pd-mod-group__label">OUT</span>';
+  for (var j = 0; j < outs.length; j++) {
+    html += '<i class="bi ' + modalityIcon(outs[j]) + '" title="' + modalityLabel(outs[j]) + '"></i>';
+  }
+  html += '</span>';
+  return html;
+}
+
+// Top-metric pill (highest of Int/Cod/Math)
+function renderTopMetric(p) {
+  var keys = [
+    { k: 'intelligence_index', label: 'Int' },
+    { k: 'coding_index', label: 'Cod' },
+    { k: 'math_index', label: 'Math' }
+  ];
+  var best = null;
+  for (var i = 0; i < keys.length; i++) {
+    var v = p[keys[i].k];
+    if (v == null) continue;
+    if (!best || v > best.value) best = { label: keys[i].label, value: v };
+  }
+  if (!best) return '<div class="catalog-card__metrics"></div>';
+  return '<div class="catalog-card__metrics">' +
+    '<span class="catalog-metric catalog-metric--top">' +
+    '<span class="catalog-metric__label">TOP</span>' +
+    '<span class="catalog-metric__value">' + best.label + ' ' + best.value.toFixed(1) + '/20</span>' +
+    '</span></div>';
+}
+
+// Horizontal benchmark bars for Int/Cod/Math (0-20 scale)
+function benchColor(score, max) {
+  var pct = score / max;
+  if (pct >= 0.66) return 'var(--bs-success)';
+  if (pct >= 0.33) return 'var(--bs-primary)';
+  if (pct >= 0.15) return 'var(--bs-warning)';
+  return 'var(--bs-danger)';
+}
+
+function renderBars(p) {
+  var rows = [
+    { label: 'Int', value: p.intelligence_index, max: 20 },
+    { label: 'Cod', value: p.coding_index, max: 20 },
+    { label: 'Math', value: p.math_index, max: 20 }
+  ];
+  var html = '<div class="catalog-card__benchmarks">';
+  for (var i = 0; i < rows.length; i++) {
+    var r = rows[i];
+    html += '<div class="catalog-bench-row">';
+    html += '<span class="catalog-bench-row__label">' + r.label + '</span>';
+    if (r.value == null) {
+      html += '<span class="catalog-bench-row__bar"></span>';
+      html += '<span class="catalog-bench-row__score" style="opacity:0.4">—</span>';
+    } else {
+      var pct = Math.min(100, (r.value / r.max) * 100);
+      html += '<span class="catalog-bench-row__bar"><span class="catalog-bench-row__fill" style="width:' + pct + '%;background:' + benchColor(r.value, r.max) + '"></span></span>';
+      html += '<span class="catalog-bench-row__score">' + r.value.toFixed(1) + '</span>';
+    }
+    html += '</div>';
+  }
+  html += '</div>';
+  return html;
+}
+
+function renderPerf(p) {
+  var items = [];
+  if (p.median_output_tokens_per_second != null && p.median_output_tokens_per_second > 0) {
+    items.push({ label: 'Spd', value: p.median_output_tokens_per_second.toFixed(0) + ' tok/s' });
+  }
+  if (p.ttft != null && p.ttft > 0) {
+    items.push({ label: 'TTFT', value: p.ttft.toFixed(2) + 's' });
+  }
+  if (!items.length) return '';
+  var html = '<div class="catalog-card__perf">';
+  for (var i = 0; i < items.length; i++) {
+    html += '<span class="catalog-card__perf-item">';
+    html += '<span class="catalog-card__perf-label">' + items[i].label + '</span>';
+    html += '<span class="catalog-card__perf-value">' + items[i].value + '</span>';
+    html += '</span>';
+  }
+  html += '</div>';
+  return html;
+}
+
+function renderCaps(p) {
+  if (!p.capabilities) return '';
+  var caps = [];
+  if (p.capabilities.tool_use) caps.push({ icon: 'bi-tools', label: 'tool use' });
+  if (p.capabilities.reasoning) caps.push({ icon: 'bi-lightbulb', label: 'reasoning' });
+  if (!caps.length) return '';
+  var html = '<div class="catalog-card__caps-row">';
+  for (var i = 0; i < caps.length; i++) {
+    html += '<span class="catalog-tag catalog-tag--neutral"><i class="bi ' + caps[i].icon + '"></i> ' + caps[i].label + '</span>';
+  }
+  html += '</div>';
+  return html;
+}
+
+function renderCard(p) {
+  var html = '';
+  var detailHref = './_model_detail_a.html?id=' + encodeURIComponent(p.id);
+  html += '<a class="catalog-card" data-model-id="' + escapeHtml(p.id) + '" href="' + detailHref + '">';
+
+  // Header: model id (large) + resource badge (right)
+  html += '<div class="catalog-card__header" style="align-items:flex-start;">';
+  html += '<div class="catalog-card__heading" style="flex:1;">';
+  html += '<div class="catalog-card__name">' + escapeHtml(p.id) + '</div>';
+  html += '<div class="catalog-card__source">' + escapeHtml(p.developer) + ' · ' + escapeHtml(p.model_source || '') + '</div>';
+  html += '</div>';
+  var bg = p.resource_type === 'CPU' ? 'bg-secondary' : 'bg-primary';
+  html += '<span class="badge ' + bg + ' catalog-card__resource-badge">' + p.resource_type + '</span>';
+  html += '</div>';
+
+  // Metrics row (TOP highlight)
+  html += renderTopMetric(p);
+
+  // Meta row: Plan D modality + context
+  html += '<div class="catalog-card__meta">';
+  html += renderModalityGroup(p);
+  html += '<span class="catalog-tag catalog-tag--neutral catalog-tag--context">' + formatContext(p.max_input_tokens) + ' ctx</span>';
+  html += '</div>';
+
+  // Benchmark bars
+  html += renderBars(p);
+
+  // Performance section (Spd / TTFT)
+  html += renderPerf(p);
+
+  // Capabilities
+  html += renderCaps(p);
+
+  html += '</a>';
+  return html;
+}
+
+(function init() {
+  var presets = window.PresetData.list;
+
+  // Filter chips
+  var devs = window.PresetData.getDevelopers(presets);
+  var lics = window.PresetData.getLicenses(presets);
+  var devHTML = '<button class="btn btn-sm btn-outline-secondary active">Any</button>';
+  for (var i = 0; i < devs.length; i++) {
+    devHTML += '<button class="btn btn-sm btn-outline-secondary">' + devs[i] + '</button>';
+  }
+  document.getElementById('filter-developers').innerHTML = devHTML;
+  var licHTML = '<button class="btn btn-sm btn-outline-secondary active">Any</button>';
+  for (var j = 0; j < lics.length; j++) {
+    licHTML += '<button class="btn btn-sm btn-outline-secondary">' + lics[j] + '</button>';
+  }
+  document.getElementById('filter-licenses').innerHTML = licHTML;
+
+  // Cards
+  var grid = document.getElementById('card-grid');
+  var html = '';
+  for (var k = 0; k < presets.length; k++) html += renderCard(presets[k]);
+  grid.innerHTML = html;
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html class="h-100" lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="./static/css/bootstrap.min.css">
+  <link rel="stylesheet" href="./static/css/bootstrap-table.min.css">
+  <link rel="stylesheet" href="./static/font/bootstrap-icons.css">
+  <link rel="stylesheet" href="./static/css/style.css">
+  <title>AIStation Dashboard - Mail Settings</title>
+</head>
+<body class="h-100">
+
+  <!-- Header -->
+  <header>
+    <nav class="navbar navbar-expand-sm rd-navbar" aria-label="Top navigation">
+      <a class="navbar-brand" href="./">AIStation Dashboard</a>
+      <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item">
+            <a href="#" class="rd-nav-user">
+              <span class="rd-nav-user__badge">Admin</span>
+              <i class="bi bi-person-circle" aria-hidden="true"></i> root
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="#" class="rd-nav-logout"><i class="bi bi-box-arrow-right" aria-hidden="true"></i> Logout</a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+  </header>
+
+  <div class="d-flex rd-main-container">
+
+    <!-- Sidebar -->
+    <nav class="rd-sidebar" aria-label="Main navigation">
+      <ul class="nav flex-column m-0">
+        <li class="rd-sidebar__section-label">Admin</li>
+        <li class="nav-item"><a class="nav-link" href="./keys.html"><i class="bi bi-key" aria-hidden="true"></i> API Keys</a></li>
+        <li class="nav-item"><a class="nav-link" href="./teams.html"><i class="bi bi-people" aria-hidden="true"></i> Teams</a></li>
+        <li class="nav-item"><a class="nav-link" href="#"><i class="bi bi-clock-history" aria-hidden="true"></i> Histories</a></li>
+        <li><div class="rd-sidebar__separator"></div></li>
+        <li class="rd-sidebar__separator-label">Management</li>
+        <li class="nav-item"><a class="nav-link" href="./model_settings.html"><i class="bi bi-robot" aria-hidden="true"></i> Model management</a></li>
+        <li class="nav-item"><a class="nav-link" href="./team_management.html"><i class="bi bi-diagram-3" aria-hidden="true"></i> Team management</a></li>
+        <li class="nav-item"><a class="nav-link" href="./user_management.html"><i class="bi bi-person" aria-hidden="true"></i> User management</a></li>
+        <li class="nav-item"><a class="nav-link active" href="./mail_settings.html"><i class="bi bi-envelope" aria-hidden="true"></i> Mail settings</a></li>
+      </ul>
+    </nav>
+
+    <!-- Content -->
+    <main class="rd-content bg-body">
+      <div class="rd-card rd-fade-in">
+        <div class="rd-card__header">
+          <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0">
+              <li class="breadcrumb-item active" aria-current="page">Mail Settings</li>
+            </ol>
+          </nav>
+        </div>
+        <div class="rd-card__body--padded rd-mail-form">
+
+          <!-- Error container -->
+          <div id="mail-form-error" class="rd-alert rd-alert--error mb-3" style="display:none" role="alert"><div class="rd-alert__body"></div></div>
+
+          <form action="/mail/settings" method="POST" novalidate="novalidate">
+            <input id="csrf_token" name="csrf_token" type="hidden" value="">
+
+            <div class="row mb-3 align-items-center">
+              <label for="mail_server" class="col-sm-4 col-xl-3 col-form-label">Mail Server <span class="rd-required-mark">*</span></label>
+              <div class="col-sm-8 col-xl-9">
+                <input class="form-control" id="mail_server" name="mail_server" placeholder="smtp.example.com" required type="text" value="">
+              </div>
+            </div>
+
+            <div class="row mb-3 align-items-center">
+              <label for="mail_port" class="col-sm-4 col-xl-3 col-form-label">Port <span class="rd-required-mark">*</span></label>
+              <div class="col-sm-8 col-xl-9">
+                <input class="form-control" id="mail_port" name="mail_port" placeholder="587" required type="text" value="">
+                <div class="rd-help-text">Common values: 587 (TLS), 465 (SSL), 25 (unencrypted)</div>
+              </div>
+            </div>
+
+            <div class="row mb-3 align-items-center">
+              <label for="mail_username" class="col-sm-4 col-xl-3 col-form-label">Username <span class="rd-required-mark">*</span></label>
+              <div class="col-sm-8 col-xl-9">
+                <input class="form-control" id="mail_username" name="mail_username" placeholder="user@example.com" required type="text" value="">
+              </div>
+            </div>
+
+            <div class="row mb-3 align-items-center">
+              <label for="mail_password" class="col-sm-4 col-xl-3 col-form-label">Password <span class="rd-required-mark">*</span></label>
+              <div class="col-sm-8 col-xl-9">
+                <input class="form-control" id="mail_password" name="mail_password" placeholder="********" required type="password" value="">
+              </div>
+            </div>
+
+            <div class="row mb-3 align-items-center">
+              <label class="col-sm-4 col-xl-3 col-form-label" id="mail_use_tls_label">Enable TLS</label>
+              <div class="col-sm-8 col-xl-9">
+                <div class="d-flex gap-4 py-2" role="radiogroup" aria-labelledby="mail_use_tls_label">
+                  <div class="form-check">
+                    <input class="form-check-input c-radio-black" id="mail_use_tls-0" name="mail_use_tls" type="radio" value="1">
+                    <label class="form-check-label ms-1" for="mail_use_tls-0">True</label>
+                  </div>
+                  <div class="form-check">
+                    <input class="form-check-input c-radio-black" id="mail_use_tls-1" name="mail_use_tls" type="radio" value="0">
+                    <label class="form-check-label ms-1" for="mail_use_tls-1">False</label>
+                  </div>
+                </div>
+                <div class="rd-help-text">Recommended for secure connections</div>
+              </div>
+            </div>
+
+            <div class="row mb-3 align-items-center">
+              <label class="col-sm-4 col-xl-3 col-form-label" id="mail_use_ssl_label">Enable SSL</label>
+              <div class="col-sm-8 col-xl-9">
+                <div class="d-flex gap-4 py-2" role="radiogroup" aria-labelledby="mail_use_ssl_label">
+                  <div class="form-check">
+                    <input class="form-check-input c-radio-black" id="mail_use_ssl-0" name="mail_use_ssl" type="radio" value="1">
+                    <label class="form-check-label ms-1" for="mail_use_ssl-0">True</label>
+                  </div>
+                  <div class="form-check">
+                    <input class="form-check-input c-radio-black" id="mail_use_ssl-1" name="mail_use_ssl" type="radio" value="0">
+                    <label class="form-check-label ms-1" for="mail_use_ssl-1">False</label>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="row mb-3 align-items-center">
+              <label for="mail_default_sender" class="col-sm-4 col-xl-3 col-form-label">Default Sender</label>
+              <div class="col-sm-8 col-xl-9">
+                <input class="form-control" id="mail_default_sender" name="mail_default_sender" placeholder="noreply@example.com" type="text" value="">
+                <div class="rd-help-text">e.g., noreply@example.com</div>
+              </div>
+            </div>
+
+            <div class="d-flex justify-content-end pt-3 border-top">
+              <button type="submit" class="rd-btn-primary">
+                <i class="bi bi-check"></i> Submit
+              </button>
+            </div>
+          </form>
+
+        </div>
+      </div>
+    </main>
+
+  </div>
+
+  <div id="toast-container" class="position-fixed top-0 end-0 p-3" style="z-index:1080"></div>
+  <script src="./static/js/jquery-3.7.1.min.js"></script>
+  <script src="./static/js/bootstrap.bundle.min.js"></script>
+  <script src="./static/js/bootstrap-table.min.js"></script>
+  <script src="./static/js/app.js"></script>
+</body>
+</html>

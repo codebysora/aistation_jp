@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="../static/css/bootstrap.min.css">
+  <link rel="stylesheet" href="../static/font/bootstrap-icons.css">
+  <link rel="stylesheet" href="../static/css/style.css">
+  <title>Model Select — 案A / 案B 比較インデックス</title>
+  <style>
+    body { background: var(--bs-body-bg); }
+    .compare-shell { max-width: 1100px; margin: 0 auto; padding: 2rem 1.5rem 4rem; }
+    h1 { font-size: 1.5rem; margin-bottom: 0.4rem; }
+    .lede { color: var(--bs-secondary-color); margin-bottom: 2rem; }
+
+    .compare-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem;
+    }
+    .compare-card {
+      border: 1px solid var(--rd-border-subtle);
+      border-radius: var(--rd-radius-lg);
+      background: #fff; padding: 1.25rem;
+      display: flex; flex-direction: column; gap: 0.6rem;
+    }
+    .compare-card h2 { font-size: 1.1rem; margin: 0; }
+    .compare-card .badge-source {
+      display: inline-block; font-size: 0.7rem;
+      padding: 0.15rem 0.5rem; border-radius: 999px;
+      font-weight: 600;
+    }
+    .badge-ours { background: rgba(40, 167, 69, 0.12); color: #1d7a3a; }
+    .badge-partner { background: rgba(13, 110, 253, 0.12); color: #0a58ca; }
+    .compare-card ul { font-size: 0.85rem; padding-left: 1.1rem; margin: 0.3rem 0; }
+    .compare-card ul li { margin-bottom: 0.2rem; }
+    .compare-card .open-btn {
+      align-self: stretch; margin-top: 0.5rem;
+    }
+
+    .table-diff {
+      margin-top: 2rem; background: #fff;
+      border: 1px solid var(--rd-border-subtle);
+      border-radius: var(--rd-radius-lg);
+      overflow: hidden;
+    }
+    .table-diff table { width: 100%; font-size: 0.85rem; }
+    .table-diff th, .table-diff td { padding: 0.55rem 0.85rem; vertical-align: top; }
+    .table-diff thead { background: var(--rd-bg-subtle); }
+    .table-diff tbody tr + tr { border-top: 1px solid var(--rd-border-subtle); }
+    .table-diff td:first-child { font-weight: 600; width: 22%; }
+
+    .attr-note {
+      margin-top: 1.5rem; padding: 0.75rem 1rem;
+      background: rgba(13, 110, 253, 0.06);
+      border-left: 3px solid var(--bs-primary);
+      border-radius: 4px; font-size: 0.85rem;
+    }
+    .attr-note b { color: var(--bs-primary); }
+    .attr-note a { color: var(--bs-primary); }
+  </style>
+</head>
+<body>
+
+<div class="compare-shell">
+  <h1>Model Select 改修案 — 2 案併走</h1>
+  <p class="lede">
+    先方共有のサンプル <code>preset.json</code> + <code>model_select.html</code> を元データに、
+    UI を 2 案で制作。両案とも同一 preset データを描画しているので、見た目だけを比較できます。
+  </p>
+
+  <div class="compare-grid">
+
+    <div class="compare-card">
+      <span class="badge-source badge-ours">こちら案</span>
+      <h2>案A: Plan D 系統を踏襲</h2>
+      <ul>
+        <li>カード基調: 既存 <code>catalog-card</code>（白背景）</li>
+        <li>Modality: <strong>IN→OUT アイコン</strong> (Plan D)</li>
+        <li>主指標: <strong>横バー</strong> Int/Cod/Math (0–20)</li>
+        <li>右上: CPU/GPU バッジ</li>
+        <li>ハイライト: <strong>TOP 指標ピル</strong> (最高スコアを目立たせ)</li>
+        <li>下段: Spd / TTFT を補助情報として小さめに</li>
+        <li>Capabilities: tool_use / reasoning をニュートラルタグで表示</li>
+        <li><strong>詳細ページ</strong>: カードクリック → 18 列ベンチマーク + Spec + Parameters + Deploy CTA</li>
+      </ul>
+      <a href="./_model_select_a.html" class="btn btn-success open-btn">案A 一覧を開く →</a>
+      <a href="./_model_detail_a.html" class="btn btn-outline-success open-btn">案A 詳細ページを開く →</a>
+    </div>
+
+    <div class="compare-card">
+      <span class="badge-source badge-partner">先方案</span>
+      <h2>案B: 先方サンプル準拠</h2>
+      <ul>
+        <li>カード基調: 既存 <code>c-model-card</code>（dark）</li>
+        <li>Modality: <strong>フラット modality タグ</strong>（IN/OUT 区別なし、output はタブで切替）</li>
+        <li>主指標: <strong>5-dot 円</strong> 2 カラム (Int/Cod/Mat ｜ Spd/TTFT)</li>
+        <li>右上: CPU/GPU バッジ</li>
+        <li>下段: <code>context N tokens</code></li>
+        <li>Capabilities: tool use のみタグ表示</li>
+        <li>Detail view: 列の表示切替 + ソート (今回モックでは省略)</li>
+      </ul>
+      <a href="./_model_select_b.html" class="btn btn-primary open-btn">案B を開く →</a>
+    </div>
+
+  </div>
+
+  <div class="table-diff">
+    <table>
+      <thead>
+        <tr><th>軸</th><th>案A (こちら)</th><th>案B (先方)</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>カード背景</td>
+          <td>白 (catalog-card)</td>
+          <td>ダーク (c-model-card)</td>
+        </tr>
+        <tr>
+          <td>Modality 表示</td>
+          <td>IN→OUT アイコンの 1 行（Plan D）</td>
+          <td>フラットなタグ列（input のみ）</td>
+        </tr>
+        <tr>
+          <td>スコア可視化</td>
+          <td>横バー (連続値)</td>
+          <td>5-dot 円 (離散 5 段階)</td>
+        </tr>
+        <tr>
+          <td>情報密度</td>
+          <td>中（バー + 数値 + Spd/TTFT 別段）</td>
+          <td>高（Int/Cod/Mat と Spd/TTFT が同段）</td>
+        </tr>
+        <tr>
+          <td>スコア精度の伝わりやすさ</td>
+          <td>○（連続値が直観的に見える）</td>
+          <td>△（5 段階に丸まる、しきい値で印象が変わる）</td>
+        </tr>
+        <tr>
+          <td>カード間の比較しやすさ</td>
+          <td>○（バー長で並列比較可）</td>
+          <td>◎（円の塗り数が一目で揃う）</td>
+        </tr>
+        <tr>
+          <td>多モダリティ (T,I,A,V → T) の表現</td>
+          <td>IN/OUT が分かれて意味明瞭</td>
+          <td>output 推論はタブ依存、input は横並びで完結</td>
+        </tr>
+        <tr>
+          <td>既存 UI との整合</td>
+          <td>そのまま接続可（現行スタイルに最も近い）</td>
+          <td>カード見た目が既存と乖離（既に c-model-card は別ページで利用）</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="attr-note">
+    <b>出典明記（追加対応）</b>:
+    両案とも、ベンチマーク値の出典として
+    <a href="https://artificialanalysis.ai/" target="_blank" rel="noopener">Artificial Analysis</a>
+    へのリンクを <strong>カード一覧上部</strong>（メトリクス凡例として）と
+    <strong>画面フッター</strong>の 2 か所に掲示しています。
+    詳細は <code>docs/model_select_two_options.md</code> §10 を参照。
+  </div>
+
+</div>
+</body>
+</html>

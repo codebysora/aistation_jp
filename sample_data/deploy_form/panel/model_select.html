@@ -1,0 +1,596 @@
+{% extends "layout.html" %}
+
+{% block content %}
+{% set menu="models" %}
+{% include "sidemenu.html" %}
+
+{# Macro: circle score row (5 circles). max_val sets the scale; invert=true for lower-is-better metrics. #}
+{% macro score_row(label, value, color, max_val=20, invert=false) %}
+{% if value is not none %}
+<div class="d-flex align-items-center gap-1">
+  <span class="text-white-50" style="font-size:0.65rem;width:2.5rem;flex-shrink:0;">{{ label }}</span>
+  {% if invert %}
+    {% set filled = [[(5.0 - value / max_val * 5) | round(0, 'floor') | int, 5] | min, 0] | max %}
+  {% else %}
+    {% set filled = [[(value / max_val * 5) | round(0, 'floor') | int, 5] | min, 0] | max %}
+  {% endif %}
+  {% for i in range(5) %}
+  <i class="bi {% if i < filled %}bi-circle-fill{% else %}bi-circle{% endif %} {{ color }}" style="font-size:0.6rem;"></i>
+  {% endfor %}
+  <span class="text-white-50 ms-1" style="font-size:0.75rem;">{{ value }}</span>
+</div>
+{% endif %}
+{% endmacro %}
+
+<main class="rd-content bg-body">
+  <div class="rd-card">
+    <div class="rd-card__header">
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb mb-0">
+          <li class="breadcrumb-item">
+            <a href="{{ url_for('models') }}">Model management</a>
+          </li>
+          <li class="breadcrumb-item active" aria-current="page">Select model</li>
+        </ol>
+      </nav>
+    </div>
+    <div class="rd-card__body">
+
+      <!-- ===== Collapsible Filter Panel ===== -->
+      <div class="border-bottom">
+        <button class="btn btn-link text-decoration-none text-body d-flex align-items-center gap-2 px-4 py-3 w-100 text-start"
+          type="button" data-bs-toggle="collapse" data-bs-target="#filter-panel" aria-expanded="false">
+          <i class="bi bi-funnel"></i>
+          <span class="fw-semibold small">Filters</span>
+          <i class="bi bi-chevron-down ms-1 js-filter-chevron" style="font-size:0.75rem;transition:transform 0.2s;"></i>
+          <span id="filter-badge" class="badge bg-primary ms-1 d-none">0</span>
+        </button>
+        <div class="collapse" id="filter-panel">
+          <div class="px-4 pb-4 d-flex flex-wrap gap-4">
+
+            <!-- Context filter -->
+            <div>
+              <div class="small fw-semibold text-body-secondary mb-2">Context</div>
+              <div class="d-flex flex-wrap gap-1" id="ctx-filter-group">
+                <button class="btn btn-sm btn-outline-secondary active js-ctx-btn" data-min="0">Any</button>
+                <button class="btn btn-sm btn-outline-secondary js-ctx-btn" data-min="32768">32k+</button>
+                <button class="btn btn-sm btn-outline-secondary js-ctx-btn" data-min="131072">128k+</button>
+                <button class="btn btn-sm btn-outline-secondary js-ctx-btn" data-min="262144">256k+</button>
+              </div>
+            </div>
+
+            <!-- Input modality filter -->
+            <div>
+              <div class="small fw-semibold text-body-secondary mb-2">Input modality</div>
+              <div class="d-flex flex-wrap gap-1" id="modality-filter-group">
+                <button class="btn btn-sm btn-outline-secondary active js-modality-btn" data-modality="all">Any</button>
+                <button class="btn btn-sm btn-outline-secondary js-modality-btn" data-modality="text">
+                  <i class="bi bi-fonts"></i> text
+                </button>
+                <button class="btn btn-sm btn-outline-secondary js-modality-btn" data-modality="image">
+                  <i class="bi bi-image"></i> image
+                </button>
+                <button class="btn btn-sm btn-outline-secondary js-modality-btn" data-modality="audio">
+                  <i class="bi bi-mic"></i> audio
+                </button>
+                <button class="btn btn-sm btn-outline-secondary js-modality-btn" data-modality="video">
+                  <i class="bi bi-camera-video"></i> video
+                </button>
+              </div>
+            </div>
+
+            <!-- Publisher filter -->
+            <div>
+              <div class="small fw-semibold text-body-secondary mb-2">Publisher</div>
+              <div class="d-flex flex-wrap gap-1" id="developer-filter-group">
+                <button class="btn btn-sm btn-outline-secondary active js-developer-btn" data-developer="all">Any</button>
+                {% for dev in developers %}
+                <button class="btn btn-sm btn-outline-secondary js-developer-btn" data-developer="{{ dev }}">{{ dev }}</button>
+                {% endfor %}
+              </div>
+            </div>
+
+            <!-- License filter -->
+            <div>
+              <div class="small fw-semibold text-body-secondary mb-2">License</div>
+              <div class="d-flex flex-wrap gap-1" id="license-filter-group">
+                <button class="btn btn-sm btn-outline-secondary active js-license-btn" data-license="all">Any</button>
+                {% for lic in licenses %}
+                <button class="btn btn-sm btn-outline-secondary js-license-btn" data-license="{{ lic }}">{{ lic }}</button>
+                {% endfor %}
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== Output modality tabs + View toggle ===== -->
+      <div class="d-flex justify-content-between align-items-center px-4 pt-3 pb-1">
+        <ul class="nav nav-tabs border-0 gap-1" id="output-tabs">
+          <li class="nav-item">
+            <button class="nav-link active js-output-tab px-3 py-2" data-output="text">Text</button>
+          </li>
+          <li class="nav-item">
+            <button class="nav-link js-output-tab px-3 py-2" data-output="embedding">Embedding</button>
+          </li>
+        </ul>
+        <div class="btn-group" role="group">
+          <button type="button" class="btn btn-sm btn-outline-secondary active js-view-btn" data-view="card" title="Card view">
+            <i class="bi bi-grid-3x3-gap"></i>
+          </button>
+          <button type="button" class="btn btn-sm btn-outline-secondary js-view-btn" data-view="detail" title="Detail view">
+            <i class="bi bi-layout-split"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- ===== CARD VIEW (default) ===== -->
+      <div id="view-card" class="p-4 overflow-y-auto rd-model-select-scroll">
+        <div class="row row-cols-2 g-3" id="card-grid">
+          {% for preset in preset_list %}
+          <div class="col js-card-item"
+            data-output="{{ preset.output_modalities | join(',') }}"
+            data-context="{{ preset.max_input_tokens if preset.max_input_tokens is not none else 0 }}"
+            data-modalities="{{ preset.input_modalities | join(',') }}"
+            data-developer="{{ preset.developer }}"
+            data-license="{{ preset.license }}">
+            <form action="{{ url_for('model_deploy') }}" method="POST" novalidate="novalidate" class="h-100">
+              <input type="hidden" name="model_name" value="{{ preset.id }}">
+              <button type="submit" class="c-model-card p-4 h-100 w-100 text-start border-0">
+                <!-- Row 1: name + resource badge -->
+                <div class="d-flex justify-content-between align-items-start mb-1">
+                  <span class="fw-bold">{{ preset.id }}</span>
+                  <span class="badge {% if preset.resource_type == 'CPU' %}bg-secondary{% else %}bg-primary{% endif %} ms-2 flex-shrink-0">
+                    {{ preset.resource_type }}
+                  </span>
+                </div>
+                <div class="text-white-50 small mb-2">{{ preset.developer }}</div>
+                <!-- Score rows: 2-column layout (performance indices | speed) -->
+                <div class="d-flex gap-3 mb-3">
+                  <div class="d-flex flex-column gap-1">
+                    {{ score_row('Int', preset.intelligence_index, 'text-info') }}
+                    {{ score_row('Cod', preset.coding_index, 'text-warning') }}
+                    {{ score_row('Mat', preset.math_index, 'text-success') }}
+                  </div>
+                  <div class="d-flex flex-column gap-1 border-start border-secondary ps-3">
+                    {{ score_row('Spd', preset.median_output_tokens_per_second, 'text-primary', 400) }}
+                    {{ score_row('TTFT', preset.ttft, 'text-danger', 5, true) }}
+                  </div>
+                </div>
+                <!-- Modality + capability tags -->
+                <div class="d-flex flex-wrap gap-1 mb-2">
+                  {% for m in preset.input_modalities %}
+                  <span class="c-model-card__tag c-model-card__tag--modality">
+                    {% if m == 'text' %}<i class="bi bi-fonts"></i>
+                    {% elif m == 'image' %}<i class="bi bi-image"></i>
+                    {% elif m == 'audio' %}<i class="bi bi-mic"></i>
+                    {% elif m == 'video' %}<i class="bi bi-camera-video"></i>
+                    {% endif %}
+                    {{ m }}
+                  </span>
+                  {% endfor %}
+                  {% if preset.capabilities.get('tool_use') %}
+                  <span class="c-model-card__tag c-model-card__tag--cap">tool use</span>
+                  {% endif %}
+                </div>
+                {% if preset.max_input_tokens is not none %}
+                <div class="text-white-50 mt-1" style="font-size:0.7rem;">
+                  context {{ "{:,}".format(preset.max_input_tokens) }} tokens
+                </div>
+                {% endif %}
+              </button>
+            </form>
+          </div>
+          {% endfor %}
+        </div>
+        <div id="card-empty" class="text-body-secondary text-center py-5 d-none">No models match the selected filters.</div>
+      </div>
+
+      <!-- ===== DETAIL VIEW ===== -->
+      <div id="view-detail" class="d-none p-4 overflow-y-auto rd-model-select-scroll">
+
+        <!-- Column visibility -->
+        <div class="mb-3 border rounded p-3">
+          <div class="small fw-semibold text-body-secondary mb-2">Columns</div>
+          <div class="d-flex flex-wrap gap-1">
+            <button class="btn btn-sm btn-outline-secondary active js-col-btn" data-col-id="intelligence_index">Intelligence</button>
+            <button class="btn btn-sm btn-outline-secondary active js-col-btn" data-col-id="coding_index">Coding</button>
+            <button class="btn btn-sm btn-outline-secondary active js-col-btn" data-col-id="math_index">Math</button>
+            <button class="btn btn-sm btn-outline-secondary active js-col-btn" data-col-id="median_output_tokens_per_second">Speed</button>
+            <button class="btn btn-sm btn-outline-secondary active js-col-btn" data-col-id="ttft">TTFT</button>
+            <button class="btn btn-sm btn-outline-secondary js-col-btn" data-col-id="tta">TTA</button>
+            <button class="btn btn-sm btn-outline-secondary js-col-btn" data-col-id="mmlu_pro">MMLU-Pro</button>
+            <button class="btn btn-sm btn-outline-secondary js-col-btn" data-col-id="gpqa">GPQA</button>
+            <button class="btn btn-sm btn-outline-secondary js-col-btn" data-col-id="hle">HLE</button>
+            <button class="btn btn-sm btn-outline-secondary js-col-btn" data-col-id="livecodebench">LiveCodeBench</button>
+            <button class="btn btn-sm btn-outline-secondary js-col-btn" data-col-id="scicode">SCI-Code</button>
+            <button class="btn btn-sm btn-outline-secondary js-col-btn" data-col-id="math_500">MATH-500</button>
+            <button class="btn btn-sm btn-outline-secondary js-col-btn" data-col-id="aime">AIME</button>
+            <button class="btn btn-sm btn-outline-secondary js-col-btn" data-col-id="aime_25">AIME'25</button>
+            <button class="btn btn-sm btn-outline-secondary js-col-btn" data-col-id="ifbench">IF-Bench</button>
+            <button class="btn btn-sm btn-outline-secondary js-col-btn" data-col-id="lcr">LCR</button>
+            <button class="btn btn-sm btn-outline-secondary js-col-btn" data-col-id="terminalbench_hard">TermBench</button>
+            <button class="btn btn-sm btn-outline-secondary js-col-btn" data-col-id="tau2">TAU2</button>
+          </div>
+        </div>
+
+        <div style="overflow-x:auto;">
+        <table class="table table-sm table-hover c-table--border" id="detail-view-table" style="white-space:nowrap;">
+          <thead>
+            <tr>
+              <th style="width:1.5rem;"></th>
+              <th>Model</th>
+              <th>Developer</th>
+              <th data-col-id="intelligence_index" data-sort-key="intelligence_index" style="cursor:pointer;">Intelligence <i class="bi bi-sort js-sort-icon ms-1 text-body-tertiary" style="font-size:0.75rem;"></i></th>
+              <th data-col-id="coding_index" data-sort-key="coding_index" style="cursor:pointer;">Coding <i class="bi bi-sort js-sort-icon ms-1 text-body-tertiary" style="font-size:0.75rem;"></i></th>
+              <th data-col-id="math_index" data-sort-key="math_index" style="cursor:pointer;">Math <i class="bi bi-sort js-sort-icon ms-1 text-body-tertiary" style="font-size:0.75rem;"></i></th>
+              <th data-col-id="median_output_tokens_per_second" data-sort-key="median_output_tokens_per_second" style="cursor:pointer;">Speed (tok/s) <i class="bi bi-sort js-sort-icon ms-1 text-body-tertiary" style="font-size:0.75rem;"></i></th>
+              <th data-col-id="ttft" data-sort-key="ttft" style="cursor:pointer;">TTFT (s) <i class="bi bi-sort js-sort-icon ms-1 text-body-tertiary" style="font-size:0.75rem;"></i></th>
+              <th class="d-none" data-col-id="tta" data-sort-key="tta" style="cursor:pointer;">TTA (s) <i class="bi bi-sort js-sort-icon ms-1 text-body-tertiary" style="font-size:0.75rem;"></i></th>
+              <th class="d-none" data-col-id="mmlu_pro" data-sort-key="mmlu_pro" style="cursor:pointer;">MMLU-Pro <i class="bi bi-sort js-sort-icon ms-1 text-body-tertiary" style="font-size:0.75rem;"></i></th>
+              <th class="d-none" data-col-id="gpqa" data-sort-key="gpqa" style="cursor:pointer;">GPQA <i class="bi bi-sort js-sort-icon ms-1 text-body-tertiary" style="font-size:0.75rem;"></i></th>
+              <th class="d-none" data-col-id="hle" data-sort-key="hle" style="cursor:pointer;">HLE <i class="bi bi-sort js-sort-icon ms-1 text-body-tertiary" style="font-size:0.75rem;"></i></th>
+              <th class="d-none" data-col-id="livecodebench" data-sort-key="livecodebench" style="cursor:pointer;">LiveCodeBench <i class="bi bi-sort js-sort-icon ms-1 text-body-tertiary" style="font-size:0.75rem;"></i></th>
+              <th class="d-none" data-col-id="scicode" data-sort-key="scicode" style="cursor:pointer;">SCI-Code <i class="bi bi-sort js-sort-icon ms-1 text-body-tertiary" style="font-size:0.75rem;"></i></th>
+              <th class="d-none" data-col-id="math_500" data-sort-key="math_500" style="cursor:pointer;">MATH-500 <i class="bi bi-sort js-sort-icon ms-1 text-body-tertiary" style="font-size:0.75rem;"></i></th>
+              <th class="d-none" data-col-id="aime" data-sort-key="aime" style="cursor:pointer;">AIME <i class="bi bi-sort js-sort-icon ms-1 text-body-tertiary" style="font-size:0.75rem;"></i></th>
+              <th class="d-none" data-col-id="aime_25" data-sort-key="aime_25" style="cursor:pointer;">AIME'25 <i class="bi bi-sort js-sort-icon ms-1 text-body-tertiary" style="font-size:0.75rem;"></i></th>
+              <th class="d-none" data-col-id="ifbench" data-sort-key="ifbench" style="cursor:pointer;">IF-Bench <i class="bi bi-sort js-sort-icon ms-1 text-body-tertiary" style="font-size:0.75rem;"></i></th>
+              <th class="d-none" data-col-id="lcr" data-sort-key="lcr" style="cursor:pointer;">LCR <i class="bi bi-sort js-sort-icon ms-1 text-body-tertiary" style="font-size:0.75rem;"></i></th>
+              <th class="d-none" data-col-id="terminalbench_hard" data-sort-key="terminalbench_hard" style="cursor:pointer;">TermBench <i class="bi bi-sort js-sort-icon ms-1 text-body-tertiary" style="font-size:0.75rem;"></i></th>
+              <th class="d-none" data-col-id="tau2" data-sort-key="tau2" style="cursor:pointer;">TAU2 <i class="bi bi-sort js-sort-icon ms-1 text-body-tertiary" style="font-size:0.75rem;"></i></th>
+              <th>Context</th>
+              <th>Input</th>
+              <th>Tool use</th>
+              <th>Resource</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for preset in preset_list %}
+            <tr class="js-detail-main" style="cursor:pointer;"
+              data-output="{{ preset.output_modalities | join(',') }}"
+              data-context="{{ preset.max_input_tokens if preset.max_input_tokens is not none else 0 }}"
+              data-modalities="{{ preset.input_modalities | join(',') }}"
+              data-developer="{{ preset.developer }}"
+              data-license="{{ preset.license }}"
+              data-target="detail-{{ loop.index }}">
+              <td class="text-body-tertiary align-middle">
+                <i class="bi bi-chevron-right js-chevron" style="font-size:0.75rem;transition:transform 0.2s;"></i>
+              </td>
+              <td class="fw-semibold align-middle">{{ preset.id }}</td>
+              <td class="text-body-secondary small align-middle">{{ preset.developer }}</td>
+              <td class="align-middle" data-col-id="intelligence_index" data-val="{{ preset.intelligence_index if preset.intelligence_index is not none else '' }}">
+                {% if preset.intelligence_index is not none %}
+                <span class="fw-semibold">{{ preset.intelligence_index }}</span><span class="text-body-tertiary small">/20</span>
+                {% else %}-{% endif %}
+              </td>
+              <td class="align-middle" data-col-id="coding_index" data-val="{{ preset.coding_index if preset.coding_index is not none else '' }}">
+                {% if preset.coding_index is not none %}
+                <span class="fw-semibold">{{ preset.coding_index }}</span><span class="text-body-tertiary small">/20</span>
+                {% else %}-{% endif %}
+              </td>
+              <td class="align-middle" data-col-id="math_index" data-val="{{ preset.math_index if preset.math_index is not none else '' }}">
+                {% if preset.math_index is not none %}
+                <span class="fw-semibold">{{ preset.math_index }}</span><span class="text-body-tertiary small">/20</span>
+                {% else %}-{% endif %}
+              </td>
+              <td class="align-middle" data-col-id="median_output_tokens_per_second" data-val="{{ preset.median_output_tokens_per_second if preset.median_output_tokens_per_second is not none else '' }}">
+                {% if preset.median_output_tokens_per_second is not none %}{{ preset.median_output_tokens_per_second }}{% else %}-{% endif %}
+              </td>
+              <td class="align-middle" data-col-id="ttft" data-val="{{ preset.ttft if preset.ttft is not none else '' }}">
+                {% if preset.ttft is not none %}{{ "%.2f"|format(preset.ttft) }}{% else %}-{% endif %}
+              </td>
+              <td class="align-middle d-none" data-col-id="tta" data-val="{{ preset.tta if preset.tta is not none else '' }}">
+                {% if preset.tta is not none %}{{ "%.2f"|format(preset.tta) }}{% else %}-{% endif %}
+              </td>
+              <td class="align-middle d-none" data-col-id="mmlu_pro" data-val="{{ preset.mmlu_pro if preset.mmlu_pro is not none else '' }}">
+                {% if preset.mmlu_pro is not none %}{{ "%.1f"|format(preset.mmlu_pro * 100) }}%{% else %}-{% endif %}
+              </td>
+              <td class="align-middle d-none" data-col-id="gpqa" data-val="{{ preset.gpqa if preset.gpqa is not none else '' }}">
+                {% if preset.gpqa is not none %}{{ "%.1f"|format(preset.gpqa * 100) }}%{% else %}-{% endif %}
+              </td>
+              <td class="align-middle d-none" data-col-id="hle" data-val="{{ preset.hle if preset.hle is not none else '' }}">
+                {% if preset.hle is not none %}{{ "%.1f"|format(preset.hle * 100) }}%{% else %}-{% endif %}
+              </td>
+              <td class="align-middle d-none" data-col-id="livecodebench" data-val="{{ preset.livecodebench if preset.livecodebench is not none else '' }}">
+                {% if preset.livecodebench is not none %}{{ "%.1f"|format(preset.livecodebench * 100) }}%{% else %}-{% endif %}
+              </td>
+              <td class="align-middle d-none" data-col-id="scicode" data-val="{{ preset.scicode if preset.scicode is not none else '' }}">
+                {% if preset.scicode is not none %}{{ "%.1f"|format(preset.scicode * 100) }}%{% else %}-{% endif %}
+              </td>
+              <td class="align-middle d-none" data-col-id="math_500" data-val="{{ preset.math_500 if preset.math_500 is not none else '' }}">
+                {% if preset.math_500 is not none %}{{ "%.1f"|format(preset.math_500 * 100) }}%{% else %}-{% endif %}
+              </td>
+              <td class="align-middle d-none" data-col-id="aime" data-val="{{ preset.aime if preset.aime is not none else '' }}">
+                {% if preset.aime is not none %}{{ "%.1f"|format(preset.aime * 100) }}%{% else %}-{% endif %}
+              </td>
+              <td class="align-middle d-none" data-col-id="aime_25" data-val="{{ preset.aime_25 if preset.aime_25 is not none else '' }}">
+                {% if preset.aime_25 is not none %}{{ "%.1f"|format(preset.aime_25 * 100) }}%{% else %}-{% endif %}
+              </td>
+              <td class="align-middle d-none" data-col-id="ifbench" data-val="{{ preset.ifbench if preset.ifbench is not none else '' }}">
+                {% if preset.ifbench is not none %}{{ "%.1f"|format(preset.ifbench * 100) }}%{% else %}-{% endif %}
+              </td>
+              <td class="align-middle d-none" data-col-id="lcr" data-val="{{ preset.lcr if preset.lcr is not none else '' }}">
+                {% if preset.lcr is not none %}{{ "%.1f"|format(preset.lcr * 100) }}%{% else %}-{% endif %}
+              </td>
+              <td class="align-middle d-none" data-col-id="terminalbench_hard" data-val="{{ preset.terminalbench_hard if preset.terminalbench_hard is not none else '' }}">
+                {% if preset.terminalbench_hard is not none %}{{ "%.1f"|format(preset.terminalbench_hard * 100) }}%{% else %}-{% endif %}
+              </td>
+              <td class="align-middle d-none" data-col-id="tau2" data-val="{{ preset.tau2 if preset.tau2 is not none else '' }}">
+                {% if preset.tau2 is not none %}{{ "%.1f"|format(preset.tau2 * 100) }}%{% else %}-{% endif %}
+              </td>
+              <td class="align-middle">{% if preset.max_input_tokens is not none %}{{ "{:,}".format(preset.max_input_tokens) }}{% else %}-{% endif %}</td>
+              <td class="align-middle">
+                <div class="d-flex flex-wrap gap-1">
+                  {% for m in preset.input_modalities %}
+                  <span class="c-model-card__tag c-model-card__tag--modality py-0">{{ m }}</span>
+                  {% endfor %}
+                </div>
+              </td>
+              <td class="align-middle">
+                {% if preset.capabilities.get('tool_use') %}
+                <i class="bi bi-check-circle-fill text-success"></i>
+                {% else %}
+                <i class="bi bi-dash text-body-tertiary"></i>
+                {% endif %}
+              </td>
+              <td class="align-middle">
+                <span class="badge {% if preset.resource_type == 'CPU' %}bg-secondary{% else %}bg-primary{% endif %}">
+                  {{ preset.resource_type }}
+                </span>
+              </td>
+              <td class="align-middle">
+                <form action="{{ url_for('model_deploy') }}" method="POST" novalidate="novalidate">
+                  <input type="hidden" name="model_name" value="{{ preset.id }}">
+                  <button type="submit" class="btn btn-sm btn-dark rd-btn-action border-0">Deploy</button>
+                </form>
+              </td>
+            </tr>
+            <!-- Expandable detail row -->
+            <tr id="detail-{{ loop.index }}" class="d-none js-detail-row">
+              <td></td>
+              <td colspan="100">
+                <div class="p-3 rounded-2 small" style="background:var(--bs-light);">
+                  <div class="row g-3">
+                    <div class="col-md-4">
+                      <div class="fw-semibold mb-1 text-body-secondary">Model source</div>
+                      <div class="font-monospace">{{ preset.model_source }}</div>
+                      <div class="text-body-tertiary mt-1">Engine: {{ preset.engine_version }}</div>
+                      <div class="text-body-tertiary">License: {{ preset.license }}</div>
+                    </div>
+                    <div class="col-md-4">
+                      <div class="fw-semibold mb-1 text-body-secondary">Resources</div>
+                      {% if preset.required_resources.get('cpu') %}
+                      <div>CPU × {{ preset.required_resources.cpu.count }}, {{ preset.required_resources.cpu.memory_gb }} GB RAM</div>
+                      {% elif preset.required_resources.get('gpu') %}
+                      <div>GPU × {{ preset.required_resources.gpu.count }}, {{ preset.required_resources.gpu.memory_gb }} GB VRAM</div>
+                      {% endif %}
+                    </div>
+                    <div class="col-md-4">
+                      <div class="fw-semibold mb-1 text-body-secondary">Parameters</div>
+                      {% if preset.parameters.get('kwargs') %}
+                      {% for k, v in preset.parameters.kwargs.items() %}
+                      <div class="font-monospace text-body-secondary">--{{ k }} {{ v }}</div>
+                      {% endfor %}
+                      {% endif %}
+                    </div>
+                  </div>
+                </div>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        </div>
+        <div id="detail-empty" class="text-body-secondary text-center py-5 d-none">No models match the selected filters.</div>
+      </div>
+
+    </div>
+  </div>
+</main>
+{% endblock %}
+
+{% block script %}
+<script>
+// ---- Active filter state ----
+const filterState = { ctx: 0, modality: 'all', developer: 'all', license: 'all', output: 'text' };
+
+function countActiveFilters() {
+  let n = 0;
+  if (filterState.ctx > 0) n++;
+  if (filterState.modality !== 'all') n++;
+  if (filterState.developer !== 'all') n++;
+  if (filterState.license !== 'all') n++;
+  return n;
+}
+
+function updateFilterBadge() {
+  const n = countActiveFilters();
+  const badge = document.getElementById('filter-badge');
+  badge.textContent = n;
+  badge.classList.toggle('d-none', n === 0);
+}
+
+function matchesFilters(el) {
+  const ctx = parseInt(el.dataset.context || '0');
+  if (ctx < filterState.ctx) return false;
+  if (filterState.modality !== 'all' && !el.dataset.modalities.includes(filterState.modality)) return false;
+  if (filterState.developer !== 'all' && el.dataset.developer !== filterState.developer) return false;
+  if (filterState.license !== 'all' && el.dataset.license !== filterState.license) return false;
+  if (!el.dataset.output.includes(filterState.output)) return false;
+  return true;
+}
+
+function applyFilters() {
+  let visibleCards = 0, visibleRows = 0;
+
+  document.querySelectorAll('.js-card-item').forEach(el => {
+    const show = matchesFilters(el);
+    el.classList.toggle('d-none', !show);
+    if (show) visibleCards++;
+  });
+  document.getElementById('card-empty').classList.toggle('d-none', visibleCards > 0);
+
+  document.querySelectorAll('.js-detail-main').forEach(el => {
+    const show = matchesFilters(el);
+    el.classList.toggle('d-none', !show);
+    const detailRow = document.getElementById(el.dataset.target);
+    if (detailRow && !show) {
+      detailRow.classList.add('d-none');
+      el.querySelector('.js-chevron').style.transform = '';
+    }
+    if (show) visibleRows++;
+  });
+  document.getElementById('detail-empty').classList.toggle('d-none', visibleRows > 0);
+
+  updateFilterBadge();
+}
+
+// ---- Filter chevron animation ----
+document.getElementById('filter-panel').addEventListener('show.bs.collapse', () => {
+  document.querySelector('.js-filter-chevron').style.transform = 'rotate(180deg)';
+});
+document.getElementById('filter-panel').addEventListener('hide.bs.collapse', () => {
+  document.querySelector('.js-filter-chevron').style.transform = '';
+});
+
+// ---- Context buttons ----
+document.querySelectorAll('.js-ctx-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.js-ctx-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    filterState.ctx = parseInt(btn.dataset.min);
+    applyFilters();
+  });
+});
+
+// ---- Modality buttons ----
+document.querySelectorAll('.js-modality-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.js-modality-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    filterState.modality = btn.dataset.modality;
+    applyFilters();
+  });
+});
+
+// ---- Developer buttons ----
+document.querySelectorAll('.js-developer-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.js-developer-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    filterState.developer = btn.dataset.developer;
+    applyFilters();
+  });
+});
+
+// ---- License buttons ----
+document.querySelectorAll('.js-license-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.js-license-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    filterState.license = btn.dataset.license;
+    applyFilters();
+  });
+});
+
+// ---- Output modality tabs ----
+document.querySelectorAll('.js-output-tab').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.js-output-tab').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    filterState.output = btn.dataset.output;
+    applyFilters();
+  });
+});
+
+// ---- View switch ----
+const viewBtns = document.querySelectorAll('.js-view-btn');
+viewBtns.forEach(btn => {
+  btn.addEventListener('click', () => {
+    viewBtns.forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const isDetail = btn.dataset.view === 'detail';
+    document.getElementById('view-card').classList.toggle('d-none', isDetail);
+    document.getElementById('view-detail').classList.toggle('d-none', !isDetail);
+  });
+});
+
+// ---- Column visibility toggle ----
+document.querySelectorAll('.js-col-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const colId = btn.dataset.colId;
+    const isActive = btn.classList.toggle('active');
+    document.querySelectorAll(`th[data-col-id="${colId}"], td[data-col-id="${colId}"]`).forEach(el => {
+      el.classList.toggle('d-none', !isActive);
+    });
+  });
+});
+
+// ---- Sort ----
+let sortState = { key: null, dir: 1 };
+
+function sortTable(key) {
+  if (sortState.key === key) {
+    sortState.dir *= -1;
+  } else {
+    sortState.key = key;
+    sortState.dir = 1;
+  }
+
+  const tbody = document.querySelector('#detail-view-table tbody');
+  const pairs = [];
+  document.querySelectorAll('.js-detail-main').forEach(row => {
+    pairs.push([row, document.getElementById(row.dataset.target)]);
+  });
+
+  pairs.sort(([a], [b]) => {
+    const av = a.querySelector(`[data-col-id="${key}"]`)?.dataset.val;
+    const bv = b.querySelector(`[data-col-id="${key}"]`)?.dataset.val;
+    const an = (av === '' || av == null) ? null : parseFloat(av);
+    const bn = (bv === '' || bv == null) ? null : parseFloat(bv);
+    if (an == null && bn == null) return 0;
+    if (an == null) return 1;
+    if (bn == null) return -1;
+    return (an - bn) * sortState.dir;
+  });
+
+  pairs.forEach(([main, detail]) => {
+    tbody.appendChild(main);
+    if (detail) tbody.appendChild(detail);
+  });
+
+  // Update sort icons
+  document.querySelectorAll('[data-sort-key]').forEach(th => {
+    const icon = th.querySelector('.js-sort-icon');
+    if (!icon) return;
+    if (th.dataset.sortKey === key) {
+      icon.className = `bi ${sortState.dir === 1 ? 'bi-sort-up' : 'bi-sort-down'} js-sort-icon ms-1`;
+    } else {
+      icon.className = 'bi bi-sort js-sort-icon ms-1 text-body-tertiary';
+    }
+  });
+}
+
+document.querySelectorAll('[data-sort-key]').forEach(th => {
+  th.addEventListener('click', () => sortTable(th.dataset.sortKey));
+});
+
+// ---- Detail row expand ----
+document.querySelectorAll('.js-detail-main').forEach(row => {
+  row.addEventListener('click', e => {
+    if (e.target.closest('form')) return;
+    const detail = document.getElementById(row.dataset.target);
+    const chevron = row.querySelector('.js-chevron');
+    const isOpen = !detail.classList.contains('d-none');
+    detail.classList.toggle('d-none', isOpen);
+    chevron.style.transform = isOpen ? '' : 'rotate(90deg)';
+  });
+});
+
+// ---- Initialize: show only "text" output models ----
+applyFilters();
+</script>
+{% endblock %}

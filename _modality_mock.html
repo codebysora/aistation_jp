@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html class="h-100" lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="./static/css/bootstrap.min.css">
+  <link rel="stylesheet" href="./static/font/bootstrap-icons.css">
+  <link rel="stylesheet" href="./static/css/style.css">
+  <title>Modality Display Mock</title>
+  <style>
+    .mock-wrap { max-width: 1320px; margin: 0 auto; padding: 1.5rem 1.5rem 4rem; }
+    .mock-intro { background: var(--rd-bg-subtle, #f5f6f8); border-radius: var(--rd-radius-lg, 10px); padding: 1rem 1.25rem; margin-bottom: 1.5rem; font-size: 0.875rem; color: var(--bs-secondary-color); }
+    .mock-intro b { color: var(--bs-body-color); }
+    .mock-section { margin-bottom: 2.75rem; }
+    .mock-section__head { border-left: 4px solid var(--bs-primary, #0d6efd); padding-left: 0.75rem; margin-bottom: 1rem; }
+    .mock-section__title { font-size: 1.05rem; font-weight: 700; margin: 0; }
+    .mock-section__desc { font-size: 0.8125rem; color: var(--bs-secondary-color); margin: 0.25rem 0 0; }
+    .mock-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1rem; }
+
+    /* ===== Modality pills (shared across proposals) ===== */
+    .mod-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.2rem;
+      padding: 0.15rem 0.5rem;
+      border-radius: 999px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      background: var(--rd-bg-subtle, rgba(0,0,0,0.04));
+      color: var(--bs-secondary-color);
+      border: 1px solid rgba(0,0,0,0.06);
+      line-height: 1.4;
+    }
+    .mod-pill i { font-size: 0.72rem; }
+
+    /* Proposal A: header-right "IN→OUT" flow */
+    .pa-flow {
+      margin-left: auto;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.2rem;
+      font-size: 0.68rem;
+      color: var(--bs-secondary-color);
+      white-space: nowrap;
+    }
+    .pa-flow__group { display: inline-flex; gap: 0.15rem; }
+    .pa-flow__arrow { opacity: 0.5; }
+    .pa-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.15rem;
+      padding: 0.1rem 0.4rem;
+      border-radius: 4px;
+      background: var(--rd-bg-subtle, rgba(0,0,0,0.04));
+      color: var(--bs-secondary-color);
+      font-weight: 600;
+    }
+    .pa-chip i { font-size: 0.68rem; }
+
+    /* Proposal B: two-row IN / OUT labeled stripe */
+    .pb-modalities {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+      margin: 0 0 0.625rem;
+      padding: 0.5rem 0.625rem;
+      background: var(--rd-bg-subtle, rgba(0,0,0,0.03));
+      border-radius: 6px;
+    }
+    .pb-row { display: flex; align-items: center; gap: 0.4rem; font-size: 0.7rem; }
+    .pb-row__label {
+      width: 28px;
+      font-weight: 700;
+      font-size: 0.64rem;
+      color: var(--bs-secondary-color);
+      letter-spacing: 0.04em;
+    }
+
+    /* Proposal C: color-coded IN vs OUT pills */
+    .pc-row { display: flex; flex-wrap: wrap; gap: 0.3rem; margin: 0 0 0.625rem; align-items: center; }
+    .pc-pill-in  { background: rgba(79,142,247,0.10); color: #2e5fbd; border-color: rgba(79,142,247,0.22); }
+    .pc-pill-out { background: rgba(156,93,229,0.10); color: #6b3fb5; border-color: rgba(156,93,229,0.22); }
+    .pc-arrow { color: var(--bs-secondary-color); opacity: 0.6; font-size: 0.8rem; }
+
+    /* Proposal D: icon-only badges in meta row */
+    .pd-mod-group {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.15rem;
+      padding: 0.2rem 0.45rem;
+      border-radius: 4px;
+      background: var(--rd-bg-subtle, rgba(0,0,0,0.04));
+      font-size: 0.72rem;
+      color: var(--bs-secondary-color);
+    }
+    .pd-mod-group__label { font-weight: 700; font-size: 0.62rem; letter-spacing: 0.05em; opacity: 0.8; margin-right: 0.1rem; }
+    .pd-mod-group i { font-size: 0.8rem; }
+    .pd-mod-group__arrow { opacity: 0.4; margin: 0 0.15rem; }
+
+    /* shared card tweaks for mock */
+    .mock-card .catalog-card { cursor: default; }
+    .mock-card .catalog-card:hover { transform: none; box-shadow: none; }
+    .mock-label {
+      display: inline-block;
+      font-size: 0.7rem;
+      font-weight: 600;
+      padding: 0.1rem 0.5rem;
+      border-radius: 4px;
+      background: var(--bs-primary, #0d6efd);
+      color: #fff;
+      margin-bottom: 0.5rem;
+    }
+  </style>
+</head>
+<body class="h-100">
+
+<div class="mock-wrap">
+
+  <div class="mock-intro">
+    <b>in / out モダリティ表示のモック</b> — 同じ 3 モデル（マルチモーダル Llama 4、Text-only Qwen3、Text→Image の Stable Diffusion 想定）で 4 案を並べています。
+    判断材料：<b>情報量</b>、<b>スキャンしやすさ</b>、<b>色数</b>、<b>カード高さ</b>。
+    現状実装しているカードから <i>usecase タグ（色付き）</i> は全案で残しています。
+  </div>
+
+  <!-- =================================================================== -->
+  <!-- Proposal A: Header-right "IN→OUT" inline flow (most compact) -->
+  <!-- =================================================================== -->
+  <section class="mock-section">
+    <div class="mock-section__head">
+      <p class="mock-section__title">案 A: ヘッダ右に IN→OUT のインラインフロー</p>
+      <p class="mock-section__desc">プロバイダー名の右側に、小さなアイコン付きチップで <b>入力 → 出力</b> を一行表示。最もコンパクトでカード高さ増なし。</p>
+    </div>
+    <div class="mock-grid mock-card">
+
+      <!-- Card 1: Multimodal (Llama 4) -->
+      <div class="catalog-card" data-model-id="llama4-maverick">
+        <div class="catalog-card__header">
+          <img class="catalog-card__provider-icon" src="./static/img/providers/meta.svg" alt="" aria-hidden="true">
+          <div class="catalog-card__heading">
+            <div class="catalog-card__name">Llama 4 Maverick</div>
+            <div class="catalog-card__provider">Meta</div>
+          </div>
+          <div class="pa-flow" title="Input → Output">
+            <span class="pa-flow__group">
+              <span class="pa-chip"><i class="bi bi-fonts"></i>T</span>
+              <span class="pa-chip"><i class="bi bi-image"></i>I</span>
+            </span>
+            <span class="pa-flow__arrow"><i class="bi bi-arrow-right"></i></span>
+            <span class="pa-flow__group">
+              <span class="pa-chip"><i class="bi bi-fonts"></i>T</span>
+            </span>
+          </div>
+        </div>
+        <div class="catalog-card__usecases">
+          <span class="catalog-tag catalog-tag--usecase catalog-tag--usecase-agent"><i class="bi bi-robot"></i> agent</span>
+          <span class="catalog-tag catalog-tag--usecase catalog-tag--usecase-reasoning"><i class="bi bi-lightbulb"></i> reasoning</span>
+        </div>
+        <div class="catalog-card__meta">
+          <span class="catalog-tag catalog-tag--neutral">400B (MoE 128E)</span>
+          <span class="catalog-tag catalog-tag--neutral">1M ctx</span>
+        </div>
+      </div>
+
+      <!-- Card 2: Text-only -->
+      <div class="catalog-card" data-model-id="qwen3-235b">
+        <div class="catalog-card__header">
+          <img class="catalog-card__provider-icon" src="./static/img/providers/qwen.svg" alt="" aria-hidden="true">
+          <div class="catalog-card__heading">
+            <div class="catalog-card__name">Qwen3 235B A22B</div>
+            <div class="catalog-card__provider">Qwen</div>
+          </div>
+          <div class="pa-flow" title="Input → Output">
+            <span class="pa-flow__group"><span class="pa-chip"><i class="bi bi-fonts"></i>T</span></span>
+            <span class="pa-flow__arrow"><i class="bi bi-arrow-right"></i></span>
+            <span class="pa-flow__group"><span class="pa-chip"><i class="bi bi-fonts"></i>T</span></span>
+          </div>
+        </div>
+        <div class="catalog-card__usecases">
+          <span class="catalog-tag catalog-tag--usecase catalog-tag--usecase-agent"><i class="bi bi-robot"></i> agent</span>
+          <span class="catalog-tag catalog-tag--usecase catalog-tag--usecase-reasoning"><i class="bi bi-lightbulb"></i> reasoning</span>
+        </div>
+        <div class="catalog-card__meta">
+          <span class="catalog-tag catalog-tag--neutral">235B (MoE)</span>
+          <span class="catalog-tag catalog-tag--neutral">131K ctx</span>
+        </div>
+      </div>
+
+      <!-- Card 3: Text-to-Image (hypothetical) -->
+      <div class="catalog-card" data-model-id="sd3-example">
+        <div class="catalog-card__header">
+          <img class="catalog-card__provider-icon" src="./static/img/providers/huggingface.svg" alt="" aria-hidden="true">
+          <div class="catalog-card__heading">
+            <div class="catalog-card__name">Stable Diffusion 3</div>
+            <div class="catalog-card__provider">Stability AI</div>
+          </div>
+          <div class="pa-flow" title="Input → Output">
+            <span class="pa-flow__group"><span class="pa-chip"><i class="bi bi-fonts"></i>T</span></span>
+            <span class="pa-flow__arrow"><i class="bi bi-arrow-right"></i></span>
+            <span class="pa-flow__group"><span class="pa-chip"><i class="bi bi-image"></i>I</span></span>
+          </div>
+        </div>
+        <div class="catalog-card__usecases">
+          <span class="catalog-tag catalog-tag--usecase catalog-tag--usecase-multimodal"><i class="bi bi-palette"></i> image-gen</span>
+        </div>
+        <div class="catalog-card__meta">
+          <span class="catalog-tag catalog-tag--neutral">2B</span>
+          <span class="catalog-tag catalog-tag--neutral">—</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- =================================================================== -->
+  <!-- Proposal B: Two-row labeled IN / OUT stripe -->
+  <!-- =================================================================== -->
+  <section class="mock-section">
+    <div class="mock-section__head">
+      <p class="mock-section__title">案 B: カード内に IN / OUT 二段の帯</p>
+      <p class="mock-section__desc">ヘッダ下に <b>IN:</b> / <b>OUT:</b> のラベル付きでモダリティを並べる。読み間違いリスクが最小。カード高さはやや増える。</p>
+    </div>
+    <div class="mock-grid mock-card">
+
+      <div class="catalog-card">
+        <div class="catalog-card__header">
+          <img class="catalog-card__provider-icon" src="./static/img/providers/meta.svg" alt="" aria-hidden="true">
+          <div class="catalog-card__heading">
+            <div class="catalog-card__name">Llama 4 Maverick</div>
+            <div class="catalog-card__provider">Meta</div>
+          </div>
+        </div>
+        <div class="pb-modalities">
+          <div class="pb-row">
+            <span class="pb-row__label">IN</span>
+            <span class="mod-pill"><i class="bi bi-fonts"></i> Text</span>
+            <span class="mod-pill"><i class="bi bi-image"></i> Image</span>
+          </div>
+          <div class="pb-row">
+            <span class="pb-row__label">OUT</span>
+            <span class="mod-pill"><i class="bi bi-fonts"></i> Text</span>
+          </div>
+        </div>
+        <div class="catalog-card__usecases">
+          <span class="catalog-tag catalog-tag--usecase catalog-tag--usecase-agent"><i class="bi bi-robot"></i> agent</span>
+          <span class="catalog-tag catalog-tag--usecase catalog-tag--usecase-reasoning"><i class="bi bi-lightbulb"></i> reasoning</span>
+        </div>
+        <div class="catalog-card__meta">
+          <span class="catalog-tag catalog-tag--neutral">400B (MoE 128E)</span>
+          <span class="catalog-tag catalog-tag--neutral">1M ctx</span>
+        </div>
+      </div>
+
+      <div class="catalog-card">
+        <div class="catalog-card__header">
+          <img class="catalog-card__provider-icon" src="./static/img/providers/qwen.svg" alt="" aria-hidden="true">
+          <div class="catalog-card__heading">
+            <div class="catalog-card__name">Qwen3 235B A22B</div>
+            <div class="catalog-card__provider">Qwen</div>
+          </div>
+        </div>
+        <div class="pb-modalities">
+          <div class="pb-row">
+            <span class="pb-row__label">IN</span>
+            <span class="mod-pill"><i class="bi bi-fonts"></i> Text</span>
+          </div>
+          <div class="pb-row">
+            <span class="pb-row__label">OUT</span>
+            <span class="mod-pill"><i class="bi bi-fonts"></i> Text</span>
+          </div>
+        </div>
+        <div class="catalog-card__usecases">
+          <span class="catalog-tag catalog-tag--usecase catalog-tag--usecase-agent"><i class="bi bi-robot"></i> agent</span>
+          <span class="catalog-tag catalog-tag--usecase catalog-tag--usecase-reasoning"><i class="bi bi-lightbulb"></i> reasoning</span>
+        </div>
+        <div class="catalog-card__meta">
+          <span class="catalog-tag catalog-tag--neutral">235B (MoE)</span>
+          <span class="catalog-tag catalog-tag--neutral">131K ctx</span>
+        </div>
+      </div>
+
+      <div class="catalog-card">
+        <div class="catalog-card__header">
+          <img class="catalog-card__provider-icon" src="./static/img/providers/huggingface.svg" alt="" aria-hidden="true">
+          <div class="catalog-card__heading">
+            <div class="catalog-card__name">Stable Diffusion 3</div>
+            <div class="catalog-card__provider">Stability AI</div>
+          </div>
+        </div>
+        <div class="pb-modalities">
+          <div class="pb-row">
+            <span class="pb-row__label">IN</span>
+            <span class="mod-pill"><i class="bi bi-fonts"></i> Text</span>
+          </div>
+          <div class="pb-row">
+            <span class="pb-row__label">OUT</span>
+            <span class="mod-pill"><i class="bi bi-image"></i> Image</span>
+          </div>
+        </div>
+        <div class="catalog-card__usecases">
+          <span class="catalog-tag catalog-tag--usecase catalog-tag--usecase-multimodal"><i class="bi bi-palette"></i> image-gen</span>
+        </div>
+        <div class="catalog-card__meta">
+          <span class="catalog-tag catalog-tag--neutral">2B</span>
+          <span class="catalog-tag catalog-tag--neutral">—</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- =================================================================== -->
+  <!-- Proposal C: Inline IN→OUT pills with subtle color coding -->
+  <!-- =================================================================== -->
+  <section class="mock-section">
+    <div class="mock-section__head">
+      <p class="mock-section__title">案 C: IN/OUT に薄い色分け、1 行フロー</p>
+      <p class="mock-section__desc">usecase タグの上に <b>Text ▸ Text</b> のようにピルを並べる。IN は青、OUT は紫の薄い色で役割を識別しやすく。色数は増える。</p>
+    </div>
+    <div class="mock-grid mock-card">
+
+      <div class="catalog-card">
+        <div class="catalog-card__header">
+          <img class="catalog-card__provider-icon" src="./static/img/providers/meta.svg" alt="" aria-hidden="true">
+          <div class="catalog-card__heading">
+            <div class="catalog-card__name">Llama 4 Maverick</div>
+            <div class="catalog-card__provider">Meta</div>
+          </div>
+        </div>
+        <div class="pc-row">
+          <span class="mod-pill pc-pill-in"><i class="bi bi-fonts"></i> Text</span>
+          <span class="mod-pill pc-pill-in"><i class="bi bi-image"></i> Image</span>
+          <span class="pc-arrow"><i class="bi bi-arrow-right"></i></span>
+          <span class="mod-pill pc-pill-out"><i class="bi bi-fonts"></i> Text</span>
+        </div>
+        <div class="catalog-card__usecases">
+          <span class="catalog-tag catalog-tag--usecase catalog-tag--usecase-agent"><i class="bi bi-robot"></i> agent</span>
+          <span class="catalog-tag catalog-tag--usecase catalog-tag--usecase-reasoning"><i class="bi bi-lightbulb"></i> reasoning</span>
+        </div>
+        <div class="catalog-card__meta">
+          <span class="catalog-tag catalog-tag--neutral">400B (MoE 128E)</span>
+          <span class="catalog-tag catalog-tag--neutral">1M ctx</span>
+        </div>
+      </div>
+
+      <div class="catalog-card">
+        <div class="catalog-card__header">
+          <img class="catalog-card__provider-icon" src="./static/img/providers/qwen.svg" alt="" aria-hidden="true">
+          <div class="catalog-card__heading">
+            <div class="catalog-card__name">Qwen3 235B A22B</div>
+            <div class="catalog-card__provider">Qwen</div>
+          </div>
+        </div>
+        <div class="pc-row">
+          <span class="mod-pill pc-pill-in"><i class="bi bi-fonts"></i> Text</span>
+          <span class="pc-arrow"><i class="bi bi-arrow-right"></i></span>
+          <span class="mod-pill pc-pill-out"><i class="bi bi-fonts"></i> Text</span>
+        </div>
+        <div class="catalog-card__usecases">
+          <span class="catalog-tag catalog-tag--usecase catalog-tag--usecase-agent"><i class="bi bi-robot"></i> agent</span>
+          <span class="catalog-tag catalog-tag--usecase catalog-tag--usecase-reasoning"><i class="bi bi-lightbulb"></i> reasoning</span>
+        </div>
+        <div class="catalog-card__meta">
+          <span class="catalog-tag catalog-tag--neutral">235B (MoE)</span>
+          <span class="catalog-tag catalog-tag--neutral">131K ctx</span>
+        </div>
+      </div>
+
+      <div class="catalog-card">
+        <div class="catalog-card__header">
+          <img class="catalog-card__provider-icon" src="./static/img/providers/huggingface.svg" alt="" aria-hidden="true">
+          <div class="catalog-card__heading">
+            <div class="catalog-card__name">Stable Diffusion 3</div>
+            <div class="catalog-card__provider">Stability AI</div>
+          </div>
+        </div>
+        <div class="pc-row">
+          <span class="mod-pill pc-pill-in"><i class="bi bi-fonts"></i> Text</span>
+          <span class="pc-arrow"><i class="bi bi-arrow-right"></i></span>
+          <span class="mod-pill pc-pill-out"><i class="bi bi-image"></i> Image</span>
+        </div>
+        <div class="catalog-card__usecases">
+          <span class="catalog-tag catalog-tag--usecase catalog-tag--usecase-multimodal"><i class="bi bi-palette"></i> image-gen</span>
+        </div>
+        <div class="catalog-card__meta">
+          <span class="catalog-tag catalog-tag--neutral">2B</span>
+          <span class="catalog-tag catalog-tag--neutral">—</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- =================================================================== -->
+  <!-- Proposal D: Icon-only, integrated into meta row -->
+  <!-- =================================================================== -->
+  <section class="mock-section">
+    <div class="mock-section__head">
+      <p class="mock-section__title">案 D: meta 行に統合したアイコンのみ表示</p>
+      <p class="mock-section__desc">size / context と同じ行に <code>IN: T I → OUT: T</code> のアイコンを配置。カード要素数を増やさず最小干渉。ホバーでツールチップ前提。</p>
+    </div>
+    <div class="mock-grid mock-card">
+
+      <div class="catalog-card">
+        <div class="catalog-card__header">
+          <img class="catalog-card__provider-icon" src="./static/img/providers/meta.svg" alt="" aria-hidden="true">
+          <div class="catalog-card__heading">
+            <div class="catalog-card__name">Llama 4 Maverick</div>
+            <div class="catalog-card__provider">Meta</div>
+          </div>
+        </div>
+        <div class="catalog-card__usecases">
+          <span class="catalog-tag catalog-tag--usecase catalog-tag--usecase-agent"><i class="bi bi-robot"></i> agent</span>
+          <span class="catalog-tag catalog-tag--usecase catalog-tag--usecase-reasoning"><i class="bi bi-lightbulb"></i> reasoning</span>
+        </div>
+        <div class="catalog-card__meta">
+          <span class="pd-mod-group" title="Input: Text, Image → Output: Text">
+            <span class="pd-mod-group__label">IN</span>
+            <i class="bi bi-fonts" title="Text"></i>
+            <i class="bi bi-image" title="Image"></i>
+            <span class="pd-mod-group__arrow"><i class="bi bi-arrow-right"></i></span>
+            <span class="pd-mod-group__label">OUT</span>
+            <i class="bi bi-fonts" title="Text"></i>
+          </span>
+          <span class="catalog-tag catalog-tag--neutral">400B</span>
+          <span class="catalog-tag catalog-tag--neutral">1M ctx</span>
+        </div>
+      </div>
+
+      <div class="catalog-card">
+        <div class="catalog-card__header">
+          <img class="catalog-card__provider-icon" src="./static/img/providers/qwen.svg" alt="" aria-hidden="true">
+          <div class="catalog-card__heading">
+            <div class="catalog-card__name">Qwen3 235B A22B</div>
+            <div class="catalog-card__provider">Qwen</div>
+          </div>
+        </div>
+        <div class="catalog-card__usecases">
+          <span class="catalog-tag catalog-tag--usecase catalog-tag--usecase-agent"><i class="bi bi-robot"></i> agent</span>
+          <span class="catalog-tag catalog-tag--usecase catalog-tag--usecase-reasoning"><i class="bi bi-lightbulb"></i> reasoning</span>
+        </div>
+        <div class="catalog-card__meta">
+          <span class="pd-mod-group" title="Input: Text → Output: Text">
+            <span class="pd-mod-group__label">IN</span>
+            <i class="bi bi-fonts"></i>
+            <span class="pd-mod-group__arrow"><i class="bi bi-arrow-right"></i></span>
+            <span class="pd-mod-group__label">OUT</span>
+            <i class="bi bi-fonts"></i>
+          </span>
+          <span class="catalog-tag catalog-tag--neutral">235B</span>
+          <span class="catalog-tag catalog-tag--neutral">131K ctx</span>
+        </div>
+      </div>
+
+      <div class="catalog-card">
+        <div class="catalog-card__header">
+          <img class="catalog-card__provider-icon" src="./static/img/providers/huggingface.svg" alt="" aria-hidden="true">
+          <div class="catalog-card__heading">
+            <div class="catalog-card__name">Stable Diffusion 3</div>
+            <div class="catalog-card__provider">Stability AI</div>
+          </div>
+        </div>
+        <div class="catalog-card__usecases">
+          <span class="catalog-tag catalog-tag--usecase catalog-tag--usecase-multimodal"><i class="bi bi-palette"></i> image-gen</span>
+        </div>
+        <div class="catalog-card__meta">
+          <span class="pd-mod-group" title="Input: Text → Output: Image">
+            <span class="pd-mod-group__label">IN</span>
+            <i class="bi bi-fonts"></i>
+            <span class="pd-mod-group__arrow"><i class="bi bi-arrow-right"></i></span>
+            <span class="pd-mod-group__label">OUT</span>
+            <i class="bi bi-image"></i>
+          </span>
+          <span class="catalog-tag catalog-tag--neutral">2B</span>
+          <span class="catalog-tag catalog-tag--neutral">—</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- =================================================================== -->
+  <!-- Comparison matrix -->
+  <!-- =================================================================== -->
+  <section class="mock-section">
+    <div class="mock-section__head">
+      <p class="mock-section__title">各案の比較</p>
+    </div>
+    <div class="table-responsive">
+      <table class="table table-sm table-bordered" style="background:#fff;">
+        <thead class="table-light">
+          <tr>
+            <th>軸</th>
+            <th>A: ヘッダ右フロー</th>
+            <th>B: IN/OUT 二段帯</th>
+            <th>C: 色分けピル 1 行</th>
+            <th>D: meta 行アイコンのみ</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>情報量</td>
+            <td>△（略記 T/I 等）</td>
+            <td>◎（ラベル付き）</td>
+            <td>◎（ラベル付き）</td>
+            <td>○（アイコン＋tooltip）</td>
+          </tr>
+          <tr>
+            <td>スキャンしやすさ</td>
+            <td>○</td>
+            <td>◎</td>
+            <td>◎</td>
+            <td>△（慣れが必要）</td>
+          </tr>
+          <tr>
+            <td>色数</td>
+            <td>◎（無彩色のみ）</td>
+            <td>◎（無彩色のみ）</td>
+            <td>△（IN 青 / OUT 紫）</td>
+            <td>◎（無彩色のみ）</td>
+          </tr>
+          <tr>
+            <td>カード高さ増</td>
+            <td>なし</td>
+            <td>+1 行程度</td>
+            <td>+1 行程度</td>
+            <td>なし</td>
+          </tr>
+          <tr>
+            <td>マルチモーダル可読性</td>
+            <td>○</td>
+            <td>◎</td>
+            <td>◎</td>
+            <td>△</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="mock-section__desc" style="margin-top:0.75rem;">
+      推奨は <b>案 B</b>（IN/OUT 二段）。先方の「情報の重要性を意識したトーン」に沿って無彩色で統一でき、マルチモーダル時も読み間違いがない。カード高さの増分は 1 行程度で許容範囲。
+      <br>コンパクト重視なら <b>案 A</b>、色で直感的な識別を入れたければ <b>案 C</b>。
+    </p>
+  </section>
+
+</div>
+</body>
+</html>

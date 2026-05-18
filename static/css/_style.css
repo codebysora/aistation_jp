@@ -1,0 +1,1143 @@
+@charset "UTF-8";
+/***************************************
+ Redesign - Custom CSS
+ Bootstrap 5 CSS変数の上書き + 改善スタイル
+****************************************/
+
+/* ============================================
+   CSS Custom Properties (既存カラー維持)
+   ============================================ */
+:root {
+    --bs-primary: #0F66DC;
+    --bs-primary-rgb: 15, 102, 220;
+    --bs-white: #fff;
+    --bs-white-rgb: 255, 255, 255;
+    --bs-secondary: #2FC5FB;
+    --bs-secondary-rgb: 47, 197, 251;
+    --bs-tertiary: #505050;
+    --bs-tertiary-rgb: 80, 80, 80;
+    --bs-dark: var(--bs-tertiary);
+    --bs-dark-rgb: 80, 80, 80;
+    --bs-info: #91C8E4;
+    --bs-info-rgb: 145, 200, 228;
+    --bs-body-bg: #f3f3f3;
+    --bs-body-bg-rgb: 243, 243, 243;
+    --bs-body-color: #1B1B1B;
+    --bs-body-color-rgb: 27, 27, 27;
+    --bs-success: #77C845;
+    --bs-success-rgb: 119, 200, 69;
+    --bs-warning: #F0C987;
+    --bs-warning-rgb: 240, 201, 135;
+    --bs-danger: #DA5050;
+    --bs-danger-rgb: 218, 80, 80;
+    --bs-light: #f3f3f3;
+    --bs-light-rgb: 243, 243, 243;
+    --bs-emphasis-color: #161616;
+    --bs-emphasis-color-rgb: 22, 22, 22;
+    --bs-box-shadow-sm: 0 2px 4px 0 rgba(0, 0, 0, 0.20);
+    --bs-border-radius: 0.5rem;
+    --bs-table-striped-bg: var(--bs-white);
+
+    /* Redesign tokens */
+    --rd-bg-subtle: #fafafa;
+    --rd-border-subtle: #f0f0f0;
+    --rd-member-tag-bg: #F5F4D7;
+    --rd-sidebar-width: 260px;
+    --rd-header-height: 56px;
+    --rd-shadow-card: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.06);
+    --rd-shadow-card-hover: 0 4px 12px rgba(0,0,0,0.10);
+    --rd-shadow-modal: 0 20px 60px rgba(0,0,0,0.15);
+    --rd-radius-sm: 0.375rem;
+    --rd-radius-md: 0.5rem;
+    --rd-radius-lg: 0.75rem;
+    --rd-transition: 0.2s ease;
+    --rd-font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+/* ============================================
+   Base / Reset
+   ============================================ */
+body {
+    font-family: var(--rd-font-family);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.rd-sidebar ul, .rd-nav-hub {
+    list-style: none;
+}
+
+/* ============================================
+   Header / Navbar
+   ============================================ */
+.rd-navbar,
+.rd-sidebar {
+    --bs-link-color: var(--bs-white);
+    --bs-link-hover-color: rgba(255, 255, 255, 0.75);
+    --bs-nav-link-disabled-color: var(--bs-tertiary);
+}
+
+.rd-navbar {
+    background-color: var(--bs-primary);
+    height: var(--rd-header-height);
+    padding: 0;
+}
+
+.rd-navbar .navbar-brand {
+    width: var(--rd-sidebar-width);
+    padding: 0 1.25rem;
+    font-size: 1.0625rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    color: var(--bs-white);
+    display: flex;
+    align-items: center;
+    height: 100%;
+    border-right: 1px solid rgba(255,255,255,0.2);
+    text-decoration: none;
+}
+
+.rd-navbar .navbar-brand:hover {
+    color: rgba(255,255,255,0.9);
+}
+
+.rd-nav-user {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--bs-white);
+    text-decoration: none;
+    padding: 0.5rem 1rem;
+    transition: opacity var(--rd-transition);
+    border-right: 1px solid rgba(255,255,255,0.2);
+}
+
+.rd-nav-user:hover {
+    opacity: 0.8;
+    color: var(--bs-white);
+}
+
+.rd-nav-user__badge {
+    background: var(--bs-white);
+    color: var(--bs-primary);
+    font-weight: 700;
+    font-size: 0.6875rem;
+    padding: 0.125rem 0.375rem;
+    border-radius: var(--rd-radius-sm);
+    line-height: 1;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+}
+
+.rd-nav-logout {
+    color: var(--bs-white);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    padding: 0.5rem 1.25rem;
+    transition: opacity var(--rd-transition);
+    font-size: 0.875rem;
+}
+
+.rd-nav-logout:hover {
+    opacity: 0.8;
+    color: var(--bs-white);
+}
+
+/* ============================================
+   Sidebar
+   ============================================ */
+.rd-sidebar {
+    width: var(--rd-sidebar-width);
+    min-width: var(--rd-sidebar-width);
+    background-color: var(--bs-tertiary);
+    min-height: calc(100vh - var(--rd-header-height));
+    padding-top: 0;
+}
+
+.rd-sidebar__section-label {
+    background-color: var(--bs-secondary);
+    color: var(--bs-white);
+    font-weight: 700;
+    text-align: center;
+    padding: 0.625rem 1rem;
+    font-size: 0.8125rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.rd-sidebar__separator {
+    border: none;
+    border-top: 1px solid rgba(255,255,255,0.12);
+    margin: 0.25rem 1rem;
+    opacity: 1;
+}
+
+.rd-sidebar__separator-label {
+    color: rgba(255,255,255,0.45);
+    font-size: 0.6875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 0.75rem 1.25rem 0.375rem;
+    font-weight: 600;
+}
+
+.rd-sidebar .nav-link {
+    color: rgba(255,255,255,0.75);
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    padding: 0.75rem 1.25rem;
+    font-size: 0.875rem;
+    border-left: 3px solid transparent;
+    transition: all var(--rd-transition);
+}
+
+.rd-sidebar .nav-link i {
+    font-size: 1rem;
+    width: 1.25rem;
+    text-align: center;
+}
+
+.rd-sidebar .nav-link:hover {
+    color: var(--bs-white);
+    background-color: rgba(255,255,255,0.06);
+}
+
+.rd-sidebar .nav-item.active .nav-link,
+.rd-sidebar .nav-link.active {
+    color: var(--bs-white);
+    background-color: rgba(255,255,255,0.1);
+    border-left-color: var(--bs-secondary);
+    font-weight: 600;
+}
+
+/* ============================================
+   Main Content
+   ============================================ */
+.rd-main-container {
+    min-height: calc(100vh - var(--rd-header-height));
+}
+
+.rd-content {
+    flex-grow: 1;
+    min-width: 0;
+    padding: 2rem 2.5rem;
+}
+
+/* ============================================
+   Cards
+   ============================================ */
+.rd-card {
+    background: var(--bs-white);
+    border: none;
+    border-radius: var(--rd-radius-lg);
+    box-shadow: var(--rd-shadow-card);
+    overflow: hidden;
+}
+
+.rd-card__header {
+    background: var(--bs-white);
+    border-bottom: 1px solid var(--bs-border-color);
+    padding: 1.25rem 1.5rem;
+    font-weight: 700;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.rd-card__body {
+    padding: 0;
+}
+
+.rd-card__body--padded {
+    padding: 1.5rem;
+}
+
+/* ============================================
+   Tables
+   ============================================ */
+.table {
+    --bs-table-sortable-icon: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%23505050' viewBox='0 0 16 16'><path fill-rule='evenodd' d='M11.5 15a.5.5 0 0 0 .5-.5V2.707l3.146 3.147a.5.5 0 0 0 .708-.708l-4-4a.5.5 0 0 0-.708 0l-4 4a.5.5 0 1 0 .708.708L11 2.707V14.5a.5.5 0 0 0 .5.5m-9-14a.5.5 0 0 1 .5.5v11.793l3.146-3.147a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 .708-.708L4 13.293V1.5a.5.5 0 0 1 .5-.5'/></svg>");
+    --bs-table-sortable-active-icon: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%23505050' viewBox='0 0 16 16'><path fill-rule='evenodd' d='M8 15a.5.5 0 0 0 .5-.5V2.707l3.146 3.147a.5.5 0 0 0 .708-.708l-4-4a.5.5 0 0 0-.708 0l-4 4a.5.5 0 1 0 .708.708L7.5 2.707V14.5a.5.5 0 0 0 .5.5'/></svg>");
+    --bs-table-sortable-desc-icon: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%23505050' viewBox='0 0 16 16'><path fill-rule='evenodd' d='M8 1a.5.5 0 0 1 .5.5v11.793l3.146-3.147a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 .708-.708L7.5 13.293V1.5A.5.5 0 0 1 8 1'/></svg>");
+    --bs-table-striped-bg: var(--bs-white);
+    --bs-table-color: var(--bs-tertiary);
+    --bs-table-striped-color: var(--bs-tertiary);
+    margin-bottom: 0;
+}
+
+.rd-card .table th {
+    font-weight: 600;
+    white-space: nowrap;
+    font-size: 0.8125rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    color: var(--bs-secondary-color);
+    background: var(--rd-bg-subtle);
+    border-bottom: 2px solid var(--bs-border-color-translucent, #eee);
+    padding: 0.875rem 1.5rem;
+}
+
+.table td {
+    white-space: nowrap;
+    padding: 0.75rem 1.5rem;
+    vertical-align: middle;
+    font-size: 0.875rem;
+    border-bottom: 1px solid var(--rd-border-subtle);
+}
+
+/* Bootstrap Table 内部構造を含む先頭・末尾セルの余白確保 */
+.rd-card th:first-child,
+.rd-card td:first-child,
+.rd-card .fixed-table-header th:first-child,
+.rd-card .fixed-table-body td:first-child,
+.rd-card .fixed-table-body th:first-child,
+.bootstrap-table th:first-child,
+.bootstrap-table td:first-child {
+    padding-left: 1.75rem !important;
+}
+
+.rd-card th:last-child,
+.rd-card td:last-child,
+.rd-card .fixed-table-header th:last-child,
+.rd-card .fixed-table-body td:last-child,
+.rd-card .fixed-table-body th:last-child,
+.bootstrap-table th:last-child,
+.bootstrap-table td:last-child {
+    padding-right: 1.75rem !important;
+}
+
+.table > tbody > tr {
+    transition: background-color var(--rd-transition);
+}
+
+.rd-card .table > tbody > tr:hover {
+    background-color: rgba(15, 102, 220, 0.03);
+}
+
+.table-bordered > :not(caption) > * > *,
+.table-bordered > :not(caption) > * {
+    border-width: 0;
+}
+
+.bootstrap-table .fixed-table-container.fixed-height .fixed-table-border {
+    border: none;
+}
+
+.bootstrap-table .fixed-table-container.fixed-height:not(.has-footer),
+.table > :not(caption) > * > * {
+    border-bottom: none;
+}
+
+.table > :not(caption) > * > * {
+    border-right: none;
+    border-left: none;
+}
+
+/* Bordered table variant */
+table.rd-table--border tbody tr {
+    border-bottom: 1px solid var(--bs-border-color-translucent, #eee);
+}
+table.rd-table--border > :not(caption) > * {
+    border-bottom: 1px solid var(--bs-border-color-translucent, #eee);
+}
+table.rd-table--border tbody tr:last-child {
+    border-bottom: none;
+}
+
+/* White background table */
+.rd-table--white {
+    background: var(--bs-white);
+}
+.rd-table--white tr,
+.rd-table--white th,
+.rd-table--white td {
+    background: var(--bs-white);
+}
+
+.c-sort-icon {
+    color: var(--bs-tertiary-color, #adb5bd);
+    font-size: 0.6875rem;
+    vertical-align: middle;
+    margin-left: 0.25rem;
+}
+
+/* Bootstrap Table - toolbar & search box padding */
+.rd-card .bootstrap-table .fixed-table-toolbar {
+    padding: 1rem 1.5rem 0.5rem;
+}
+
+.rd-card .bootstrap-table .fixed-table-toolbar .search {
+    padding-right: 0;
+}
+
+.rd-card .bootstrap-table .fixed-table-toolbar .search input {
+    border-radius: 2rem;
+    padding-left: 1rem;
+    padding-right: 2.5rem;
+}
+
+.rd-card .bootstrap-table .fixed-table-toolbar .columns,
+.rd-card .bootstrap-table .fixed-table-toolbar .bs-bars {
+    padding-left: 0;
+}
+
+/* Toolbar button (e.g. "add team") inside card */
+.rd-card .toolbar {
+    padding: 1rem 1.5rem 0.5rem;
+    display: block;
+}
+
+/* ============================================
+   Buttons
+   ============================================ */
+.btn {
+    --bs-btn-padding-x: 1.25rem;
+    --bs-btn-padding-y: 0.625rem;
+    --bs-btn-line-height: normal;
+    border-radius: var(--rd-radius-sm);
+    font-size: 0.875rem;
+    font-weight: 500;
+    transition: all var(--rd-transition);
+}
+
+.btn:active {
+    transform: translateY(1px);
+}
+
+.btn-success {
+    --bs-btn-bg: var(--bs-success);
+    --bs-btn-border-color: rgba(107, 179, 62);
+    --bs-btn-hover-bg: rgba(107, 179, 62);
+    --bs-btn-hover-border-color: var(--bs-success);
+    --bs-btn-active-bg: var(--bs-success);
+    --bs-btn-active-border-color: var(--bs-success);
+}
+
+.btn-dark {
+    --bs-btn-bg: var(--bs-tertiary);
+}
+
+.rd-btn-action {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* ============================================
+   Badges
+   ============================================ */
+.badge {
+    --bs-badge-padding-x: 0.625em;
+    --bs-badge-padding-y: 0.375em;
+    font-size: 0.75rem;
+    font-weight: 600;
+    border-radius: var(--rd-radius-sm);
+    letter-spacing: 0.02em;
+    line-height: 1.2;
+    display: inline-block;
+    min-width: 3.5em;
+    text-align: center;
+}
+
+/* ============================================
+   Pagination
+   ============================================ */
+.rd-card .page-link {
+    --bs-pagination-border-color: transparent;
+    --bs-pagination-bg: #e9ecef;
+    color: var(--bs-tertiary);
+    border-radius: var(--rd-radius-sm);
+    font-size: 0.8125rem;
+    font-weight: 500;
+    transition: all var(--rd-transition);
+}
+
+.pagination {
+    --bs-pagination-active-border-color: transparent;
+    --bs-pagination-active-bg: var(--bs-primary);
+    --bs-pagination-active-color: var(--bs-white);
+    --bs-pagination-padding-x: 0.625rem;
+    --bs-pagination-padding-y: 0.375rem;
+    gap: 0.375rem;
+}
+
+.page-link:hover {
+    background-color: var(--bs-border-color);
+    color: var(--bs-tertiary);
+}
+
+.page-item.active .page-link {
+    background-color: var(--bs-primary);
+    color: var(--bs-white);
+}
+
+/* Pagination inside cards */
+.rd-card .fixed-table-pagination {
+    display: flex;
+    flex-direction: column-reverse;
+    align-items: center;
+    padding: 1rem 0;
+}
+
+.rd-card .fixed-table-pagination ul.pagination {
+    gap: 0.375rem;
+}
+
+.rd-card .page-item .page-link {
+    border-radius: var(--rd-radius-sm);
+    line-height: 1.1;
+}
+
+.rd-card .page-item:first-child .page-link,
+.rd-card .page-item:last-child .page-link {
+    border-radius: var(--rd-radius-sm);
+}
+
+.rd-card .bootstrap-table .fixed-table-pagination > .pagination {
+    margin-bottom: 0.5rem;
+    margin-top: 0.75rem;
+}
+
+.rd-card .page-item {
+    cursor: pointer;
+}
+.rd-card .page-item.active {
+    cursor: default;
+}
+
+/* ============================================
+   Forms
+   ============================================ */
+.form-control {
+    --bs-border-radius: var(--rd-radius-sm);
+    background-color: var(--bs-white);
+    border-color: var(--bs-border-color);
+    font-size: 0.875rem;
+    padding: 0.5rem 0.875rem;
+    transition: border-color var(--rd-transition), box-shadow var(--rd-transition);
+}
+
+.form-control:focus {
+    border-color: var(--bs-primary);
+    box-shadow: 0 0 0 3px rgba(15, 102, 220, 0.1);
+}
+
+.form-label {
+    font-weight: 500;
+    font-size: 0.875rem;
+    color: var(--bs-tertiary);
+    margin-bottom: 0.375rem;
+}
+
+/* Search input */
+.search-input {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%23000000' viewBox='0 0 16 16'%3e%3cpath d='M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z'/%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    background-size: 1rem 1rem;
+    padding-right: 2.5rem;
+    border-radius: 2rem;
+}
+
+.search-input::placeholder {
+    color: var(--bs-tertiary-color, #adb5bd);
+    opacity: 1;
+}
+
+.search-input::-webkit-search-cancel-button,
+.search-input::-webkit-search-decoration {
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+/* Radio buttons - black style */
+.c-radio-black[type="radio"] {
+    width: 0.875em;
+    height: 0.875em;
+    margin-top: calc(0.25em + 0.09375em);
+    background-color: var(--bs-white);
+    border-color: var(--bs-body-color);
+}
+
+.c-radio-black[type="radio"]:checked {
+    background-color: var(--bs-white);
+    border-color: var(--bs-body-color);
+}
+
+.c-radio-black:checked[type=radio] {
+    --bs-form-check-bg-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='%23111'/%3e%3c/svg%3e");
+}
+
+/* ============================================
+   Modals
+   ============================================ */
+.modal {
+    --bs-modal-color: var(--bs-body-color);
+}
+
+.rd-modal {
+    max-width: 400px;
+}
+
+.rd-modal--big {
+    min-width: 480px;
+}
+
+.rd-modal .modal-content {
+    border: none;
+    border-radius: var(--rd-radius-lg);
+    box-shadow: var(--rd-shadow-modal);
+    padding: 2rem;
+}
+
+.rd-modal .modal-header {
+    border: none;
+    padding: 0 0 1rem 0;
+}
+
+.rd-modal .modal-title {
+    font-weight: 700;
+    font-size: 1.25rem;
+    color: var(--bs-tertiary);
+}
+
+.rd-modal .modal-body {
+    padding: 0;
+}
+
+.rd-modal .modal-footer {
+    border: none;
+    padding: 1.5rem 0 0 0;
+}
+
+.rd-modal__info {
+    background: var(--bs-body-bg);
+    border-radius: var(--rd-radius-sm);
+    padding: 0.75rem 1rem;
+    font-size: 0.875rem;
+    color: var(--bs-emphasis-color);
+}
+
+/* ============================================
+   Links
+   ============================================ */
+.rd-link-danger {
+    color: var(--bs-danger);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    transition: opacity var(--rd-transition);
+    font-size: 0.875rem;
+}
+
+.rd-link-danger:hover {
+    opacity: 0.7;
+    color: var(--bs-danger);
+}
+
+.rd-link-action {
+    text-decoration: underline;
+    text-underline-offset: 0.125em;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    transition: opacity var(--rd-transition);
+    font-size: 0.875rem;
+}
+
+.rd-link-action:hover {
+    opacity: 0.7;
+}
+
+.link-fade {
+    transition: opacity var(--rd-transition);
+}
+.link-fade:hover {
+    opacity: 0.7;
+}
+
+/* ============================================
+   Alerts / Info
+   ============================================ */
+.alert {
+    --bs-alert-bg: var(--bs-body-bg);
+    --bs-border-radius: var(--rd-radius-sm);
+}
+
+/* ============================================
+   API Keys - Copy button
+   ============================================ */
+.cpytext {
+    position: relative;
+}
+
+button.cpybtn {
+    cursor: pointer;
+    color: var(--bs-secondary-color);
+    font-size: 0.875rem;
+    border: 1px solid var(--bs-border-color);
+    margin: 0 0.25rem;
+    padding: 0.25rem;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    transition: all var(--rd-transition);
+}
+
+button.cpybtn:hover {
+    background: var(--bs-body-bg);
+    border-color: var(--bs-tertiary);
+    color: var(--bs-tertiary);
+}
+
+.balloon_top {
+    width: 120px;
+    position: absolute;
+    bottom: 100%;
+    margin-bottom: 12px;
+    padding: 0.375rem 0.5rem;
+    border-radius: var(--rd-radius-sm);
+    background-color: rgba(50, 50, 50, 0.9);
+    font-size: 0.75rem;
+    color: #fff;
+    text-align: center;
+    z-index: 10;
+}
+
+.balloon_top::before {
+    content: "";
+    width: 0;
+    height: 0;
+    border: 6px solid transparent;
+    border-top: 8px solid rgba(50, 50, 50, 0.9);
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+/* ============================================
+   Add key badge
+   ============================================ */
+.c-add-key {
+    font-size: 0.8125rem;
+}
+
+/* ============================================
+   Breadcrumb
+   ============================================ */
+.breadcrumb-item + .breadcrumb-item::before {
+    content: ">";
+    color: var(--bs-tertiary-color, #adb5bd);
+}
+
+.breadcrumb-item.active {
+    font-weight: 700;
+    color: var(--bs-body-color);
+}
+
+.breadcrumb-item a {
+    color: var(--bs-tertiary);
+    text-decoration: none;
+    transition: color var(--rd-transition);
+}
+
+.breadcrumb-item a:hover {
+    color: var(--bs-primary);
+}
+
+/* ============================================
+   Model Settings
+   ============================================ */
+.c-model-status--active {
+    color: var(--bs-success);
+    font-weight: 700;
+}
+
+.c-model-status--failed {
+    color: var(--bs-danger);
+    font-weight: 700;
+}
+
+.rd-card .table .c-model-row--deploying td,
+.rd-card .table .c-model-row--deploying th {
+    background-color: rgba(47, 197, 251, 0.12);
+}
+
+.rd-card .table .c-model-progress-row td {
+    background-color: rgba(47, 197, 251, 0.12);
+}
+
+/* ============================================
+   Deploy Model Select - Cards & Tabs
+   ============================================ */
+.c-model-card {
+    background-color: var(--bs-tertiary);
+    color: var(--bs-white);
+    cursor: pointer;
+    transition: opacity var(--rd-transition), transform var(--rd-transition), box-shadow var(--rd-transition);
+    border-radius: var(--rd-radius-lg);
+}
+
+.c-model-card:hover {
+    opacity: 0.88;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+}
+
+.c-model-card__tag {
+    background-color: rgba(255, 255, 255, 0.12);
+    color: var(--bs-white);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 2rem;
+    padding: 0.25rem 0.75rem;
+    font-size: 0.8125rem;
+    white-space: nowrap;
+}
+
+.nav-tabs {
+    border-bottom: 2px solid var(--bs-border-color-translucent, #eee);
+}
+
+.nav-tabs .nav-link {
+    color: var(--bs-tertiary);
+    border: none;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -2px;
+    padding: 0.75rem 1.25rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    transition: all var(--rd-transition);
+}
+
+.nav-tabs .nav-link:hover {
+    color: var(--bs-body-color);
+    border-bottom-color: #ccc;
+}
+
+.nav-tabs .nav-link.active {
+    color: var(--bs-primary);
+    font-weight: 600;
+    border: none;
+    border-bottom: 2px solid var(--bs-primary);
+    background: transparent;
+}
+
+/* ============================================
+   Deploy Model Form
+   ============================================ */
+.c-form-row {
+    display: flex;
+    border-bottom: 1px solid var(--rd-border-subtle);
+}
+
+.c-form-row:last-child {
+    border-bottom: none;
+}
+
+.c-form-row__label {
+    width: 220px;
+    min-width: 220px;
+    padding: 1.125rem 1.5rem;
+    background: var(--rd-bg-subtle);
+}
+
+.c-form-row__field {
+    flex: 1;
+    padding: 1.125rem 1.5rem 1.125rem 1rem;
+    min-width: 0;
+}
+
+.c-form-field {
+    border: none;
+    border-bottom: 1px solid var(--bs-border-color);
+    border-radius: 0;
+    padding: 0 0 0.375rem 0;
+    width: 100%;
+    background: transparent;
+    outline: none;
+    font-size: 0.875rem;
+    transition: border-color var(--rd-transition);
+}
+
+.c-form-field:focus {
+    border-bottom-color: var(--bs-primary);
+    box-shadow: none;
+}
+
+.c-form-textarea {
+    border: 1px solid var(--bs-border-color);
+    border-radius: var(--rd-radius-sm);
+    padding: 0.625rem;
+    width: 100%;
+    background: var(--bs-white);
+    font-size: 0.875rem;
+    resize: vertical;
+    min-height: 80px;
+    transition: border-color var(--rd-transition);
+}
+
+.c-form-textarea:focus {
+    outline: none;
+    border-color: var(--bs-primary);
+    box-shadow: 0 0 0 3px rgba(15, 102, 220, 0.1);
+}
+
+.c-form-annotation {
+    font-size: 0.8125rem;
+    color: var(--bs-secondary-color);
+    margin-top: 0.375rem;
+}
+
+.rd-form-scroll {
+    max-height: calc(100vh - var(--rd-header-height) - 220px);
+}
+
+.rd-model-select-scroll {
+    max-height: calc(100vh - var(--rd-header-height) - 260px);
+}
+
+.rd-form-min-h-0 {
+    min-height: 0;
+}
+
+.c-advanced-toggle {
+    cursor: pointer;
+    user-select: none;
+    background-color: var(--rd-bg-subtle);
+    padding: 0.875rem 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid var(--bs-border-color-translucent, #eee);
+    border-bottom: 1px solid var(--bs-border-color-translucent, #eee);
+    font-weight: 500;
+    font-size: 0.875rem;
+    transition: background-color var(--rd-transition);
+}
+
+.c-advanced-toggle:hover {
+    background-color: var(--rd-border-subtle);
+}
+
+/* ============================================
+   Add Members Modal
+   ============================================ */
+.p-selected-members__input {
+    display: none;
+}
+
+.p-selected-members {
+    cursor: text;
+    border-radius: 1.5rem;
+    min-height: 48px;
+}
+
+.c-member-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.625rem;
+    padding-left: 0.625rem;
+    padding-right: 0.25rem;
+    background-color: var(--rd-member-tag-bg);
+    font-size: 0.875rem;
+    line-height: 24px;
+    border-radius: var(--rd-radius-sm);
+}
+
+/* Member dropdown */
+.c-member-dropdown {
+    position: relative;
+}
+
+.c-member-dropdown__menu {
+    max-width: 544px;
+    box-shadow: var(--rd-shadow-modal);
+    position: absolute;
+    inset: -15px auto auto 0px;
+    margin: 0px;
+    transform: translate(0px, -100%);
+    border-radius: var(--rd-radius-md);
+}
+
+.c-member-dropdown__menu .fixed-table-container {
+    overflow: hidden;
+    height: 247px;
+}
+
+.c-member-dropdown__menu tbody {
+    overflow-y: auto;
+}
+
+.c-member-dropdown__menu table thead {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    background-color: var(--bs-white);
+}
+
+.c-member-dropdown__menu table tr {
+    border-bottom: 1px solid var(--bs-border-color-translucent, #eee);
+}
+
+.c-member-dropdown__menu table thead,
+.c-member-dropdown__menu table thead tr {
+    border-bottom: none;
+}
+
+.c-member-dropdown__menu table tbody tr:last-child {
+    border-bottom: none;
+}
+
+.c-member-dropdown__menu table thead th {
+    box-shadow: inset 0 -1px 0 var(--bs-border-color-translucent, #eee);
+    border-bottom: none;
+}
+
+/* ============================================
+   User edit - Card body form
+   ============================================ */
+.rd-card__body--form .row {
+    border-radius: var(--rd-radius-sm);
+    background: var(--rd-bg-subtle);
+    --bs-gutter-x: 0;
+    padding: 1rem;
+}
+
+/* ============================================
+   Mail settings form
+   ============================================ */
+.rd-mail-form .form-control {
+    border-radius: var(--rd-radius-sm);
+}
+
+.rd-mail-form .col-form-label {
+    font-weight: 500;
+    font-size: 0.875rem;
+}
+
+/* ============================================
+   Utility / Misc
+   ============================================ */
+.form-control-lg {
+    --bs-border-radius-lg: 0.5rem;
+}
+
+.rounded-1, .rounded-start-1, .rounded-end-1 {
+    --bs-border-radius-sm: 0.375rem;
+}
+
+/* Index nav hub */
+.rd-nav-hub a {
+    display: block;
+    padding: 0.75rem 1rem;
+    color: var(--bs-body-color);
+    text-decoration: none;
+    border-radius: var(--rd-radius-sm);
+    transition: background-color var(--rd-transition);
+    font-size: 0.9375rem;
+}
+
+.rd-nav-hub a:hover {
+    background-color: rgba(15, 102, 220, 0.06);
+    color: var(--bs-primary);
+}
+
+.rd-nav-hub li {
+    border-bottom: 1px solid var(--rd-border-subtle);
+}
+
+.rd-nav-hub li:last-child {
+    border-bottom: none;
+}
+
+/* ============================================
+   Card header - borderless variant
+   ============================================ */
+.rd-card__header--borderless {
+    border-bottom: none;
+}
+
+/* ============================================
+   Role section (user_edit)
+   ============================================ */
+.rd-role-section {
+    background: var(--rd-bg-subtle);
+    padding: 1rem;
+    border-radius: var(--rd-radius-md);
+}
+
+.rd-role-section__label {
+    min-width: 100px;
+}
+
+/* ============================================
+   Form model header (deploy_model_form)
+   ============================================ */
+.rd-form-model-header {
+    background: var(--rd-bg-subtle);
+    padding: 0.75rem 1.5rem;
+    font-weight: 700;
+    border-bottom: 1px solid var(--bs-border-color);
+    flex-shrink: 0;
+}
+
+/* ============================================
+   Deploying animation
+   ============================================ */
+.c-deploying-text::after {
+    content: '';
+    animation: deploying-dots 1.5s steps(4, end) infinite;
+}
+
+@keyframes deploying-dots {
+    0%  { content: ''; }
+    25% { content: '.'; }
+    50% { content: '..'; }
+    75% { content: '...'; }
+}
+
+/* ============================================
+   Responsive
+   ============================================ */
+/* ============================================
+   Offcanvas sidebar (mobile)
+   ============================================ */
+.rd-offcanvas-sidebar {
+    background-color: var(--bs-tertiary);
+    width: var(--rd-sidebar-width);
+}
+
+.rd-offcanvas-sidebar .btn-close {
+    filter: invert(1) grayscale(100%) brightness(200%);
+}
+
+@media (max-width: 991.98px) {
+    .rd-sidebar {
+        display: none;
+    }
+    .rd-content {
+        width: 100%;
+        padding: 1.5rem 1rem;
+    }
+    .rd-navbar .navbar-brand {
+        width: auto;
+        border-right: none;
+    }
+    .c-form-row {
+        flex-direction: column;
+    }
+    .c-form-row__label {
+        width: 100%;
+        min-width: 100%;
+    }
+}

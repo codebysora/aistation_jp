@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="../static/css/bootstrap.min.css">
+  <link rel="stylesheet" href="../static/font/bootstrap-icons.css">
+  <link rel="stylesheet" href="../static/css/style.css">
+  <title>案A 詳細ページ — Model Detail Mock</title>
+  <style>
+    body { background: var(--bs-body-bg); }
+    .mock-shell { max-width: 1100px; margin: 0 auto; padding: 1.5rem 1.5rem 4rem; }
+    .mock-banner {
+      background: rgba(40, 167, 69, 0.08);
+      border-left: 3px solid #28a745;
+      padding: 0.75rem 1rem; border-radius: 6px;
+      margin-bottom: 1.25rem; font-size: 0.85rem;
+    }
+    .mock-banner b { color: #28a745; }
+
+    /* ===== breadcrumb / back link ===== */
+    .detail-back {
+      display: inline-flex; align-items: center; gap: 0.3rem;
+      font-size: 0.8rem; color: var(--bs-secondary-color);
+      text-decoration: none; margin-bottom: 0.75rem;
+    }
+    .detail-back:hover { color: var(--bs-primary); }
+
+    /* ===== detail header ===== */
+    .detail-header {
+      background: #fff;
+      border: 1px solid var(--rd-border-subtle);
+      border-radius: var(--rd-radius-lg);
+      padding: 1.5rem;
+      margin-bottom: 1.25rem;
+    }
+    .detail-header__row1 {
+      display: flex; align-items: flex-start; gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+    .detail-header__name {
+      font-size: 1.5rem; font-weight: 700;
+      font-family: var(--bs-font-monospace);
+      letter-spacing: -0.01em; line-height: 1.2;
+      flex: 1; min-width: 0;
+    }
+    .detail-header__badges {
+      display: flex; gap: 0.4rem; flex-shrink: 0;
+    }
+    .detail-header__badges .badge {
+      font-size: 0.72rem; font-weight: 700;
+      padding: 0.3rem 0.6rem; letter-spacing: 0.04em;
+    }
+    .detail-header__sub {
+      margin-top: 0.4rem; font-size: 0.85rem;
+      color: var(--bs-secondary-color);
+      display: flex; gap: 0.5rem; flex-wrap: wrap;
+    }
+    .detail-header__sub > span { display: inline-flex; align-items: center; gap: 0.3rem; }
+    .detail-header__sub .dot::before { content: "·"; margin: 0 0.25rem; opacity: 0.5; }
+
+    /* hero metrics row */
+    .detail-hero {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 0.6rem; margin-top: 1rem;
+    }
+    .detail-hero__item {
+      background: var(--rd-bg-subtle, #f8f9fa);
+      border: 1px solid var(--rd-border-subtle);
+      border-radius: 8px; padding: 0.6rem 0.85rem;
+    }
+    .detail-hero__item--top {
+      background: rgba(13, 110, 253, 0.06);
+      border-color: rgba(13, 110, 253, 0.24);
+    }
+    .detail-hero__label {
+      font-size: 0.68rem; font-weight: 700; letter-spacing: 0.06em;
+      color: var(--bs-secondary-color); text-transform: uppercase;
+    }
+    .detail-hero__value {
+      font-size: 1.1rem; font-weight: 700;
+      font-variant-numeric: tabular-nums; margin-top: 0.15rem;
+    }
+    .detail-hero__suffix {
+      font-size: 0.7rem; color: var(--bs-secondary-color);
+      font-weight: 500; margin-left: 0.2rem;
+    }
+
+    /* ===== Plan D modality (large variant) ===== */
+    .detail-modality {
+      display: flex; align-items: center; gap: 0.35rem;
+      font-size: 0.95rem; font-weight: 600;
+    }
+    .detail-modality__label {
+      font-size: 0.68rem; font-weight: 700; letter-spacing: 0.08em;
+      color: var(--bs-secondary-color); padding: 0.18rem 0.4rem;
+      border: 1px solid var(--rd-border-subtle);
+      border-radius: 4px; background: #fff;
+    }
+    .detail-modality__icons { display: inline-flex; gap: 0.35rem; }
+    .detail-modality__icons i { font-size: 1rem; color: var(--bs-body-color); }
+    .detail-modality__arrow {
+      color: var(--bs-secondary-color); font-size: 1rem; margin: 0 0.15rem;
+    }
+
+    /* ===== section blocks ===== */
+    .detail-section {
+      background: #fff;
+      border: 1px solid var(--rd-border-subtle);
+      border-radius: var(--rd-radius-lg);
+      padding: 1.25rem 1.5rem;
+      margin-bottom: 1rem;
+    }
+    .detail-section__header {
+      display: flex; align-items: center; gap: 0.5rem;
+      margin-bottom: 0.9rem;
+    }
+    .detail-section__title {
+      font-size: 0.95rem; font-weight: 700; margin: 0;
+      letter-spacing: -0.005em;
+    }
+    .detail-section__src {
+      margin-left: auto; font-size: 0.7rem;
+      color: var(--bs-secondary-color);
+    }
+    .detail-section__src a { color: var(--bs-secondary-color); text-decoration: underline; }
+    .detail-section__src a:hover { color: var(--bs-primary); }
+
+    /* primary bars (Int/Cod/Math) — larger than card */
+    .detail-bar-row {
+      display: grid; grid-template-columns: 4rem 1fr 4rem;
+      align-items: center; gap: 0.6rem;
+      padding: 0.4rem 0;
+    }
+    .detail-bar-row + .detail-bar-row { border-top: 1px dashed var(--rd-border-subtle); }
+    .detail-bar-row__label { font-size: 0.85rem; font-weight: 700; }
+    .detail-bar-row__bar {
+      position: relative; height: 0.55rem; border-radius: 999px;
+      background: rgba(0,0,0,0.06); overflow: hidden;
+    }
+    .detail-bar-row__fill {
+      position: absolute; left: 0; top: 0; bottom: 0;
+      border-radius: 999px;
+    }
+    .detail-bar-row__score {
+      font-size: 0.85rem; font-weight: 700;
+      font-variant-numeric: tabular-nums; text-align: right;
+    }
+    .detail-bar-row__score--null { opacity: 0.35; font-weight: 500; }
+
+    /* 18-column benchmark grid */
+    .detail-bench-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+      gap: 0.5rem 0.75rem;
+    }
+    .detail-bench-cell {
+      display: grid; grid-template-columns: 1fr auto;
+      column-gap: 0.5rem; row-gap: 0.18rem;
+      padding: 0.4rem 0; border-bottom: 1px solid var(--rd-border-subtle);
+    }
+    .detail-bench-cell__label {
+      font-size: 0.78rem; font-weight: 600;
+      color: var(--bs-body-color); font-family: var(--bs-font-monospace);
+    }
+    .detail-bench-cell__value {
+      font-size: 0.78rem; font-weight: 700;
+      font-variant-numeric: tabular-nums; text-align: right;
+    }
+    .detail-bench-cell__value--null { opacity: 0.35; font-weight: 500; }
+    .detail-bench-cell__bar {
+      grid-column: 1 / -1;
+      height: 3px; border-radius: 999px;
+      background: rgba(0,0,0,0.06); overflow: hidden;
+    }
+    .detail-bench-cell__fill {
+      height: 100%; border-radius: 999px;
+    }
+
+    /* perf section bars (Spd / TTFT) */
+    .detail-perf-row {
+      display: grid; grid-template-columns: 5rem 1fr 5rem;
+      align-items: center; gap: 0.6rem;
+      padding: 0.5rem 0;
+    }
+    .detail-perf-row + .detail-perf-row { border-top: 1px dashed var(--rd-border-subtle); }
+    .detail-perf-row__label { font-size: 0.85rem; font-weight: 700; }
+    .detail-perf-row__bar {
+      position: relative; height: 0.5rem; border-radius: 999px;
+      background: rgba(0,0,0,0.06); overflow: hidden;
+    }
+    .detail-perf-row__fill {
+      position: absolute; left: 0; top: 0; bottom: 0;
+      border-radius: 999px;
+    }
+    .detail-perf-row__score {
+      font-size: 0.85rem; font-weight: 700;
+      font-variant-numeric: tabular-nums; text-align: right;
+    }
+
+    /* spec list */
+    .detail-spec-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 0.5rem 1.25rem;
+    }
+    .detail-spec-cell {
+      padding: 0.45rem 0;
+      border-bottom: 1px dashed var(--rd-border-subtle);
+    }
+    .detail-spec-cell__label {
+      font-size: 0.7rem; font-weight: 700;
+      letter-spacing: 0.04em; color: var(--bs-secondary-color);
+      text-transform: uppercase;
+    }
+    .detail-spec-cell__value {
+      font-size: 0.85rem; margin-top: 0.1rem;
+      font-family: var(--bs-font-monospace); word-break: break-all;
+    }
+    .detail-cap-row {
+      display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.5rem;
+    }
+    .detail-cap-tag {
+      display: inline-flex; align-items: center; gap: 0.3rem;
+      padding: 0.25rem 0.6rem; font-size: 0.78rem;
+      background: var(--rd-bg-subtle, #f8f9fa);
+      border: 1px solid var(--rd-border-subtle);
+      border-radius: 999px;
+    }
+
+    /* parameters (collapsible) */
+    .detail-params details { border: none; }
+    .detail-params summary {
+      cursor: pointer; font-size: 0.85rem; font-weight: 600;
+      padding: 0.4rem 0; user-select: none;
+    }
+    .detail-params summary::marker { color: var(--bs-secondary-color); }
+    .detail-params pre {
+      background: #1e1e1e; color: #e0e0e0;
+      padding: 0.85rem 1rem; border-radius: 6px;
+      font-size: 0.78rem; line-height: 1.5;
+      overflow-x: auto; margin-top: 0.4rem;
+    }
+
+    /* CTA */
+    .detail-cta {
+      display: flex; gap: 0.5rem; justify-content: flex-end;
+      margin-top: 1.25rem; flex-wrap: wrap;
+    }
+    .detail-cta .btn { padding: 0.55rem 1.25rem; font-weight: 600; }
+
+    /* Attribution: page footer */
+    .attr-footer {
+      margin-top: 2rem; padding-top: 1rem;
+      border-top: 1px solid var(--rd-border-subtle, rgba(0,0,0,0.08));
+      font-size: 0.72rem; color: var(--bs-secondary-color);
+      text-align: center;
+    }
+    .attr-footer a { color: var(--bs-secondary-color); text-decoration: underline; }
+  </style>
+</head>
+<body>
+
+<div class="mock-shell">
+
+  <div class="mock-banner">
+    <b>案A 詳細ページモック</b> — カード一覧から遷移。Plan D modality + 連続値バー（主要 3 指標）+ 18 列ベンチマーク + Performance + Spec。
+    <a href="./_model_select_compare.html" class="ms-2">← 比較に戻る</a>
+  </div>
+
+  <a class="detail-back" href="./_model_select_a.html"><i class="bi bi-arrow-left"></i> Model Select 一覧へ戻る</a>
+
+  <!-- Header -->
+  <div class="detail-header" id="header"></div>
+
+  <!-- Section: Modality -->
+  <div class="detail-section" id="section-modality">
+    <div class="detail-section__header">
+      <h2 class="detail-section__title"><i class="bi bi-arrow-left-right"></i> Modality</h2>
+    </div>
+    <div id="modality-body"></div>
+  </div>
+
+  <!-- Section: Primary benchmarks -->
+  <div class="detail-section">
+    <div class="detail-section__header">
+      <h2 class="detail-section__title"><i class="bi bi-bar-chart-fill"></i> Primary benchmarks</h2>
+      <span class="detail-section__src">
+        Source:
+        <a href="https://artificialanalysis.ai/" target="_blank" rel="noopener">
+          Artificial Analysis <i class="bi bi-box-arrow-up-right"></i>
+        </a>
+      </span>
+    </div>
+    <div id="primary-bars"></div>
+  </div>
+
+  <!-- Section: Detailed benchmarks (18-col) -->
+  <div class="detail-section">
+    <div class="detail-section__header">
+      <h2 class="detail-section__title"><i class="bi bi-grid-3x3-gap"></i> Detailed benchmarks</h2>
+      <span class="detail-section__src">
+        Source:
+        <a href="https://artificialanalysis.ai/" target="_blank" rel="noopener">
+          Artificial Analysis <i class="bi bi-box-arrow-up-right"></i>
+        </a>
+      </span>
+    </div>
+    <div class="detail-bench-grid" id="bench-grid"></div>
+  </div>
+
+  <!-- Section: Performance -->
+  <div class="detail-section">
+    <div class="detail-section__header">
+      <h2 class="detail-section__title"><i class="bi bi-speedometer2"></i> Performance</h2>
+      <span class="detail-section__src">
+        Source:
+        <a href="https://artificialanalysis.ai/" target="_blank" rel="noopener">
+          Artificial Analysis <i class="bi bi-box-arrow-up-right"></i>
+        </a>
+      </span>
+    </div>
+    <div id="perf-bars"></div>
+  </div>
+
+  <!-- Section: Specifications -->
+  <div class="detail-section">
+    <div class="detail-section__header">
+      <h2 class="detail-section__title"><i class="bi bi-gear"></i> Specifications</h2>
+    </div>
+    <div class="detail-spec-grid" id="spec-grid"></div>
+    <div id="caps-row"></div>
+  </div>
+
+  <!-- Section: Parameters (raw, collapsible) -->
+  <div class="detail-section detail-params">
+    <div class="detail-section__header">
+      <h2 class="detail-section__title"><i class="bi bi-code-slash"></i> Parameters</h2>
+    </div>
+    <details>
+      <summary>raw parameters / engine config を表示</summary>
+      <pre id="params-pre"></pre>
+    </details>
+  </div>
+
+  <!-- CTA -->
+  <div class="detail-cta">
+    <a class="btn btn-outline-secondary" href="./_model_select_a.html">
+      <i class="bi bi-arrow-left"></i> 一覧へ戻る
+    </a>
+    <a class="btn btn-success" id="cta-deploy" href="#">
+      このモデルでデプロイする <i class="bi bi-arrow-right"></i>
+    </a>
+  </div>
+
+  <!-- Attribution footer (①) -->
+  <footer class="attr-footer">
+    Performance data provided by
+    <a href="https://artificialanalysis.ai/" target="_blank" rel="noopener">Artificial Analysis ↗</a>
+  </footer>
+
+</div>
+
+<script src="./_preset_data.js"></script>
+<script>
+function escapeHtml(s) { return String(s).replace(/[&<>"']/g, function(c){
+  return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+}); }
+function formatInt(n) { return Number(n).toLocaleString(); }
+function formatContext(ctx) {
+  if (ctx == null) return '—';
+  if (ctx >= 1048576) return (ctx / 1048576).toFixed(1).replace(/\.0$/, '') + 'M';
+  if (ctx >= 1024) return (ctx / 1024).toFixed(0) + 'K';
+  return String(ctx);
+}
+function getQueryId() {
+  var m = location.search.match(/[?&]id=([^&]+)/);
+  return m ? decodeURIComponent(m[1]) : null;
+}
+
+var MODALITY_ICONS = {
+  text: 'bi-fonts', vision: 'bi-image', image: 'bi-image',
+  audio: 'bi-mic', video: 'bi-camera-video', embeddings: 'bi-bezier2'
+};
+var MODALITY_LABELS = {
+  text: 'Text', vision: 'Image', image: 'Image',
+  audio: 'Audio', video: 'Video', embeddings: 'Embeddings'
+};
+function modalityIcon(m) { return MODALITY_ICONS[m] || 'bi-circle'; }
+function modalityLabel(m) { return MODALITY_LABELS[m] || m; }
+
+function benchColor(score, max) {
+  var pct = score / max;
+  if (pct >= 0.66) return 'var(--bs-success)';
+  if (pct >= 0.33) return 'var(--bs-primary)';
+  if (pct >= 0.15) return 'var(--bs-warning)';
+  return 'var(--bs-danger)';
+}
+
+function renderHeader(p) {
+  var bg = p.resource_type === 'CPU' ? 'bg-secondary' : 'bg-primary';
+  var keys = [
+    { k: 'intelligence_index', label: 'Int' },
+    { k: 'coding_index',       label: 'Cod' },
+    { k: 'math_index',         label: 'Math' }
+  ];
+  var top = null;
+  for (var i = 0; i < keys.length; i++) {
+    var v = p[keys[i].k];
+    if (v == null) continue;
+    if (!top || v > top.value) top = { label: keys[i].label, value: v };
+  }
+
+  var html = '';
+  html += '<div class="detail-header__row1">';
+  html += '  <div style="flex:1;min-width:0;">';
+  html += '    <div class="detail-header__name">' + escapeHtml(p.id) + '</div>';
+  html += '    <div class="detail-header__sub">';
+  html += '      <span><i class="bi bi-building"></i> ' + escapeHtml(p.developer) + '</span>';
+  html += '      <span class="dot"></span>';
+  html += '      <span><i class="bi bi-link-45deg"></i> ' + escapeHtml(p.model_source || '—') + '</span>';
+  if (p.release_data) {
+    html += '      <span class="dot"></span>';
+    html += '      <span><i class="bi bi-calendar3"></i> ' + escapeHtml(p.release_data) + '</span>';
+  }
+  html += '    </div>';
+  html += '  </div>';
+  html += '  <div class="detail-header__badges">';
+  html += '    <span class="badge ' + bg + '">' + p.resource_type + '</span>';
+  html += '    <span class="badge bg-light text-dark border">' + escapeHtml(p.license) + '</span>';
+  html += '  </div>';
+  html += '</div>';
+
+  // Hero metrics row
+  html += '<div class="detail-hero">';
+  if (top) {
+    html += '<div class="detail-hero__item detail-hero__item--top">';
+    html += '  <div class="detail-hero__label">TOP indicator</div>';
+    html += '  <div class="detail-hero__value">' + top.label + ' ' + top.value.toFixed(1) + '<span class="detail-hero__suffix">/20</span></div>';
+    html += '</div>';
+  }
+  if (p.intelligence_index != null) {
+    html += '<div class="detail-hero__item">';
+    html += '  <div class="detail-hero__label">Intelligence</div>';
+    html += '  <div class="detail-hero__value">' + p.intelligence_index.toFixed(1) + '<span class="detail-hero__suffix">/20</span></div>';
+    html += '</div>';
+  }
+  if (p.coding_index != null) {
+    html += '<div class="detail-hero__item">';
+    html += '  <div class="detail-hero__label">Coding</div>';
+    html += '  <div class="detail-hero__value">' + p.coding_index.toFixed(1) + '<span class="detail-hero__suffix">/20</span></div>';
+    html += '</div>';
+  }
+  if (p.math_index != null) {
+    html += '<div class="detail-hero__item">';
+    html += '  <div class="detail-hero__label">Math</div>';
+    html += '  <div class="detail-hero__value">' + p.math_index.toFixed(1) + '<span class="detail-hero__suffix">/20</span></div>';
+    html += '</div>';
+  }
+  if (p.median_output_tokens_per_second != null && p.median_output_tokens_per_second > 0) {
+    html += '<div class="detail-hero__item">';
+    html += '  <div class="detail-hero__label">Speed</div>';
+    html += '  <div class="detail-hero__value">' + p.median_output_tokens_per_second.toFixed(0) + '<span class="detail-hero__suffix">tok/s</span></div>';
+    html += '</div>';
+  }
+  if (p.ttft != null && p.ttft > 0) {
+    html += '<div class="detail-hero__item">';
+    html += '  <div class="detail-hero__label">TTFT</div>';
+    html += '  <div class="detail-hero__value">' + p.ttft.toFixed(2) + '<span class="detail-hero__suffix">s</span></div>';
+    html += '</div>';
+  }
+  html += '<div class="detail-hero__item">';
+  html += '  <div class="detail-hero__label">Context</div>';
+  html += '  <div class="detail-hero__value">' + formatContext(p.max_input_tokens) + '<span class="detail-hero__suffix">tokens</span></div>';
+  html += '</div>';
+  html += '</div>';
+
+  document.getElementById('header').innerHTML = html;
+  document.title = p.id + ' — Model Detail';
+}
+
+function renderModality(p) {
+  var ins = p.input_modalities || [];
+  var outs = p.output_modalities || [];
+  var inLabel = ins.map(modalityLabel).join(', ');
+  var outLabel = outs.map(modalityLabel).join(', ');
+  var html = '<div class="detail-modality">';
+  html += '<span class="detail-modality__label">IN</span>';
+  html += '<span class="detail-modality__icons">';
+  for (var i = 0; i < ins.length; i++) {
+    html += '<i class="bi ' + modalityIcon(ins[i]) + '" title="' + escapeHtml(modalityLabel(ins[i])) + '"></i>';
+  }
+  html += '</span>';
+  html += '<span class="detail-modality__arrow"><i class="bi bi-arrow-right"></i></span>';
+  html += '<span class="detail-modality__label">OUT</span>';
+  html += '<span class="detail-modality__icons">';
+  for (var j = 0; j < outs.length; j++) {
+    html += '<i class="bi ' + modalityIcon(outs[j]) + '" title="' + escapeHtml(modalityLabel(outs[j])) + '"></i>';
+  }
+  html += '</span>';
+  html += '</div>';
+  html += '<div style="margin-top:0.5rem;font-size:0.78rem;color:var(--bs-secondary-color);">';
+  html += '入力: ' + escapeHtml(inLabel || '—') + ' / 出力: ' + escapeHtml(outLabel || '—');
+  html += '</div>';
+  document.getElementById('modality-body').innerHTML = html;
+}
+
+function renderPrimaryBars(p) {
+  var rows = [
+    { label: 'Intelligence', value: p.intelligence_index, max: 20 },
+    { label: 'Coding',       value: p.coding_index,       max: 20 },
+    { label: 'Math',         value: p.math_index,         max: 20 }
+  ];
+  var html = '';
+  for (var i = 0; i < rows.length; i++) {
+    var r = rows[i];
+    html += '<div class="detail-bar-row">';
+    html += '<span class="detail-bar-row__label">' + r.label + '</span>';
+    if (r.value == null) {
+      html += '<span class="detail-bar-row__bar"></span>';
+      html += '<span class="detail-bar-row__score detail-bar-row__score--null">—</span>';
+    } else {
+      var pct = Math.min(100, (r.value / r.max) * 100);
+      html += '<span class="detail-bar-row__bar"><span class="detail-bar-row__fill" style="width:' + pct + '%;background:' + benchColor(r.value, r.max) + '"></span></span>';
+      html += '<span class="detail-bar-row__score">' + r.value.toFixed(1) + ' / ' + r.max + '</span>';
+    }
+    html += '</div>';
+  }
+  document.getElementById('primary-bars').innerHTML = html;
+}
+
+function renderBenchGrid(p) {
+  // 詳細ベンチ群（0..1 ratio scale）
+  var benches = [
+    { k: 'mmlu_pro',          label: 'mmlu_pro' },
+    { k: 'gpqa',              label: 'gpqa' },
+    { k: 'hle',               label: 'hle' },
+    { k: 'livecodebench',     label: 'livecodebench' },
+    { k: 'scicode',           label: 'scicode' },
+    { k: 'math_500',          label: 'math_500' },
+    { k: 'aime',              label: 'aime' },
+    { k: 'aime_25',           label: 'aime_25' },
+    { k: 'ifbench',           label: 'ifbench' },
+    { k: 'lcr',               label: 'lcr' },
+    { k: 'terminalbench_hard',label: 'terminalbench_hard' },
+    { k: 'tau2',              label: 'tau2' }
+  ];
+  var html = '';
+  for (var i = 0; i < benches.length; i++) {
+    var b = benches[i];
+    var v = p[b.k];
+    html += '<div class="detail-bench-cell">';
+    html += '  <span class="detail-bench-cell__label">' + b.label + '</span>';
+    if (v == null) {
+      html += '  <span class="detail-bench-cell__value detail-bench-cell__value--null">—</span>';
+      html += '  <span class="detail-bench-cell__bar"></span>';
+    } else {
+      var pct = Math.min(100, v * 100);
+      html += '  <span class="detail-bench-cell__value">' + (v * 100).toFixed(1) + '%</span>';
+      html += '  <span class="detail-bench-cell__bar"><span class="detail-bench-cell__fill" style="width:' + pct + '%;background:' + benchColor(v, 1) + '"></span></span>';
+    }
+    html += '</div>';
+  }
+  document.getElementById('bench-grid').innerHTML = html;
+}
+
+function renderPerfBars(p) {
+  var rows = [];
+  if (p.median_output_tokens_per_second != null) {
+    rows.push({
+      label: 'Speed',
+      raw: p.median_output_tokens_per_second,
+      display: p.median_output_tokens_per_second.toFixed(1) + ' tok/s',
+      pct: Math.min(100, (p.median_output_tokens_per_second / 400) * 100),
+      color: 'var(--bs-primary)'
+    });
+  }
+  if (p.ttft != null) {
+    // TTFT は小さいほど良い: 5s を上限基準で反転
+    var rev = Math.max(0, Math.min(100, (1 - p.ttft / 5) * 100));
+    rows.push({
+      label: 'TTFT',
+      raw: p.ttft,
+      display: p.ttft.toFixed(2) + ' s',
+      pct: rev,
+      color: 'var(--bs-warning)'
+    });
+  }
+  if (p.tta != null) {
+    var rev2 = Math.max(0, Math.min(100, (1 - p.tta / 5) * 100));
+    rows.push({
+      label: 'TTA',
+      raw: p.tta,
+      display: p.tta.toFixed(2) + ' s',
+      pct: rev2,
+      color: 'var(--bs-info)'
+    });
+  }
+  var html = '';
+  for (var i = 0; i < rows.length; i++) {
+    var r = rows[i];
+    html += '<div class="detail-perf-row">';
+    html += '<span class="detail-perf-row__label">' + r.label + '</span>';
+    html += '<span class="detail-perf-row__bar"><span class="detail-perf-row__fill" style="width:' + r.pct + '%;background:' + r.color + ';opacity:0.8"></span></span>';
+    html += '<span class="detail-perf-row__score">' + r.display + '</span>';
+    html += '</div>';
+  }
+  if (!rows.length) html = '<div style="font-size:0.85rem;color:var(--bs-secondary-color);">— 計測値なし</div>';
+  document.getElementById('perf-bars').innerHTML = html;
+}
+
+function renderSpecs(p, raw) {
+  var res = p.required_resources || {};
+  var resStr = '—';
+  if (res.gpu) resStr = 'GPU × ' + res.gpu.count + ' (' + res.gpu.memory_gb + ' GB)';
+  else if (res.cpu) resStr = 'CPU × ' + res.cpu.count + ' (' + res.cpu.memory_gb + ' GB)';
+
+  var def = (raw && raw.model_definition) || {};
+  var ctx = def.context || {};
+  var maxIn = ctx.max_input_tokens != null ? formatInt(ctx.max_input_tokens) + ' tokens' : '—';
+  var maxOut = ctx.max_output_tokens != null ? formatInt(ctx.max_output_tokens) + ' tokens' : '—';
+
+  var rows = [
+    { label: 'Inference backend', value: raw ? raw.inference_backend : '—' },
+    { label: 'Engine version',    value: raw ? (raw.engine_version || '—') : '—' },
+    { label: 'Required resources',value: resStr },
+    { label: 'Max input tokens',  value: maxIn },
+    { label: 'Max output tokens', value: maxOut },
+    { label: 'License',           value: p.license },
+    { label: 'Release date',      value: p.release_data || '—' }
+  ];
+  var html = '';
+  for (var i = 0; i < rows.length; i++) {
+    html += '<div class="detail-spec-cell">';
+    html += '  <div class="detail-spec-cell__label">' + rows[i].label + '</div>';
+    html += '  <div class="detail-spec-cell__value">' + escapeHtml(String(rows[i].value)) + '</div>';
+    html += '</div>';
+  }
+  document.getElementById('spec-grid').innerHTML = html;
+
+  // Capabilities row
+  var caps = p.capabilities || {};
+  var capHTML = '<div class="detail-cap-row">';
+  if (caps.tool_use)  capHTML += '<span class="detail-cap-tag"><i class="bi bi-tools"></i> tool use</span>';
+  if (caps.reasoning) capHTML += '<span class="detail-cap-tag"><i class="bi bi-lightbulb"></i> reasoning</span>';
+  if (!caps.tool_use && !caps.reasoning) capHTML += '<span class="detail-cap-tag" style="opacity:0.5;">—</span>';
+  capHTML += '</div>';
+  document.getElementById('caps-row').innerHTML = capHTML;
+}
+
+function renderParams(raw) {
+  if (!raw) { document.getElementById('params-pre').textContent = '—'; return; }
+  var obj = {
+    inference_backend: raw.inference_backend,
+    engine_version: raw.engine_version,
+    model_source: raw.model_source,
+    parameters: raw.parameters,
+    required_resources: raw.required_resources
+  };
+  document.getElementById('params-pre').textContent = JSON.stringify(obj, null, 2);
+}
+
+(function init() {
+  var list = window.PresetData.list;
+  var rawAll = window.PresetData.raw;
+  var queryId = getQueryId();
+  var p = null, raw = null;
+  if (queryId) {
+    for (var i = 0; i < list.length; i++) {
+      if (list[i].id === queryId) { p = list[i]; break; }
+    }
+    raw = rawAll[queryId] || null;
+  }
+  if (!p) {
+    p = list[0];
+    raw = rawAll[p.id] || null;
+  }
+
+  renderHeader(p);
+  renderModality(p);
+  renderPrimaryBars(p);
+  renderBenchGrid(p);
+  renderPerfBars(p);
+  renderSpecs(p, raw);
+  renderParams(raw);
+
+  document.getElementById('cta-deploy').setAttribute(
+    'href', '../deploy_model_form.html?model=' + encodeURIComponent(p.id)
+  );
+})();
+</script>
+</body>
+</html>

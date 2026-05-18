@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html class="h-100" lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="./static/css/bootstrap.min.css">
+  <link rel="stylesheet" href="./static/css/bootstrap-table.min.css">
+  <link rel="stylesheet" href="./static/font/bootstrap-icons.css">
+  <link rel="stylesheet" href="./static/css/style.css">
+  <title>AIStation Dashboard - Deploy Model Form</title>
+</head>
+<body class="h-100">
+
+  <!-- Header -->
+  <header>
+    <nav class="navbar navbar-expand-sm rd-navbar" aria-label="Top navigation">
+      <a class="navbar-brand" href="./">AIStation Dashboard</a>
+      <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item">
+            <a href="#" class="rd-nav-user">
+              <span class="rd-nav-user__badge">Admin</span>
+              <i class="bi bi-person-circle" aria-hidden="true"></i> admin@fixstars.com
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="#" class="rd-nav-logout"><i class="bi bi-box-arrow-right" aria-hidden="true"></i> Logout</a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+  </header>
+
+  <div class="d-flex rd-main-container">
+
+    <!-- Sidebar -->
+    <nav class="rd-sidebar" aria-label="Main navigation">
+      <ul class="nav flex-column m-0">
+        <li class="rd-sidebar__section-label">Admin</li>
+        <li class="nav-item"><a class="nav-link" href="./keys.html"><i class="bi bi-key" aria-hidden="true"></i> API Keys</a></li>
+        <li class="nav-item"><a class="nav-link" href="./teams.html"><i class="bi bi-people" aria-hidden="true"></i> Teams</a></li>
+        <li class="nav-item"><a class="nav-link" href="#"><i class="bi bi-clock-history" aria-hidden="true"></i> Histories</a></li>
+        <li><div class="rd-sidebar__separator"></div></li>
+        <li class="rd-sidebar__separator-label">Management</li>
+        <li class="nav-item"><a class="nav-link active" href="./model_settings.html"><i class="bi bi-robot" aria-hidden="true"></i> Model management</a></li>
+        <li class="nav-item"><a class="nav-link" href="./team_management.html"><i class="bi bi-diagram-3" aria-hidden="true"></i> Team management</a></li>
+        <li class="nav-item"><a class="nav-link" href="./user_management.html"><i class="bi bi-person" aria-hidden="true"></i> User management</a></li>
+        <li class="nav-item"><a class="nav-link" href="./mail_settings.html"><i class="bi bi-envelope" aria-hidden="true"></i> Mail settings</a></li>
+      </ul>
+    </nav>
+
+    <!-- Content -->
+    <main class="rd-content bg-body">
+
+      <div class="rd-card rd-fade-in">
+        <div class="rd-card__header">
+          <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0">
+              <li class="breadcrumb-item">
+                <a href="./model_settings.html">Model management</a>
+              </li>
+              <li class="breadcrumb-item">
+                <a href="./deploy_model_select.html">Select model</a>
+              </li>
+              <li class="breadcrumb-item active" aria-current="page">Deploy model</li>
+            </ol>
+          </nav>
+        </div>
+        <div class="rd-card__body d-flex flex-column overflow-hidden">
+
+          <!-- Step indicator -->
+          <div class="rd-steps mx-4 mt-3 mb-2">
+            <div class="rd-step rd-step--completed">
+              <div class="rd-step__number"><i class="bi bi-check"></i></div>
+              <div class="rd-step__label">Select Model</div>
+            </div>
+            <div class="rd-step rd-step--active">
+              <div class="rd-step__number">2</div>
+              <div class="rd-step__label">Configure</div>
+            </div>
+            <div class="rd-step rd-step--upcoming">
+              <div class="rd-step__number">3</div>
+              <div class="rd-step__label">Deploy</div>
+            </div>
+          </div>
+
+          <!-- Engine header -->
+          <div class="rd-form-model-header">
+            Deploy for vllm v0.14.0
+          </div>
+
+          <!-- Error container -->
+          <div id="deploy-form-error" class="rd-alert rd-alert--error mx-4 mt-3" style="display:none" role="alert"><div class="rd-alert__body"></div></div>
+
+          <form action="/model/deploy" method="POST" class="d-flex flex-column rd-form-min-h-0" id="deploy-form" novalidate>
+            <input type="hidden" name="csrf_token" id="csrf_token_deploy" value="">
+
+            <!-- Scrollable form area -->
+            <div class="overflow-y-auto rd-form-scroll">
+
+              <!-- model_source -->
+              <div class="c-form-row">
+                <div class="c-form-row__label">
+                  <label for="model_source" class="fw-bold">model_source</label>
+                  <div class="text-danger small mt-1">*Required</div>
+                </div>
+                <div class="c-form-row__field">
+                  <input type="text" class="c-form-field" id="model_source" name="model_source" value="Qwen/Qwen3-0.6B" placeholder="model_source">
+                  <div class="c-form-annotation">Model source URI (e.g., <code>Qwen/Qwen3-0.6B</code>).</div>
+                </div>
+              </div>
+
+              <!-- model_name -->
+              <div class="c-form-row">
+                <div class="c-form-row__label">
+                  <label for="model_name" class="fw-bold">model_name</label>
+                  <div class="text-danger small mt-1">*Required</div>
+                </div>
+                <div class="c-form-row__field">
+                  <input type="text" class="c-form-field" id="model_name" name="model_name" value="qwen3-0.6b-cpu" placeholder="model_name">
+                  <div class="c-form-annotation">Display name for the model. Defaults to preset name, please make it unique.</div>
+                </div>
+              </div>
+
+              <!-- Advanced settings accordion -->
+              <div class="c-advanced-toggle"
+                   data-bs-toggle="collapse"
+                   data-bs-target="#advanced-settings"
+                   aria-expanded="false"
+                   aria-controls="advanced-settings"
+                   id="advanced-toggle">
+                <span>Advanced settings</span>
+                <i class="bi bi-chevron-down" id="advanced-chevron"></i>
+              </div>
+
+              <div class="collapse" id="advanced-settings">
+
+                <!-- CPU count -->
+                <div class="c-form-row">
+                  <div class="c-form-row__label">
+                    <div class="fw-bold">cpu count</div>
+                  </div>
+                  <div class="c-form-row__field">
+                    <input type="text" class="c-form-field" id="resource_count" name="resource_count" value="1" placeholder="resource_count">
+                    <div class="c-form-annotation">Number of cores or GPUs to allocate. Default is 1.</div>
+                  </div>
+                </div>
+
+                <!-- CPU memory -->
+                <div class="c-form-row">
+                  <div class="c-form-row__label">
+                    <div class="fw-bold">cpu memory(gb)</div>
+                  </div>
+                  <div class="c-form-row__field">
+                    <input type="text" class="c-form-field" id="resource_memory_gb" name="resource_memory_gb" value="2" placeholder="resource_memory_gb">
+                    <div class="c-form-annotation">Memory limit in GB (CPU: KV cache size, GPU: VRAM size constraint).</div>
+                  </div>
+                </div>
+
+                <!-- ===== Parameters ===== -->
+                <div class="c-form-row c-form-row--section-header">
+                  <div class="c-form-row__label">
+                    <div class="fw-bold">Parameters</div>
+                  </div>
+                  <div class="c-form-row__field">
+                    <div class="c-form-annotation">Engine-specific launch parameters.</div>
+                  </div>
+                </div>
+
+                <!-- args -->
+                <div class="c-form-row">
+                  <div class="c-form-row__label">
+                    <div class="fw-semibold">args</div>
+                  </div>
+                  <div class="c-form-row__field">
+                    <div id="args-container" class="c-tag-list mb-2"></div>
+                    <div class="input-group input-group-sm c-add-row">
+                      <input type="text" id="new-arg-input" class="form-control" placeholder="e.g. enable-auto-tool-choice">
+                      <button type="button" class="btn btn-outline-secondary js-add-arg">
+                        <i class="bi bi-plus"></i> Add flag
+                      </button>
+                    </div>
+                    <div class="c-form-annotation">Flag-style arguments (without leading <code>--</code>).</div>
+                  </div>
+                </div>
+
+                <!-- kwargs -->
+                <div class="c-form-row">
+                  <div class="c-form-row__label">
+                    <div class="fw-semibold">kwargs</div>
+                  </div>
+                  <div class="c-form-row__field">
+                    <div id="kwargs-container" class="c-kv-list mb-2"></div>
+                    <button type="button" class="btn btn-sm btn-outline-secondary js-add-kwarg">
+                      <i class="bi bi-plus"></i> Add option
+                    </button>
+                    <div class="c-form-annotation">Key-value options (e.g. <code>max-model-len</code> = <code>4096</code>).</div>
+                  </div>
+                </div>
+
+                <!-- env -->
+                <div class="c-form-row">
+                  <div class="c-form-row__label">
+                    <div class="fw-semibold">env</div>
+                  </div>
+                  <div class="c-form-row__field">
+                    <div id="env-container" class="c-kv-list mb-2"></div>
+                    <button type="button" class="btn btn-sm btn-outline-secondary js-add-env">
+                      <i class="bi bi-plus"></i> Add env var
+                    </button>
+                    <div class="c-form-annotation">Environment variables for the engine container.</div>
+                  </div>
+                </div>
+
+                <!-- hidden field consumed by backend -->
+                <textarea name="parameters" id="parameters-json" hidden></textarea>
+
+                <!-- ===== Model Definition ===== -->
+                <div class="c-form-row c-form-row--section-header">
+                  <div class="c-form-row__label">
+                    <div class="fw-bold">Model definition</div>
+                  </div>
+                  <div class="c-form-row__field">
+                    <div class="c-form-annotation">Metadata for router registration.</div>
+                  </div>
+                </div>
+
+                <!-- capabilities -->
+                <div class="c-form-row">
+                  <div class="c-form-row__label">
+                    <div class="fw-semibold">capabilities</div>
+                  </div>
+                  <div class="c-form-row__field">
+                    <div class="d-flex flex-wrap gap-3">
+                      <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="cap-function-calling">
+                        <label class="form-check-label" for="cap-function-calling">function_calling</label>
+                      </div>
+                      <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="cap-structured-output">
+                        <label class="form-check-label" for="cap-structured-output">structured_output</label>
+                      </div>
+                      <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="cap-tool-choice">
+                        <label class="form-check-label" for="cap-tool-choice">tool_choice</label>
+                      </div>
+                      <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="cap-reasoning">
+                        <label class="form-check-label" for="cap-reasoning">reasoning</label>
+                      </div>
+                      <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="cap-stream">
+                        <label class="form-check-label" for="cap-stream">stream</label>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- pricing -->
+                <div class="c-form-row">
+                  <div class="c-form-row__label">
+                    <div class="fw-semibold">pricing</div>
+                  </div>
+                  <div class="c-form-row__field">
+                    <div class="d-flex gap-3 align-items-center flex-wrap">
+                      <div class="input-group input-group-sm" style="width:180px">
+                        <span class="input-group-text">input</span>
+                        <input type="number" id="pricing-input" class="form-control" step="any" min="0" placeholder="0.0">
+                      </div>
+                      <div class="input-group input-group-sm" style="width:180px">
+                        <span class="input-group-text">output</span>
+                        <input type="number" id="pricing-output" class="form-control" step="any" min="0" placeholder="0.0">
+                      </div>
+                      <div class="input-group input-group-sm" style="width:160px">
+                        <span class="input-group-text">currency</span>
+                        <input type="text" id="pricing-currency" class="form-control" placeholder="USD">
+                      </div>
+                    </div>
+                    <div class="c-form-annotation">Price per 1M tokens.</div>
+                  </div>
+                </div>
+
+                <!-- context -->
+                <div class="c-form-row">
+                  <div class="c-form-row__label">
+                    <div class="fw-semibold">context</div>
+                  </div>
+                  <div class="c-form-row__field">
+                    <div class="d-flex gap-3 align-items-center flex-wrap">
+                      <div class="input-group input-group-sm" style="width:240px">
+                        <span class="input-group-text">max input tokens</span>
+                        <input type="number" id="context-max-input" class="form-control" min="0" placeholder="—">
+                      </div>
+                      <div class="input-group input-group-sm" style="width:250px">
+                        <span class="input-group-text">max output tokens</span>
+                        <input type="number" id="context-max-output" class="form-control" min="0" placeholder="—">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- interfaces (advanced / collapsed) -->
+                <div class="c-form-row">
+                  <div class="c-form-row__label">
+                    <div class="fw-semibold">interfaces</div>
+                  </div>
+                  <div class="c-form-row__field">
+                    <a class="small text-secondary text-decoration-none" data-bs-toggle="collapse" href="#interfaces-collapse" role="button" aria-expanded="false">
+                      Edit interfaces (advanced) <i class="bi bi-chevron-down"></i>
+                    </a>
+                    <div class="collapse mt-2" id="interfaces-collapse">
+                      <textarea id="interfaces-json" rows="6" class="c-form-textarea font-monospace" placeholder='{"/v1/chat/completions": {"input_modalities": ["text"], "output_modalities": ["text"]}}'></textarea>
+                      <div class="c-form-annotation">JSON map of endpoint path → modality config.</div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- hidden field consumed by backend -->
+                <textarea name="model_definition" id="model-definition-json" hidden></textarea>
+
+              </div>
+
+            </div>
+
+            <!-- Cancel / Submit buttons -->
+            <div class="d-flex justify-content-end gap-3 py-4 pe-4 border-top flex-shrink-0">
+              <button type="button" class="rd-btn-secondary js-back-to-model-select" onclick="location.href='./deploy_model_select.html'">
+                <i class="bi bi-x" aria-hidden="true"></i> Cancel
+              </button>
+              <button type="submit" class="rd-btn-primary">
+                <i class="bi bi-plus-circle" aria-hidden="true"></i> Submit
+              </button>
+            </div>
+
+          </form>
+
+        </div>
+      </div>
+
+    </main>
+
+  </div>
+
+  <div id="toast-container" class="position-fixed top-0 end-0 p-3" style="z-index:1080"></div>
+  <script src="./static/js/jquery-3.7.1.min.js"></script>
+  <script src="./static/js/bootstrap.bundle.min.js"></script>
+  <script src="./static/js/bootstrap-table.min.js"></script>
+  <script src="./static/js/app.js"></script>
+
+  <script>
+  (function () {
+    // ---- preset (qwen3-0.6b-cpu) ----
+    const PRESET_PARAMETERS = {
+      args: ["enable-auto-tool-choice"],
+      kwargs: {
+        "reasoning-parser": "qwen3",
+        "tool-call-parser": "hermes",
+        "max-model-len": "4096"
+      },
+      env: {}
+    };
+    const PRESET_MODEL_DEFINITION = {
+      capabilities: {
+        function_calling: true,
+        tool_choice: true,
+        structured_output: true,
+        stream: true,
+        reasoning: true
+      },
+      pricing: { input: 0.0, output: 0.0 },
+      context: { max_input_tokens: 4096, max_output_tokens: 4096 },
+      interfaces: {
+        "/v1/chat/completions": {
+          input_modalities: ["text"],
+          output_modalities: ["text"]
+        }
+      }
+    };
+
+    // ---- helpers ----
+    function escHtml(s) {
+      return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    }
+    function escAttr(s) {
+      return String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;');
+    }
+
+    function makeArgTag(value) {
+      const wrap = document.createElement('div');
+      wrap.className = 'c-tag-item';
+      wrap.dataset.value = value;
+      wrap.innerHTML =
+        `<span class="c-tag-item__text">${escHtml(value)}</span>` +
+        `<button type="button" class="c-tag-item__remove js-remove-arg" aria-label="Remove"><i class="bi bi-x"></i></button>`;
+      return wrap;
+    }
+
+    function makeKvRow(key, value) {
+      const wrap = document.createElement('div');
+      wrap.className = 'c-kv-row';
+      let valStr;
+      if (typeof value === 'object' && value !== null) {
+        valStr = JSON.stringify(value);
+      } else {
+        valStr = String(value ?? '');
+      }
+      wrap.innerHTML =
+        `<input type="text" class="form-control form-control-sm c-kv-row__key" value="${escAttr(key)}" placeholder="key">` +
+        `<input type="text" class="form-control form-control-sm c-kv-row__value" value="${escAttr(valStr)}" placeholder="value">` +
+        `<button type="button" class="btn btn-sm btn-outline-danger c-kv-row__remove js-remove-kv" aria-label="Remove"><i class="bi bi-x"></i></button>`;
+      return wrap;
+    }
+
+    // ---- init UI from preset ----
+    function initParametersUI(data) {
+      data = data || {};
+      const argsContainer = document.getElementById('args-container');
+      argsContainer.innerHTML = '';
+      (data.args || []).forEach(function(v) {
+        argsContainer.appendChild(makeArgTag(v));
+      });
+
+      const kwargsContainer = document.getElementById('kwargs-container');
+      kwargsContainer.innerHTML = '';
+      Object.entries(data.kwargs || {}).forEach(function(entry) {
+        kwargsContainer.appendChild(makeKvRow(entry[0], entry[1]));
+      });
+
+      const envContainer = document.getElementById('env-container');
+      envContainer.innerHTML = '';
+      Object.entries(data.env || {}).forEach(function(entry) {
+        envContainer.appendChild(makeKvRow(entry[0], entry[1]));
+      });
+    }
+
+    function initModelDefinitionUI(data) {
+      data = data || {};
+      const cap = data.capabilities || {};
+      document.getElementById('cap-function-calling').checked = !!cap.function_calling;
+      document.getElementById('cap-structured-output').checked = !!cap.structured_output;
+      document.getElementById('cap-tool-choice').checked = !!cap.tool_choice;
+      document.getElementById('cap-reasoning').checked = !!cap.reasoning;
+      document.getElementById('cap-stream').checked = !!cap.stream;
+
+      const pricing = data.pricing || {};
+      if (pricing.input != null) document.getElementById('pricing-input').value = pricing.input;
+      if (pricing.output != null) document.getElementById('pricing-output').value = pricing.output;
+      if (pricing.currency) document.getElementById('pricing-currency').value = pricing.currency;
+
+      const ctx = data.context || {};
+      if (ctx.max_input_tokens != null) document.getElementById('context-max-input').value = ctx.max_input_tokens;
+      if (ctx.max_output_tokens != null) document.getElementById('context-max-output').value = ctx.max_output_tokens;
+
+      const interfaces = data.interfaces;
+      if (interfaces && Object.keys(interfaces).length > 0) {
+        document.getElementById('interfaces-json').value = JSON.stringify(interfaces, null, 2);
+      }
+    }
+
+    // ---- serialize ----
+    function serializeParameters() {
+      const args = Array.from(document.querySelectorAll('#args-container .c-tag-item'))
+        .map(function(el) { return el.dataset.value; });
+
+      const kwargs = {};
+      document.querySelectorAll('#kwargs-container .c-kv-row').forEach(function(row) {
+        const k = row.querySelector('.c-kv-row__key').value.trim();
+        const v = row.querySelector('.c-kv-row__value').value.trim();
+        if (k) {
+          let parsed = v;
+          try { parsed = JSON.parse(v); } catch(e) {}
+          kwargs[k] = parsed;
+        }
+      });
+
+      const env = {};
+      document.querySelectorAll('#env-container .c-kv-row').forEach(function(row) {
+        const k = row.querySelector('.c-kv-row__key').value.trim();
+        const v = row.querySelector('.c-kv-row__value').value.trim();
+        if (k) env[k] = v;
+      });
+
+      document.getElementById('parameters-json').value = JSON.stringify({ args: args, kwargs: kwargs, env: env });
+    }
+
+    function serializeModelDefinition() {
+      const capabilities = {};
+      [
+        ['cap-function-calling', 'function_calling'],
+        ['cap-structured-output', 'structured_output'],
+        ['cap-tool-choice', 'tool_choice'],
+        ['cap-reasoning', 'reasoning'],
+        ['cap-stream', 'stream']
+      ].forEach(function(pair) {
+        if (document.getElementById(pair[0]).checked) capabilities[pair[1]] = true;
+      });
+
+      const pricing = {};
+      const pIn  = document.getElementById('pricing-input').value;
+      const pOut = document.getElementById('pricing-output').value;
+      const pCur = document.getElementById('pricing-currency').value.trim();
+      if (pIn !== '')  pricing.input  = parseFloat(pIn);
+      if (pOut !== '') pricing.output = parseFloat(pOut);
+      if (pCur)        pricing.currency = pCur;
+
+      const ctx = {};
+      const cIn  = document.getElementById('context-max-input').value;
+      const cOut = document.getElementById('context-max-output').value;
+      if (cIn !== '')  ctx.max_input_tokens  = parseInt(cIn, 10);
+      if (cOut !== '') ctx.max_output_tokens = parseInt(cOut, 10);
+
+      let interfaces = {};
+      const ifText = document.getElementById('interfaces-json').value.trim();
+      if (ifText) {
+        try { interfaces = JSON.parse(ifText); } catch(e) {}
+      }
+
+      const def = {};
+      if (Object.keys(capabilities).length) def.capabilities = capabilities;
+      if (Object.keys(pricing).length)      def.pricing      = pricing;
+      if (Object.keys(ctx).length)          def.context      = ctx;
+      if (Object.keys(interfaces).length)   def.interfaces   = interfaces;
+
+      document.getElementById('model-definition-json').value = JSON.stringify(def);
+    }
+
+    // ---- chevron toggle on advanced settings ----
+    const advCollapse = document.getElementById('advanced-settings');
+    const advChevron = document.getElementById('advanced-chevron');
+    if (advCollapse && advChevron) {
+      advCollapse.addEventListener('show.bs.collapse', function() {
+        advChevron.classList.add('rd-rotate-180');
+      });
+      advCollapse.addEventListener('hide.bs.collapse', function() {
+        advChevron.classList.remove('rd-rotate-180');
+      });
+    }
+
+    // ---- event handlers ----
+    document.querySelector('.js-add-arg').addEventListener('click', function() {
+      const input = document.getElementById('new-arg-input');
+      const val = input.value.trim();
+      if (!val) return;
+      document.getElementById('args-container').appendChild(makeArgTag(val));
+      input.value = '';
+    });
+    document.getElementById('new-arg-input').addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') { e.preventDefault(); document.querySelector('.js-add-arg').click(); }
+    });
+
+    document.querySelector('.js-add-kwarg').addEventListener('click', function() {
+      document.getElementById('kwargs-container').appendChild(makeKvRow('', ''));
+    });
+    document.querySelector('.js-add-env').addEventListener('click', function() {
+      document.getElementById('env-container').appendChild(makeKvRow('', ''));
+    });
+
+    document.getElementById('args-container').addEventListener('click', function(e) {
+      const btn = e.target.closest('.js-remove-arg');
+      if (btn) btn.closest('.c-tag-item').remove();
+    });
+    ['kwargs-container', 'env-container'].forEach(function(id) {
+      document.getElementById(id).addEventListener('click', function(e) {
+        const btn = e.target.closest('.js-remove-kv');
+        if (btn) btn.closest('.c-kv-row').remove();
+      });
+    });
+
+    document.getElementById('deploy-form').addEventListener('submit', function() {
+      serializeParameters();
+      serializeModelDefinition();
+    });
+
+    // ---- bootstrap from preset ----
+    initParametersUI(PRESET_PARAMETERS);
+    initModelDefinitionUI(PRESET_MODEL_DEFINITION);
+  })();
+  </script>
+</body>
+</html>

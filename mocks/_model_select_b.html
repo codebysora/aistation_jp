@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="../static/css/bootstrap.min.css">
+  <link rel="stylesheet" href="../static/font/bootstrap-icons.css">
+  <link rel="stylesheet" href="../static/css/style.css">
+  <title>案B (先方仕様) — Model Select Mock</title>
+  <style>
+    /* ===== mock shell ===== */
+    body { background: var(--bs-body-bg); }
+    .mock-shell { max-width: 1200px; margin: 0 auto; padding: 1.5rem 1.5rem 4rem; }
+    .mock-banner {
+      background: rgba(13, 110, 253, 0.08);
+      border-left: 3px solid var(--bs-primary);
+      padding: 0.75rem 1rem; border-radius: 6px;
+      margin-bottom: 1.25rem; font-size: 0.85rem;
+    }
+    .mock-banner b { color: var(--bs-primary); }
+
+    /* ===== filter chip group ===== */
+    .filter-row { display: flex; flex-wrap: wrap; gap: 1.5rem; margin: 0.75rem 0 1rem; }
+    .filter-row__group { display: flex; flex-direction: column; gap: 0.4rem; }
+    .filter-row__label { font-size: 0.75rem; font-weight: 600; color: var(--bs-secondary-color); }
+    .filter-row__chips { display: flex; flex-wrap: wrap; gap: 0.25rem; }
+
+    /* ===== output modality tab ===== */
+    .nav-tabs--mock { border-bottom: 2px solid var(--bs-border-color-translucent); }
+
+    /* ===== c-model-card variant for partner spec ===== */
+    .c-model-card { display: block; text-decoration: none; }
+    .c-model-card .text-white-50 { color: rgba(255,255,255,0.5) !important; }
+    .c-model-card__name { font-weight: 700; font-size: 0.95rem; color: var(--bs-white); }
+    .c-model-card__resource-badge {
+      flex-shrink: 0; font-size: 0.7rem; font-weight: 600;
+      padding: 0.18rem 0.55rem; border-radius: 4px;
+    }
+
+    /* 5-dot score row */
+    .score-row { display: flex; align-items: center; gap: 0.25rem; }
+    .score-row__label {
+      width: 2.5rem; flex-shrink: 0;
+      font-size: 0.65rem; color: rgba(255,255,255,0.5);
+    }
+    .score-row__dots { display: inline-flex; gap: 0.1rem; }
+    .score-row__dots i { font-size: 0.6rem; }
+    .score-row__value {
+      margin-left: 0.35rem;
+      font-size: 0.75rem; color: rgba(255,255,255,0.5);
+      font-variant-numeric: tabular-nums;
+    }
+    .score-cols {
+      display: flex; gap: 0.75rem;
+      margin: 0.5rem 0 0.875rem;
+    }
+    .score-cols__left, .score-cols__right {
+      display: flex; flex-direction: column; gap: 0.25rem;
+    }
+    .score-cols__right {
+      border-left: 1px solid rgba(255,255,255,0.18);
+      padding-left: 0.75rem;
+    }
+
+    /* modality + capability tags */
+    .tag-row { display: flex; flex-wrap: wrap; gap: 0.25rem; margin-bottom: 0.5rem; }
+    .c-model-card__tag--modality {
+      display: inline-flex; align-items: center; gap: 0.3rem;
+      font-size: 0.75rem;
+    }
+    .c-model-card__tag--modality i { font-size: 0.75rem; }
+    .c-model-card__tag--cap {
+      background-color: rgba(13, 110, 253, 0.18);
+      border-color: rgba(13, 110, 253, 0.4);
+    }
+
+    .c-model-card__context {
+      font-size: 0.7rem; color: rgba(255,255,255,0.5);
+      margin-top: 0.25rem;
+    }
+
+    /* Attribution: source line above grid (②) */
+    .attr-source-line {
+      display: flex; align-items: center; gap: 0.4rem;
+      font-size: 0.75rem; color: var(--bs-secondary-color);
+      margin: -0.25rem 0 0.75rem;
+    }
+    .attr-source-line i.bi-info-circle { font-size: 0.85rem; opacity: 0.7; }
+    .attr-source-line a {
+      color: var(--bs-secondary-color); text-decoration: underline;
+      text-underline-offset: 2px;
+    }
+    .attr-source-line a:hover { color: var(--bs-primary); }
+
+    /* Attribution: page footer (①) */
+    .attr-footer {
+      margin-top: 2rem; padding-top: 1rem;
+      border-top: 1px solid rgba(0,0,0,0.08);
+      font-size: 0.72rem; color: var(--bs-secondary-color);
+      text-align: center;
+    }
+    .attr-footer a { color: var(--bs-secondary-color); text-decoration: underline; }
+  </style>
+</head>
+<body>
+
+<div class="mock-shell">
+
+  <div class="mock-banner">
+    <b>案B (先方仕様モック)</b> — 先方共有の jinja2 サンプル <code>model_select.html</code> を静的版に移植。
+    5-dot 円スコア + 2 カラム + フラット modality タグ + CPU/GPU バッジ。
+    <a href="./_model_select_compare.html" class="ms-2">← 比較に戻る</a>
+  </div>
+
+  <!-- Filter row (mock-only, no JS wiring) -->
+  <div class="filter-row">
+    <div class="filter-row__group">
+      <div class="filter-row__label">Context</div>
+      <div class="filter-row__chips">
+        <button class="btn btn-sm btn-outline-secondary active">Any</button>
+        <button class="btn btn-sm btn-outline-secondary">32k+</button>
+        <button class="btn btn-sm btn-outline-secondary">128k+</button>
+        <button class="btn btn-sm btn-outline-secondary">256k+</button>
+      </div>
+    </div>
+    <div class="filter-row__group">
+      <div class="filter-row__label">Input modality</div>
+      <div class="filter-row__chips">
+        <button class="btn btn-sm btn-outline-secondary active">Any</button>
+        <button class="btn btn-sm btn-outline-secondary"><i class="bi bi-fonts"></i> text</button>
+        <button class="btn btn-sm btn-outline-secondary"><i class="bi bi-image"></i> image</button>
+        <button class="btn btn-sm btn-outline-secondary"><i class="bi bi-mic"></i> audio</button>
+        <button class="btn btn-sm btn-outline-secondary"><i class="bi bi-camera-video"></i> video</button>
+      </div>
+    </div>
+    <div class="filter-row__group">
+      <div class="filter-row__label">Publisher</div>
+      <div class="filter-row__chips" id="filter-developers"></div>
+    </div>
+    <div class="filter-row__group">
+      <div class="filter-row__label">License</div>
+      <div class="filter-row__chips" id="filter-licenses"></div>
+    </div>
+  </div>
+
+  <!-- Output modality tabs -->
+  <ul class="nav nav-tabs nav-tabs--mock gap-1 mb-3">
+    <li class="nav-item">
+      <button class="nav-link active px-3 py-2" data-output="text">Text</button>
+    </li>
+    <li class="nav-item">
+      <button class="nav-link px-3 py-2" data-output="embedding">Embedding</button>
+    </li>
+  </ul>
+
+  <!-- Attribution: source line (② primary) -->
+  <div class="attr-source-line">
+    <i class="bi bi-info-circle"></i>
+    <span>ベンチマーク値（Int / Cod / Mat / Spd / TTFT）の出典:</span>
+    <a href="https://artificialanalysis.ai/" target="_blank" rel="noopener">
+      Artificial Analysis <i class="bi bi-box-arrow-up-right"></i>
+    </a>
+  </div>
+
+  <!-- Card grid -->
+  <div class="row row-cols-1 row-cols-md-2 g-3" id="card-grid"></div>
+
+  <!-- Attribution: footer (① secondary) -->
+  <footer class="attr-footer">
+    Performance data provided by
+    <a href="https://artificialanalysis.ai/" target="_blank" rel="noopener">Artificial Analysis ↗</a>
+  </footer>
+
+</div>
+
+<script src="./_preset_data.js"></script>
+<script>
+/**
+ * 案B レンダラ — partner の model_select.html / score_row macro を移植。
+ *   value/max_val*5 を切り捨てで塗り数決定。invert=true で TTFT 反転。
+ */
+function scoreRowHTML(label, value, color, max_val, invert) {
+  if (value == null) return '';
+  max_val = max_val || 20;
+  invert = !!invert;
+  var ratio = invert
+    ? (5 - (value / max_val) * 5)
+    : (value / max_val) * 5;
+  var filled = Math.max(0, Math.min(5, Math.floor(ratio)));
+  var dots = '';
+  for (var i = 0; i < 5; i++) {
+    dots += '<i class="bi ' + (i < filled ? 'bi-circle-fill' : 'bi-circle') + ' ' + color + '"></i>';
+  }
+  return '<div class="score-row">' +
+    '<span class="score-row__label">' + label + '</span>' +
+    '<span class="score-row__dots">' + dots + '</span>' +
+    '<span class="score-row__value">' + value + '</span>' +
+    '</div>';
+}
+
+function modalityIconHTML(m) {
+  var map = {
+    text: 'bi-fonts', image: 'bi-image',
+    audio: 'bi-mic', video: 'bi-camera-video'
+  };
+  return '<i class="bi ' + (map[m] || 'bi-circle') + '"></i>';
+}
+
+function formatInt(n) { return Number(n).toLocaleString(); }
+
+function renderCard(p) {
+  var html = '';
+  html += '<div class="col">';
+  html += '  <a href="../deploy_model_form.html?model=' + encodeURIComponent(p.id) + '" class="c-model-card p-4 h-100 d-block">';
+
+  // Row 1: name + resource badge
+  html += '    <div class="d-flex justify-content-between align-items-start mb-1">';
+  html += '      <span class="c-model-card__name">' + p.id + '</span>';
+  var badgeBg = p.resource_type === 'CPU' ? 'bg-secondary' : 'bg-primary';
+  html += '      <span class="badge ' + badgeBg + ' ms-2 c-model-card__resource-badge">' + p.resource_type + '</span>';
+  html += '    </div>';
+
+  // Row 2: developer
+  html += '    <div class="text-white-50 small mb-2">' + p.developer + '</div>';
+
+  // Row 3: 2-column scores
+  html += '    <div class="score-cols">';
+  html += '      <div class="score-cols__left">';
+  html += scoreRowHTML('Int', p.intelligence_index, 'text-info', 20);
+  html += scoreRowHTML('Cod', p.coding_index, 'text-warning', 20);
+  html += scoreRowHTML('Mat', p.math_index, 'text-success', 20);
+  html += '      </div>';
+  html += '      <div class="score-cols__right">';
+  html += scoreRowHTML('Spd', p.median_output_tokens_per_second, 'text-primary', 400);
+  html += scoreRowHTML('TTFT', p.ttft, 'text-danger', 5, true);
+  html += '      </div>';
+  html += '    </div>';
+
+  // Row 4: modality + capability tags
+  html += '    <div class="tag-row">';
+  for (var i = 0; i < p.input_modalities.length; i++) {
+    var m = p.input_modalities[i];
+    html += '<span class="c-model-card__tag c-model-card__tag--modality">' + modalityIconHTML(m) + ' ' + m + '</span>';
+  }
+  if (p.capabilities && p.capabilities.tool_use) {
+    html += '<span class="c-model-card__tag c-model-card__tag--cap">tool use</span>';
+  }
+  html += '    </div>';
+
+  // Row 5: context
+  if (p.max_input_tokens != null) {
+    html += '    <div class="c-model-card__context">context ' + formatInt(p.max_input_tokens) + ' tokens</div>';
+  }
+
+  html += '  </a>';
+  html += '</div>';
+  return html;
+}
+
+(function init() {
+  var presets = window.PresetData.list;
+
+  // Render filter chips for developers / licenses
+  var devs = window.PresetData.getDevelopers(presets);
+  var lics = window.PresetData.getLicenses(presets);
+  var devHTML = '<button class="btn btn-sm btn-outline-secondary active">Any</button>';
+  for (var i = 0; i < devs.length; i++) {
+    devHTML += '<button class="btn btn-sm btn-outline-secondary">' + devs[i] + '</button>';
+  }
+  document.getElementById('filter-developers').innerHTML = devHTML;
+  var licHTML = '<button class="btn btn-sm btn-outline-secondary active">Any</button>';
+  for (var j = 0; j < lics.length; j++) {
+    licHTML += '<button class="btn btn-sm btn-outline-secondary">' + lics[j] + '</button>';
+  }
+  document.getElementById('filter-licenses').innerHTML = licHTML;
+
+  // Render cards
+  var grid = document.getElementById('card-grid');
+  var html = '';
+  for (var k = 0; k < presets.length; k++) {
+    html += renderCard(presets[k]);
+  }
+  grid.innerHTML = html;
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html class="h-100" lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="./static/css/bootstrap.min.css">
+  <link rel="stylesheet" href="./static/css/bootstrap-table.min.css">
+  <link rel="stylesheet" href="./static/font/bootstrap-icons.css">
+  <link rel="stylesheet" href="./static/css/style.css">
+  <title>AIStation Dashboard - Deploy Model Form</title>
+</head>
+<body class="h-100">
+
+  <!-- Header -->
+  <header>
+    <nav class="navbar navbar-expand-sm rd-navbar" aria-label="Top navigation">
+      <a class="navbar-brand" href="./">AIStation Dashboard</a>
+      <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item">
+            <a href="#" class="rd-nav-user">
+              <span class="rd-nav-user__badge">Admin</span>
+              <i class="bi bi-person-circle" aria-hidden="true"></i> admin@fixstars.com
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="#" class="rd-nav-logout"><i class="bi bi-box-arrow-right" aria-hidden="true"></i> Logout</a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+  </header>
+
+  <div class="d-flex rd-main-container">
+
+    <!-- Sidebar -->
+    <nav class="rd-sidebar" aria-label="Main navigation">
+      <ul class="nav flex-column m-0">
+        <li class="rd-sidebar__section-label">Admin</li>
+        <li class="nav-item"><a class="nav-link" href="./keys.html"><i class="bi bi-key" aria-hidden="true"></i> API Keys</a></li>
+        <li class="nav-item"><a class="nav-link" href="./teams.html"><i class="bi bi-people" aria-hidden="true"></i> Teams</a></li>
+        <li class="nav-item"><a class="nav-link" href="#"><i class="bi bi-clock-history" aria-hidden="true"></i> Histories</a></li>
+        <li><div class="rd-sidebar__separator"></div></li>
+        <li class="rd-sidebar__separator-label">Management</li>
+        <li class="nav-item"><a class="nav-link active" href="./model_settings.html"><i class="bi bi-robot" aria-hidden="true"></i> Model management</a></li>
+        <li class="nav-item"><a class="nav-link" href="./team_management.html"><i class="bi bi-diagram-3" aria-hidden="true"></i> Team management</a></li>
+        <li class="nav-item"><a class="nav-link" href="./user_management.html"><i class="bi bi-person" aria-hidden="true"></i> User management</a></li>
+        <li class="nav-item"><a class="nav-link" href="./mail_settings.html"><i class="bi bi-envelope" aria-hidden="true"></i> Mail settings</a></li>
+      </ul>
+    </nav>
+
+    <!-- Content -->
+    <main class="rd-content bg-body">
+
+      <!-- Breadcrumb -->
+      <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb mb-0">
+          <li class="breadcrumb-item">
+            <a href="./model_settings.html">Model management</a>
+          </li>
+          <li class="breadcrumb-item active" aria-current="page">Model deploy</li>
+        </ol>
+      </nav>
+
+      <div class="rd-card">
+        <div class="rd-card__body d-flex flex-column overflow-hidden">
+
+          <!-- Engine header (fixed) -->
+          <div class="rd-form-model-header">
+            Deploy for vllm v0.14.0
+          </div>
+
+          <form action="/model/deploy" method="POST" class="d-flex flex-column rd-form-min-h-0">
+            <input type="hidden" name="csrf_token" id="csrf_token_deploy" value="">
+
+            <!-- Scrollable form area -->
+            <div class="overflow-y-auto rd-form-scroll">
+
+              <!-- model_source -->
+              <div class="c-form-row">
+                <div class="c-form-row__label">
+                  <label for="model_source" class="fw-bold">model_source</label>
+                  <div class="text-danger small mt-1">*Required</div>
+                </div>
+                <div class="c-form-row__field">
+                  <input type="text" class="c-form-field" id="model_source" name="model_source" value="Qwen/Qwen3-0.6B" placeholder="Qwen/Qwen3-0.6B">
+                  <div class="c-form-annotation">Model source URI (e.g., 'Qwen/Qwen3-0.6B').</div>
+                </div>
+              </div>
+
+              <!-- model_name -->
+              <div class="c-form-row">
+                <div class="c-form-row__label">
+                  <label for="model_name" class="fw-bold">model_name</label>
+                  <div class="text-danger small mt-1">*Required</div>
+                </div>
+                <div class="c-form-row__field">
+                  <input type="text" class="c-form-field" id="model_name" name="model_name" value="qwen3-0.6b-cpu" placeholder="qwen3-0.6b-cpu">
+                  <div class="c-form-annotation">Display name for the model. Defaults to preset name, please makes it unique.</div>
+                </div>
+              </div>
+
+              <!-- Advanced settings accordion -->
+              <div class="c-advanced-toggle"
+                   data-bs-toggle="collapse"
+                   data-bs-target="#advanced-settings"
+                   aria-expanded="false"
+                   aria-controls="advanced-settings"
+                   id="advanced-toggle">
+                <span>Advanced settings</span>
+                <i class="bi bi-chevron-down" id="advanced-chevron"></i>
+              </div>
+
+              <div class="collapse" id="advanced-settings">
+                <!-- CPU count -->
+                <div class="c-form-row">
+                  <div class="c-form-row__label">
+                    <label for="cpu_count" class="fw-bold">CPU count</label>
+                  </div>
+                  <div class="c-form-row__field">
+                    <input type="text" class="c-form-field" id="cpu_count" name="cpu_count" value="1" placeholder="1">
+                    <div class="c-form-annotation">Number of cores or GPUs to allocate. Default is 1.</div>
+                  </div>
+                </div>
+
+                <!-- CPU memory(gb) -->
+                <div class="c-form-row">
+                  <div class="c-form-row__label">
+                    <label for="cpu_memory" class="fw-bold">CPU memory(gb)</label>
+                  </div>
+                  <div class="c-form-row__field">
+                    <input type="text" class="c-form-field" id="cpu_memory" name="cpu_memory" value="2" placeholder="2">
+                    <div class="c-form-annotation">Memory limit in GB (CPU: KV cache size, GPU: VRAM size constraint).</div>
+                  </div>
+                </div>
+
+                <!-- Parameters -->
+                <div class="c-form-row">
+                  <div class="c-form-row__label">
+                    <label for="parameters" class="fw-bold">Parameters</label>
+                  </div>
+                  <div class="c-form-row__field">
+                    <textarea class="c-form-textarea" id="parameters" name="parameters">{
+  "args": {
+  }
+}</textarea>
+                    <div class="c-form-annotation">Additional engine parameters in JSON format.</div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- Cancel / Submit buttons -->
+            <div class="d-flex justify-content-end gap-3 py-4 pe-4 border-top flex-shrink-0">
+              <button type="button" class="btn btn-light rd-btn-action border-0 js-back-to-model-select">
+                <i class="bi bi-x" aria-hidden="true"></i> Cancel
+              </button>
+              <button type="submit" class="btn btn-success rd-btn-action border-0">
+                <i class="bi bi-plus-circle" aria-hidden="true"></i> Submit
+              </button>
+            </div>
+
+          </form>
+
+        </div>
+      </div>
+
+    </main>
+
+  </div>
+
+  <script src="./static/js/jquery-3.7.1.min.js"></script>
+  <script src="./static/js/bootstrap.bundle.min.js"></script>
+  <script src="./static/js/bootstrap-table.min.js"></script>
+  <script src="./static/js/app.js"></script>
+</body>
+</html>

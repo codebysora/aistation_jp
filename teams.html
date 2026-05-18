@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html class="h-100" lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="./static/css/bootstrap.min.css">
+  <link rel="stylesheet" href="./static/css/bootstrap-table.min.css">
+  <link rel="stylesheet" href="./static/font/bootstrap-icons.css">
+  <link rel="stylesheet" href="./static/css/style.css">
+  <title>AIStation Dashboard - Teams</title>
+</head>
+<body class="h-100">
+
+  <!-- Header -->
+  <header>
+    <nav class="navbar navbar-expand-sm rd-navbar" aria-label="Top navigation">
+      <a class="navbar-brand" href="./">AIStation Dashboard</a>
+      <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item">
+            <a href="#" class="rd-nav-user">
+              <span class="rd-nav-user__badge">Admin</span>
+              <i class="bi bi-person-circle" aria-hidden="true"></i> root
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="#" class="rd-nav-logout"><i class="bi bi-box-arrow-right" aria-hidden="true"></i> Logout</a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+  </header>
+
+  <div class="d-flex rd-main-container">
+
+    <!-- Sidebar -->
+    <nav class="rd-sidebar" aria-label="Main navigation">
+      <ul class="nav flex-column m-0">
+        <li class="rd-sidebar__section-label">Admin</li>
+        <li class="nav-item"><a class="nav-link" href="./keys.html"><i class="bi bi-key" aria-hidden="true"></i> API Keys</a></li>
+        <li class="nav-item"><a class="nav-link active" href="./teams.html"><i class="bi bi-people" aria-hidden="true"></i> Teams</a></li>
+        <li class="nav-item"><a class="nav-link" href="#"><i class="bi bi-clock-history" aria-hidden="true"></i> Histories</a></li>
+        <li><div class="rd-sidebar__separator"></div></li>
+        <li class="rd-sidebar__separator-label">Management</li>
+        <li class="nav-item"><a class="nav-link" href="./model_settings.html"><i class="bi bi-robot" aria-hidden="true"></i> Model management</a></li>
+        <li class="nav-item"><a class="nav-link" href="./team_management.html"><i class="bi bi-diagram-3" aria-hidden="true"></i> Team management</a></li>
+        <li class="nav-item"><a class="nav-link" href="./user_management.html"><i class="bi bi-person" aria-hidden="true"></i> User management</a></li>
+        <li class="nav-item"><a class="nav-link" href="./mail_settings.html"><i class="bi bi-envelope" aria-hidden="true"></i> Mail settings</a></li>
+      </ul>
+    </nav>
+
+    <!-- Content -->
+    <main class="rd-content bg-body">
+      <div class="rd-card rd-fade-in">
+        <div class="rd-card__header">
+          <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0">
+              <li class="breadcrumb-item active" aria-current="page">Teams</li>
+            </ol>
+          </nav>
+        </div>
+        <div class="rd-card__body">
+          <div class="rd-table-responsive">
+          <table class="table table-borderless table-hover table-striped table-sm" id="teams-table"
+            data-unique-id="team_id" data-toggle="table"
+            data-pagination="true" data-search="true"
+            data-data='[{"team_id":"bd3c0513-6d7d-40ee-a2c9-25c3b0ab42df","tpm_limit":null,"rpm_limit":null,"updated_at":"2026-02-05T03:57:32.603000Z","created_at":"2025-11-17T02:12:55.311000Z","members":["c752937e-a181-47c6-9486-36fbc75c02a1","f3bfa63f-baf9-4bbb-9953-257b0e892a5c","b1dee176-d64f-4d02-8f94-1c2f7c3a3a0d","002557bc-fae5-4f1f-94fa-da6856f5828d","58e97e79-b4d8-489f-be1a-ba55436781ad","5de3a756-b494-45a2-8389-df7ed02fff9f","bda973a8-b16d-400f-982a-0394166fc46b","fbdb2785-fe08-47c9-9b36-b189fee25430"],"team_name":"default","member_count":8,"team_role":"owner"},{"team_id":"159320b6-b244-46b1-8b9b-a32bb19528d9","tpm_limit":null,"rpm_limit":null,"updated_at":"2026-02-13T06:45:28.156000Z","created_at":"2025-11-17T02:27:00.411000Z","members":["c752937e-a181-47c6-9486-36fbc75c02a1","58e97e79-b4d8-489f-be1a-ba55436781ad","002557bc-fae5-4f1f-94fa-da6856f5828d","b1dee176-d64f-4d02-8f94-1c2f7c3a3a0d","5de3a756-b494-45a2-8389-df7ed02fff9f","bda973a8-b16d-400f-982a-0394166fc46b"],"team_name":"sample","member_count":6,"team_role":"owner"},{"team_id":"adceede4-0923-4b2d-97af-48071c6124ed","tpm_limit":500000,"rpm_limit":120,"updated_at":"2026-03-10T08:00:00.000000Z","created_at":"2025-12-01T10:00:00.000000Z","members":["f3bfa63f-baf9-4bbb-9953-257b0e892a5c","002557bc-fae5-4f1f-94fa-da6856f5828d","c752937e-a181-47c6-9486-36fbc75c02a1","58e97e79-b4d8-489f-be1a-ba55436781ad"],"team_name":"research","member_count":4,"team_role":"owner"},{"team_id":"6abf7d36-975d-4c3c-a9f0-7f8df449c55e","tpm_limit":200000,"rpm_limit":60,"updated_at":"2026-03-12T16:00:00.000000Z","created_at":"2025-12-15T09:00:00.000000Z","members":["58e97e79-b4d8-489f-be1a-ba55436781ad","5de3a756-b494-45a2-8389-df7ed02fff9f","bda973a8-b16d-400f-982a-0394166fc46b"],"team_name":"ml-ops","member_count":3,"team_role":"member"},{"team_id":"e17e408f-396d-401b-ab9a-ff369015f36b","tpm_limit":null,"rpm_limit":null,"updated_at":"2026-03-15T11:00:00.000000Z","created_at":"2026-01-10T08:00:00.000000Z","members":["bda973a8-b16d-400f-982a-0394166fc46b","fbdb2785-fe08-47c9-9b36-b189fee25430","c752937e-a181-47c6-9486-36fbc75c02a1","002557bc-fae5-4f1f-94fa-da6856f5828d","b1dee176-d64f-4d02-8f94-1c2f7c3a3a0d"],"team_name":"platform","member_count":5,"team_role":"member"},{"team_id":"0234a118-6093-40d1-bcfa-a1c75d6d857c","tpm_limit":null,"rpm_limit":null,"updated_at":"2026-03-20T14:00:00.000000Z","created_at":"2026-02-01T09:00:00.000000Z","members":["c752937e-a181-47c6-9486-36fbc75c02a1","b1dee176-d64f-4d02-8f94-1c2f7c3a3a0d","f3bfa63f-baf9-4bbb-9953-257b0e892a5c","002557bc-fae5-4f1f-94fa-da6856f5828d","58e97e79-b4d8-489f-be1a-ba55436781ad","5de3a756-b494-45a2-8389-df7ed02fff9f","bda973a8-b16d-400f-982a-0394166fc46b"],"team_name":"data-science","member_count":7,"team_role":"owner"},{"team_id":"b5a5a4fd-03bc-48a3-8f3d-181705360d3c","tpm_limit":100000,"rpm_limit":30,"updated_at":"2026-03-25T12:00:00.000000Z","created_at":"2026-02-15T07:00:00.000000Z","members":["c752937e-a181-47c6-9486-36fbc75c02a1","a1b2c3d4-e5f6-7890-abcd-ef1234567890"],"team_name":"qa-testing","member_count":2,"team_role":"member"}]'>
+            <thead>
+              <tr>
+                <th data-sortable="true" data-field="team_role" data-formatter="myTeamRoleFormatter">Member Role</th>
+                <th data-sortable="true" data-field="team_name">Team Name</th>
+                <th data-sortable="true" data-field="member_count">Members</th>
+                <th data-sortable="true" data-field="created_at">Created</th>
+                <th data-field="actions" data-formatter="teamActionFormatter">Action</th>
+              </tr>
+            </thead>
+          </table>
+          </div>
+        </div>
+      </div>
+    </main>
+
+  </div>
+
+  <!-- Add Key Modal -->
+  <div class="modal fade" id="key-new-modal" tabindex="-1" aria-labelledby="key-new-modal-label" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered rd-modal rd-modal--big">
+      <div class="modal-content">
+        <div class="modal-header flex-column align-items-start">
+          <h5 class="modal-title" id="key-new-modal-label">Add API Key</h5>
+          <button type="button" class="btn-close ms-auto" data-bs-dismiss="modal" aria-label="Close"></button>
+          <div class="rd-modal__info mt-2 w-100">
+            Team: <span id="key-new-team-name"></span>
+          </div>
+        </div>
+        <form id="key-new-form" action="/key/new" method="POST">
+          <input id="csrf_token_key" name="csrf_token" type="hidden" value="">
+          <input type="hidden" name="team_id" value="" id="key-new-team-id">
+          <div class="modal-body pt-3">
+            <div class="mb-3">
+              <label for="key-name" class="form-label">key_name</label>
+              <input type="text" name="key_name" class="form-control" id="key-name" required>
+            </div>
+            <div class="mb-4">
+              <label for="duration" class="form-label">
+                duration
+                <small class="d-block text-muted mt-1">The duration the key is valid for (e.g., '30d', '1h').</small>
+              </label>
+              <input type="text" name="duration" class="form-control" id="duration">
+            </div>
+            <div class="d-flex justify-content-end gap-3">
+              <button type="button" class="btn btn-light rd-btn-action border-0" data-bs-dismiss="modal">
+                <i class="bi bi-x"></i> Cancel
+              </button>
+              <button type="submit" class="btn btn-success rd-btn-action border-0">
+                <i class="bi bi-check"></i> Submit
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast-container" class="position-fixed top-0 end-0 p-3" style="z-index:1080"></div>
+
+  <script src="./static/js/jquery-3.7.1.min.js"></script>
+  <script src="./static/js/bootstrap.bundle.min.js"></script>
+  <script src="./static/js/bootstrap-table.min.js"></script>
+  <script src="./static/js/app.js"></script>
+</body>
+</html>

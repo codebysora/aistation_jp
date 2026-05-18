@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html class="h-100" lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="./static/css/bootstrap.min.css">
+  <link rel="stylesheet" href="./static/css/bootstrap-table.min.css">
+  <link rel="stylesheet" href="./static/font/bootstrap-icons.css">
+  <link rel="stylesheet" href="./static/css/style.css">
+  <title>AIStation Dashboard - Team Member Edit</title>
+</head>
+<body class="h-100">
+
+  <!-- Header -->
+  <header>
+    <nav class="navbar navbar-expand-sm rd-navbar" aria-label="Top navigation">
+      <a class="navbar-brand" href="./">AIStation Dashboard</a>
+      <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item">
+            <a href="#" class="rd-nav-user">
+              <span class="rd-nav-user__badge rd-nav-user__badge--user">User</span>
+              <i class="bi bi-person-circle" aria-hidden="true"></i> takeshi.miyabe@fixstars.com
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="#" class="rd-nav-logout"><i class="bi bi-box-arrow-right" aria-hidden="true"></i> Logout</a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+  </header>
+
+  <div class="d-flex rd-main-container">
+
+    <!-- Sidebar (User role) -->
+    <nav class="rd-sidebar" aria-label="Main navigation">
+      <ul class="nav flex-column m-0">
+        <li class="nav-item"><a class="nav-link" href="./userRole_keys.html"><i class="bi bi-key" aria-hidden="true"></i> API Keys</a></li>
+        <li class="nav-item"><a class="nav-link active" href="./userRole_teams.html"><i class="bi bi-people" aria-hidden="true"></i> Teams</a></li>
+        <li class="nav-item"><a class="nav-link" href="./userRole_histories.html"><i class="bi bi-clock-history" aria-hidden="true"></i> Histories</a></li>
+        <li class="nav-item"><a class="nav-link" href="./userRole_models.html"><i class="bi bi-robot" aria-hidden="true"></i> Models</a></li>
+        <li class="nav-item"><a class="nav-link" href="./model_catalog.html"><i class="bi bi-grid-3x3-gap" aria-hidden="true"></i> Model Catalog</a></li>
+      </ul>
+    </nav>
+
+    <!-- Content -->
+    <main class="rd-content bg-body">
+      <div class="rd-card">
+        <div class="rd-card__header">
+          <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0">
+              <li class="breadcrumb-item">
+                <a href="./userRole_teams.html">Teams</a>
+              </li>
+              <li class="breadcrumb-item active" aria-current="page">Team Member Edit</li>
+            </ol>
+          </nav>
+        </div>
+        <div class="rd-card__body">
+          <form action="/team/edit" method="POST" novalidate="novalidate">
+            <input name="csrf_token" type="hidden" value="">
+
+            <!-- Team Name -->
+            <div class="mb-4">
+              <label for="team_name" class="form-label fw-bold">
+                <i class="bi bi-diagram-3 me-2" aria-hidden="true"></i>Team Name
+              </label>
+              <input class="form-control bg-light border-0" id="team_name" name="team_name" type="text" value="sample" readonly>
+            </div>
+
+            <!-- Members Table -->
+            <div class="mb-4">
+              <label class="form-label fw-bold mb-3">Members</label>
+              <table class="table table-borderless table-hover table-sm" id="members-table"
+                data-unique-id="user_id" data-toggle="table"
+                data-search="true"
+                data-data='[{"user_id":"c752937e-a181-47c6-9486-36fbc75c02a1","email":"takeshi.miyabe@fixstars.com","team_role":"owner"},{"user_id":"b1dee176-d64f-4d02-8f94-1c2f7c3a3a0d","email":"sato.yuki@fixstars.com","team_role":"member"},{"user_id":"002557bc-fae5-4f1f-94fa-da6856f5828d","email":"tanaka.ken@fixstars.com","team_role":"owner"},{"user_id":"58e97e79-b4d8-489f-be1a-ba55436781ad","email":"suzuki.aoi@fixstars.com","team_role":"member"},{"user_id":"5de3a756-b494-45a2-8389-df7ed02fff9f","email":"yamada.ryo@fixstars.com","team_role":"member"},{"user_id":"bda973a8-b16d-400f-982a-0394166fc46b","email":"nakamura.hana@fixstars.com","team_role":"member"}]'>
+                <thead>
+                  <tr>
+                    <th data-sortable="true" data-field="team_role" data-formatter="teamRoleFormatter">Member Role</th>
+                    <th data-sortable="true" data-field="email">Email</th>
+                    <th data-field="actions">Action</th>
+                  </tr>
+                </thead>
+              </table>
+            </div>
+
+            <!-- Add Members -->
+            <div class="mb-4 pt-3 border-top">
+              <label class="form-label fw-bold mb-3">Add Members</label>
+              <input type="email" id="emailInput" class="d-none" multiple>
+
+              <div class="dropdown">
+                <div class="d-flex flex-wrap align-items-center gap-2 border py-2 px-3 bg-white p-selected-members" aria-expanded="false">
+                  <span class="d-inline-flex align-items-center rounded-pill text-dark c-member-tag">
+                    localtest+2@fixstars.com
+                    <button type="button" class="btn p-0 d-inline-flex align-items-center justify-content-center ms-1" aria-label="Remove">
+                      <i class="bi bi-x-circle text-dark"></i>
+                    </button>
+                  </span>
+                  <span class="d-inline-flex align-items-center rounded-pill text-dark c-member-tag">
+                    localtest+3@fixstars.com
+                    <button type="button" class="btn p-0 d-inline-flex align-items-center justify-content-center ms-1" aria-label="Remove">
+                      <i class="bi bi-x-circle text-dark"></i>
+                    </button>
+                  </span>
+                  <span class="d-inline-flex align-items-center rounded-pill text-dark c-member-tag">
+                    localtest+4@fixstars.com
+                    <button type="button" class="btn p-0 d-inline-flex align-items-center justify-content-center ms-1" aria-label="Remove">
+                      <i class="bi bi-x-circle text-dark"></i>
+                    </button>
+                  </span>
+                </div>
+
+                <div class="dropdown-menu w-100 border-0 rounded-1 bg-white show">
+                  <div class="d-flex align-items-center justify-content-between py-2 px-3 border-bottom">
+                    <label for="members-select" class="form-label fw-bold mb-0 me-3">Member List</label>
+                    <div class="search btn-group">
+                      <input class="form-control search-input bg-white border-light py-2 px-3" type="search" aria-label="Search" placeholder="Search" autocomplete="off">
+                    </div>
+                  </div>
+                  <table class="table table-hover table-sm mb-0 w-100 bg-white" id="members-select"
+                    data-unique-id="user_id" data-toggle="table"
+                    data-search="true"
+                    data-data='[{"user_id":"c752937e-a181-47c6-9486-36fbc75c02a1","email":"takeshi.miyabe@fixstars.com","team_role":"owner"},{"user_id":"b1dee176-d64f-4d02-8f94-1c2f7c3a3a0d","email":"sato.yuki@fixstars.com","team_role":"member"},{"user_id":"002557bc-fae5-4f1f-94fa-da6856f5828d","email":"tanaka.ken@fixstars.com","team_role":"owner"},{"user_id":"58e97e79-b4d8-489f-be1a-ba55436781ad","email":"suzuki.aoi@fixstars.com","team_role":"member"},{"user_id":"5de3a756-b494-45a2-8389-df7ed02fff9f","email":"yamada.ryo@fixstars.com","team_role":"member"},{"user_id":"bda973a8-b16d-400f-982a-0394166fc46b","email":"nakamura.hana@fixstars.com","team_role":"member"},{"user_id":"f3bfa63f-baf9-4bbb-9953-257b0e892a5c","email":"admin@fixstars.com"},{"user_id":"fbdb2785-fe08-47c9-9b36-b189fee25430","email":"kobayashi.dai@fixstars.com"},{"user_id":"a1b2c3d4-e5f6-7890-abcd-ef1234567890","email":"watanabe.mei@fixstars.com"},{"user_id":"11111111-2222-3333-4444-555555555555","email":"ito.shun@fixstars.com"}]'>
+                    <thead>
+                      <tr>
+                        <th data-sortable="true" data-field="email">Email</th>
+                        <th data-sortable="true" data-field="team_role" data-formatter="teamRoleFormatter">Member Role</th>
+                        <th data-field="actions">Action</th>
+                      </tr>
+                    </thead>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            <!-- Role Selection -->
+            <div class="mb-4">
+              <label class="form-label fw-bold mb-3">Member Role</label>
+              <div class="d-flex justify-content-between align-items-center">
+                <ul class="form-control rounded-1 list-unstyled d-inline-flex gap-4 w-auto m-0">
+                  <li>
+                    <input class="form-check-input ms-0" id="role-member" name="role" type="radio" value="member" checked>
+                    <label class="form-check-label ms-1" for="role-member">Member</label>
+                  </li>
+                  <li>
+                    <input class="form-check-input ms-0" id="role-owner" name="role" type="radio" value="owner">
+                    <label class="form-check-label ms-1" for="role-owner">Owner</label>
+                  </li>
+                </ul>
+                <button type="button" class="btn btn-success border-0 d-inline-flex align-items-center gap-1">
+                  <i class="bi bi-plus-circle"></i> Add Members
+                </button>
+              </div>
+            </div>
+
+            <!-- Form Actions -->
+            <div class="d-flex justify-content-end gap-3 pt-3 border-top">
+              <a href="./userRole_teams.html" class="btn btn-light rd-btn-action border-0">
+                <i class="bi bi-x"></i> Cancel
+              </a>
+              <button type="submit" class="btn btn-success rd-btn-action border-0">
+                <i class="bi bi-check"></i> Submit
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </main>
+
+  </div>
+
+  <script src="./static/js/jquery-3.7.1.min.js"></script>
+  <script src="./static/js/bootstrap.bundle.min.js"></script>
+  <script src="./static/js/bootstrap-table.min.js"></script>
+  <script src="./static/js/app.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      var selectedMembersArea = document.querySelector('.p-selected-members');
+      var dropdownMenu = document.querySelector('.dropdown-menu');
+      if (selectedMembersArea && dropdownMenu) {
+        selectedMembersArea.addEventListener('click', function(event) {
+          var removeBtn = event.target.closest('.c-member-tag button[aria-label="Remove"]');
+          if (removeBtn) {
+            var tag = removeBtn.closest('.c-member-tag');
+            if (tag) tag.remove();
+            return;
+          }
+          dropdownMenu.classList.toggle('show');
+          var isExpanded = dropdownMenu.classList.contains('show');
+          selectedMembersArea.setAttribute('aria-expanded', isExpanded);
+        });
+        document.addEventListener('click', function(event) {
+          if (!event.target.closest('.dropdown')) {
+            dropdownMenu.classList.remove('show');
+            selectedMembersArea.setAttribute('aria-expanded', 'false');
+          }
+        });
+      }
+    });
+  </script>
+</body>
+</html>

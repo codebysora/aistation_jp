@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html class="h-100" lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="./static/css/bootstrap.min.css">
+  <link rel="stylesheet" href="./static/font/bootstrap-icons.css">
+  <link rel="stylesheet" href="./static/css/style.css">
+  <title>AIStation Dashboard - Histories</title>
+</head>
+<body class="h-100">
+
+  <!-- Header -->
+  <header>
+    <nav class="navbar navbar-expand-sm rd-navbar" aria-label="Top navigation">
+      <a class="navbar-brand" href="./userRole_index.html">AIStation Dashboard</a>
+      <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item">
+            <a href="#" class="rd-nav-user">
+              <span class="rd-nav-user__badge">User</span>
+              <i class="bi bi-person-circle" aria-hidden="true"></i> takeshi.miyabe@fixstars.com
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="#" class="rd-nav-logout"><i class="bi bi-box-arrow-right" aria-hidden="true"></i> Logout</a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+  </header>
+
+  <div class="d-flex rd-main-container">
+
+    <!-- Sidebar (User role) -->
+    <nav class="rd-sidebar" aria-label="Main navigation">
+      <ul class="nav flex-column m-0">
+        <li class="rd-sidebar__section-label">User</li>
+        <li class="nav-item"><a class="nav-link" href="./userRole_keys.html"><i class="bi bi-key" aria-hidden="true"></i> API Keys</a></li>
+        <li class="nav-item"><a class="nav-link" href="./userRole_teams.html"><i class="bi bi-people" aria-hidden="true"></i> Teams</a></li>
+        <li class="nav-item"><a class="nav-link active" href="./userRole_histories.html"><i class="bi bi-clock-history" aria-hidden="true"></i> Histories</a></li>
+        <li class="nav-item"><a class="nav-link" href="./userRole_models.html"><i class="bi bi-robot" aria-hidden="true"></i> Models</a></li>
+        <li class="nav-item"><a class="nav-link" href="./model_catalog.html"><i class="bi bi-grid-3x3-gap" aria-hidden="true"></i> Model Catalog</a></li>
+      </ul>
+    </nav>
+
+    <!-- Content -->
+    <main class="rd-content bg-body">
+
+      <div class="rd-card rd-fade-in">
+        <div class="rd-card__header">
+          <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0">
+              <li class="breadcrumb-item active" aria-current="page">Histories</li>
+            </ol>
+          </nav>
+        </div>
+        <div class="rd-card__body--padded" style="overflow-y:auto">
+
+          <!-- API Requests (Line chart) -->
+          <h6 class="fw-bold mb-3">API Requests (Last 30 days)</h6>
+          <div class="position-relative" style="min-width:0;height:30vh;min-height:160px">
+            <canvas id="chart-requests"></canvas>
+          </div>
+
+          <hr class="my-4">
+
+          <!-- Token Usage (Bar) + Requests by Model (Doughnut) -->
+          <div class="row g-4">
+            <div class="col-md-7">
+              <h6 class="fw-bold mb-3">Token Usage (Last 30 days)</h6>
+              <div class="position-relative" style="min-width:0;height:28vh;min-height:160px">
+                <canvas id="chart-tokens"></canvas>
+              </div>
+              <hr class="my-4 d-md-none">
+            </div>
+            <div class="col-md-5">
+              <h6 class="fw-bold mb-3">Requests by Model</h6>
+              <div class="position-relative d-flex justify-content-center" style="min-width:0;height:28vh;min-height:160px">
+                <canvas id="chart-models" style="max-width:320px"></canvas>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </main>
+
+  </div>
+
+  <div id="toast-container" class="position-fixed top-0 end-0 p-3" style="z-index:1080"></div>
+
+  <script src="./static/js/jquery-3.7.1.min.js"></script>
+  <script src="./static/js/bootstrap.bundle.min.js"></script>
+  <script src="./static/js/chart.umd.min.js"></script>
+  <script src="./static/js/app.js"></script>
+  <script>
+  $(function () {
+    // --- Mock data: last 30 days ---
+    var labels = [];
+    var requestsData = [];
+    var promptTokens = [];
+    var completionTokens = [];
+    var today = new Date();
+    for (var i = 29; i >= 0; i--) {
+      var d = new Date(today);
+      d.setDate(d.getDate() - i);
+      labels.push((d.getMonth() + 1) + '/' + d.getDate());
+      requestsData.push(Math.floor(Math.random() * 400 + 100));
+      promptTokens.push(Math.floor(Math.random() * 50000 + 20000));
+      completionTokens.push(Math.floor(Math.random() * 30000 + 10000));
+    }
+
+    var chartColors = {
+      primary: 'rgba(15, 102, 220, 1)',
+      primaryLight: 'rgba(15, 102, 220, 0.15)',
+      success: 'rgba(119, 200, 69, 1)',
+      successLight: 'rgba(119, 200, 69, 0.6)',
+      secondary: 'rgba(47, 197, 251, 1)',
+      secondaryLight: 'rgba(47, 197, 251, 0.6)',
+      warning: 'rgba(240, 201, 135, 1)',
+      danger: 'rgba(218, 80, 80, 1)',
+      grey: 'rgba(80, 80, 80, 0.15)'
+    };
+
+    var defaultOptions = {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { labels: { font: { size: 12 }, usePointStyle: true, pointStyle: 'circle' } }
+      },
+      scales: {
+        x: { grid: { display: false }, ticks: { font: { size: 11 }, maxTicksLimit: 10 } },
+        y: { grid: { color: chartColors.grey }, ticks: { font: { size: 11 } }, beginAtZero: true }
+      }
+    };
+
+    // 1. API Requests - Line chart
+    new Chart(document.getElementById('chart-requests'), {
+      type: 'line',
+      data: {
+        labels: labels,
+        datasets: [{
+          label: 'Requests',
+          data: requestsData,
+          borderColor: chartColors.primary,
+          backgroundColor: chartColors.primaryLight,
+          fill: true,
+          tension: 0.3,
+          pointRadius: 2,
+          pointHoverRadius: 5
+        }]
+      },
+      options: defaultOptions
+    });
+
+    // 2. Token Usage - Stacked Bar chart
+    new Chart(document.getElementById('chart-tokens'), {
+      type: 'bar',
+      data: {
+        labels: labels,
+        datasets: [
+          {
+            label: 'Prompt Tokens',
+            data: promptTokens,
+            backgroundColor: chartColors.secondaryLight,
+            borderRadius: 2
+          },
+          {
+            label: 'Completion Tokens',
+            data: completionTokens,
+            backgroundColor: chartColors.successLight,
+            borderRadius: 2
+          }
+        ]
+      },
+      options: Object.assign({}, defaultOptions, {
+        scales: Object.assign({}, defaultOptions.scales, {
+          x: Object.assign({}, defaultOptions.scales.x, { stacked: true }),
+          y: Object.assign({}, defaultOptions.scales.y, { stacked: true })
+        })
+      })
+    });
+
+    // 3. Requests by Model - Doughnut chart
+    new Chart(document.getElementById('chart-models'), {
+      type: 'doughnut',
+      data: {
+        labels: ['sample-Qwen3-0.6b-gpu', 'llama3-8b-instruct', 'mistral-7b-v0.3', 'phi-3-mini-128k', 'Other'],
+        datasets: [{
+          data: [3200, 2100, 1800, 1200, 700],
+          backgroundColor: [
+            chartColors.primary,
+            chartColors.secondary,
+            chartColors.success,
+            chartColors.warning,
+            chartColors.danger
+          ]
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: 'bottom',
+            labels: { font: { size: 11 }, usePointStyle: true, pointStyle: 'circle', padding: 16 }
+          }
+        }
+      }
+    });
+  });
+  </script>
+</body>
+</html>

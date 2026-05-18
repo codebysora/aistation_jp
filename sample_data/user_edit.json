@@ -1,0 +1,6 @@
+[
+  {"team_id": "bd3c0513-6d7d-40ee-a2c9-25c3b0ab42df", "team_name": "default", "team_role": "member", "member_count": 8, "created_at": "2025-11-17T02:12:55.311000Z"},
+  {"team_id": "159320b6-b244-46b1-8b9b-a32bb19528d9", "team_name": "sample", "team_role": "owner", "member_count": 6, "created_at": "2025-11-17T02:27:00.411000Z"},
+  {"team_id": "adceede4-0923-4b2d-97af-48071c6124ed", "team_name": "research", "team_role": "member", "member_count": 4, "created_at": "2025-12-01T10:00:00.000000Z"},
+  {"team_id": "e17e408f-396d-401b-ab9a-ff369015f36b", "team_name": "platform", "team_role": "member", "member_count": 5, "created_at": "2026-01-10T08:00:00.000000Z"}
+]

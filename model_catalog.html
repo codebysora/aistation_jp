@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html class="h-100" lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="./static/css/bootstrap.min.css">
+  <link rel="stylesheet" href="./static/css/bootstrap-table.min.css">
+  <link rel="stylesheet" href="./static/font/bootstrap-icons.css">
+  <link rel="stylesheet" href="./static/css/style.css">
+  <title>AIStation Dashboard - Model Catalog</title>
+</head>
+<body class="h-100">
+
+  <!-- Header -->
+  <header>
+    <nav class="navbar navbar-expand-sm rd-navbar" aria-label="Top navigation">
+      <a class="navbar-brand" href="./userRole_index.html">AIStation Dashboard</a>
+      <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item">
+            <a href="#" class="rd-nav-user">
+              <span class="rd-nav-user__badge">User</span>
+              <i class="bi bi-person-circle" aria-hidden="true"></i> takeshi.miyabe@fixstars.com
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="#" class="rd-nav-logout"><i class="bi bi-box-arrow-right" aria-hidden="true"></i> Logout</a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+  </header>
+
+  <div class="d-flex rd-main-container">
+
+    <!-- Sidebar (User role) -->
+    <nav class="rd-sidebar" aria-label="Main navigation">
+      <ul class="nav flex-column m-0">
+        <li class="rd-sidebar__section-label">User</li>
+        <li class="nav-item"><a class="nav-link" href="./userRole_keys.html"><i class="bi bi-key" aria-hidden="true"></i> API Keys</a></li>
+        <li class="nav-item"><a class="nav-link" href="./userRole_teams.html"><i class="bi bi-people" aria-hidden="true"></i> Teams</a></li>
+        <li class="nav-item"><a class="nav-link" href="./userRole_histories.html"><i class="bi bi-clock-history" aria-hidden="true"></i> Histories</a></li>
+        <li class="nav-item"><a class="nav-link" href="./userRole_models.html"><i class="bi bi-robot" aria-hidden="true"></i> Models</a></li>
+        <li class="nav-item"><a class="nav-link active" href="./model_catalog.html"><i class="bi bi-grid-3x3-gap" aria-hidden="true"></i> Model Catalog</a></li>
+      </ul>
+    </nav>
+
+    <!-- Content -->
+    <main class="rd-content bg-body">
+      <div class="rd-card">
+        <div class="rd-card__header">
+          <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0">
+              <li class="breadcrumb-item active" aria-current="page">Model Catalog</li>
+            </ol>
+          </nav>
+        </div>
+        <div class="rd-card__body" style="display:flex;flex-direction:column;overflow:hidden">
+
+          <!-- Modality tabs (output modality: Text vs Embeddings) -->
+          <div class="catalog-modality-tabs" role="tablist" aria-label="Output modality">
+            <button type="button" class="catalog-modality-tab active" role="tab" aria-selected="true" data-modality="text">
+              <i class="bi bi-fonts" aria-hidden="true"></i> Text
+            </button>
+            <button type="button" class="catalog-modality-tab" role="tab" aria-selected="false" data-modality="embeddings">
+              <i class="bi bi-diagram-3" aria-hidden="true"></i> Embeddings
+            </button>
+          </div>
+
+          <!-- Toolbar: Search + Sort + View Toggle + Filter Toggle -->
+          <div class="catalog-toolbar">
+            <div class="catalog-toolbar__left">
+              <div class="catalog-search">
+                <i class="bi bi-search catalog-search__icon" aria-hidden="true"></i>
+                <input type="search" id="catalog-search" class="catalog-search__input" placeholder="Search models...">
+              </div>
+            </div>
+            <div class="catalog-toolbar__right">
+              <div class="catalog-sort">
+                <label class="catalog-sort__label" for="catalog-sort-select">Sort:</label>
+                <select id="catalog-sort-select" class="catalog-sort__select">
+                  <option value="name">Name</option>
+                  <option value="size_desc">Size (large first)</option>
+                  <option value="size_asc">Size (small first)</option>
+                  <option value="context_desc">Context (large first)</option>
+                  <option value="mmlu_desc">MMLU (high first)</option>
+                  <option value="humaneval_desc">HumanEval (high first)</option>
+                  <option value="math_desc">MATH (high first)</option>
+                  <option value="released_desc">Newest first</option>
+                </select>
+              </div>
+              <div class="catalog-view-toggle" role="group" aria-label="View mode">
+                <button class="catalog-view-btn active" data-view="card" title="Card view">
+                  <i class="bi bi-grid-3x2-gap"></i>
+                </button>
+                <button class="catalog-view-btn" data-view="list" title="List view">
+                  <i class="bi bi-list-ul"></i>
+                </button>
+                <button class="catalog-view-btn" data-view="detail" title="Detail view">
+                  <i class="bi bi-table"></i>
+                </button>
+              </div>
+              <button class="catalog-filter-toggle" id="catalog-filter-toggle" type="button" aria-expanded="false">
+                <i class="bi bi-funnel"></i> Filter
+              </button>
+            </div>
+          </div>
+
+          <!-- Filter Panel (collapsible) -->
+          <div class="catalog-filter-panel" id="catalog-filter-panel" style="display:none">
+
+            <!-- Group A: Filter-out requirements (drop models that don't meet) -->
+            <div class="catalog-filter-group">
+              <div class="catalog-filter-group__title"><i class="bi bi-funnel-fill"></i> 必須条件 (満たさないモデルを除外)</div>
+              <div class="catalog-filter-grid">
+                <div class="catalog-filter-section">
+                  <div class="catalog-filter-section__title">Input modality</div>
+                  <div class="catalog-filter-section__body">
+                    <label class="catalog-checkbox"><input type="checkbox" data-filter="interfaces" value="vision"> <span>Vision</span></label>
+                    <label class="catalog-checkbox"><input type="checkbox" data-filter="interfaces" value="audio"> <span>Audio</span></label>
+                    <label class="catalog-checkbox"><input type="checkbox" data-filter="interfaces" value="image_gen"> <span>Image Gen</span></label>
+                  </div>
+                </div>
+                <div class="catalog-filter-section">
+                  <div class="catalog-filter-section__title">Publisher region</div>
+                  <div class="catalog-filter-section__body">
+                    <label class="catalog-checkbox"><input type="checkbox" data-filter="publisher_region" value="western"> <span>Western (欧米)</span></label>
+                    <label class="catalog-checkbox"><input type="checkbox" data-filter="publisher_region" value="chinese"> <span>Chinese (中国)</span></label>
+                    <label class="catalog-checkbox"><input type="checkbox" data-filter="publisher_region" value="other"> <span>Other</span></label>
+                  </div>
+                </div>
+                <div class="catalog-filter-section">
+                  <div class="catalog-filter-section__title">License</div>
+                  <div class="catalog-filter-section__body">
+                    <label class="catalog-checkbox"><input type="checkbox" data-filter="license" value="Apache 2.0"> <span>Apache 2.0</span></label>
+                    <label class="catalog-checkbox"><input type="checkbox" data-filter="license" value="MIT"> <span>MIT</span></label>
+                    <label class="catalog-checkbox"><input type="checkbox" data-filter="license" value="Llama"> <span>Llama</span></label>
+                    <label class="catalog-checkbox"><input type="checkbox" data-filter="license" value="Gemma"> <span>Gemma</span></label>
+                    <label class="catalog-checkbox"><input type="checkbox" data-filter="license" value="CC-BY-NC"> <span>CC-BY-NC</span></label>
+                  </div>
+                </div>
+                <div class="catalog-filter-section catalog-filter-section--wide">
+                  <div class="catalog-filter-section__title">Min context</div>
+                  <div class="catalog-filter-section__body">
+                    <div class="catalog-range">
+                      <input type="range" id="filter-context" class="catalog-range__input" min="0" max="5" step="1" value="0">
+                      <div class="catalog-range__labels">
+                        <span>All</span><span>4K</span><span>8K</span><span>32K</span><span>128K</span><span>1M+</span>
+                      </div>
+                      <div class="catalog-range__value" id="filter-context-val">All</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Group B: Compare conditions (refine candidates) -->
+            <div class="catalog-filter-group">
+              <div class="catalog-filter-group__title"><i class="bi bi-bar-chart"></i> 比較条件 (候補内の絞り込み)</div>
+              <div class="catalog-filter-grid">
+                <div class="catalog-filter-section">
+                  <div class="catalog-filter-section__title">Capabilities</div>
+                  <div class="catalog-filter-section__body">
+                    <label class="catalog-switch">
+                      <input type="checkbox" data-filter="capability" value="reasoning">
+                      <span class="catalog-switch__track"><span class="catalog-switch__thumb"></span></span>
+                      <span>Reasoning</span>
+                    </label>
+                    <label class="catalog-switch">
+                      <input type="checkbox" data-filter="capability" value="tool_use">
+                      <span class="catalog-switch__track"><span class="catalog-switch__thumb"></span></span>
+                      <span>Tool Use</span>
+                    </label>
+                    <label class="catalog-switch">
+                      <input type="checkbox" data-filter="capability" value="vision">
+                      <span class="catalog-switch__track"><span class="catalog-switch__thumb"></span></span>
+                      <span>Vision</span>
+                    </label>
+                    <label class="catalog-switch">
+                      <input type="checkbox" data-filter="capability" value="code">
+                      <span class="catalog-switch__track"><span class="catalog-switch__thumb"></span></span>
+                      <span>Code</span>
+                    </label>
+                  </div>
+                </div>
+                <div class="catalog-filter-section catalog-filter-section--wide">
+                  <div class="catalog-filter-section__title">Model size</div>
+                  <div class="catalog-filter-section__body">
+                    <div class="catalog-range">
+                      <input type="range" id="filter-size" class="catalog-range__input" min="0" max="4" step="1" value="0">
+                      <div class="catalog-range__labels">
+                        <span>All</span><span>&lt;3B</span><span>3-13B</span><span>13-70B</span><span>70B+</span>
+                      </div>
+                      <div class="catalog-range__value" id="filter-size-val">All</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="catalog-filter-actions">
+              <button type="button" class="btn btn-sm btn-outline-secondary" id="catalog-filter-reset">
+                <i class="bi bi-x-circle"></i> Reset Filters
+              </button>
+            </div>
+          </div>
+
+          <!-- Active filter chips (always visible when any filter is on) -->
+          <div class="catalog-active-filters" id="catalog-active-filters"></div>
+
+          <!-- Model Content Area -->
+          <div class="catalog-content" id="catalog-content">
+            <!-- Rendered by JS -->
+          </div>
+
+        </div>
+      </div>
+    </main>
+
+  </div>
+
+  <!-- Model Detail Modal (for card/list view clicks) -->
+  <div class="modal fade" id="model-detail-modal" tabindex="-1" aria-labelledby="model-detail-modal-label" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered rd-modal rd-modal--big">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="model-detail-modal-label">Model Detail</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body pt-0" id="model-detail-body"></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="./static/js/jquery-3.7.1.min.js"></script>
+  <script src="./static/js/bootstrap.bundle.min.js"></script>
+  <script src="./static/js/bootstrap-table.min.js"></script>
+  <script src="./static/js/app.js"></script>
+  <script src="./static/js/catalog.js"></script>
+</body>
+</html>
