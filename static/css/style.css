@@ -510,26 +510,37 @@ table.rd-table--border tbody tr:last-child {
     gap: 0.625rem;
     padding: 0.5rem 0.75rem;
     border-radius: var(--rd-radius-sm);
+    font-size: 0.95rem;
     font-weight: 500;
-    color: var(--bs-body-color);
+    color: #6c757d;
     transition: background-color var(--rd-transition), color var(--rd-transition);
 }
 
 .rd-add-model-dropdown__menu .dropdown-item .bi {
     font-size: 1rem;
-    color: var(--bs-tertiary);
+    color: #6c757d;
     flex-shrink: 0;
+    transition: color var(--rd-transition);
 }
 
 .rd-add-model-dropdown__menu .dropdown-item:hover,
 .rd-add-model-dropdown__menu .dropdown-item:focus {
     background-color: var(--rd-bg-subtle);
-    color: var(--bs-body-color);
+    color: #000;
+}
+
+.rd-add-model-dropdown__menu .dropdown-item:hover .bi,
+.rd-add-model-dropdown__menu .dropdown-item:focus .bi {
+    color: #000;
 }
 
 .rd-add-model-dropdown__menu .dropdown-item:active {
     background-color: var(--bs-gray-200);
-    color: var(--bs-body-color);
+    color: #000;
+}
+
+.rd-add-model-dropdown__menu .dropdown-item:active .bi {
+    color: #000;
 }
 
 /* ============================================
