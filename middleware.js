@@ -11,7 +11,7 @@ export const config = {
 
 export default function middleware(request) {
   const USER = (typeof process !== 'undefined' && process.env.BASIC_AUTH_USER) || 'preview';
-  const PASS = (typeof process !== 'undefined' && process.env.BASIC_AUTH_PASS) || 'changeme';
+  const PASS = (typeof process !== 'undefined' && process.env.BASIC_AUTH_PASS) || 'aistation2026';
 
   const auth = request.headers.get('authorization');
   if (auth) {
