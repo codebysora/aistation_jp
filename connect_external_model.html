@@ -12,6 +12,7 @@
 </head>
 <body class="h-100">
 
+  <!-- Header -->
   <header>
     <nav class="navbar navbar-expand-sm rd-navbar" aria-label="Top navigation">
       <a class="navbar-brand" href="./">AIStation Dashboard</a>
@@ -36,6 +37,7 @@
 
   <div class="d-flex rd-main-container">
 
+    <!-- Sidebar -->
     <nav class="rd-sidebar" aria-label="Main navigation">
       <ul class="nav flex-column m-0">
         <li class="rd-sidebar__section-label">Admin</li>
@@ -51,6 +53,7 @@
       </ul>
     </nav>
 
+    <!-- Content -->
     <main class="rd-content bg-body">
 
       <div class="rd-card rd-fade-in">
@@ -64,50 +67,59 @@
             </ol>
           </nav>
         </div>
-        <div class="rd-card__body d-flex flex-column overflow-hidden p-0">
+        <div class="rd-card__body d-flex flex-column overflow-hidden">
 
-          <h1 class="rd-external-model-title">Connect external model</h1>
-
-          <ul class="nav nav-tabs rd-external-model-tabs" id="external-model-tabs" role="tablist">
-            <li class="nav-item" role="presentation">
-              <button class="nav-link active" id="tab-openai" data-bs-toggle="tab" data-bs-target="#pane-openai" type="button" role="tab" aria-controls="pane-openai" aria-selected="true">OpenAI Compatible</button>
-            </li>
-            <li class="nav-item" role="presentation">
-              <button class="nav-link" id="tab-bedrock" data-bs-toggle="tab" data-bs-target="#pane-bedrock" type="button" role="tab" aria-controls="pane-bedrock" aria-selected="false">Bedrock</button>
-            </li>
-            <li class="nav-item" role="presentation">
-              <button class="nav-link" id="tab-bedrock-converse" data-bs-toggle="tab" data-bs-target="#pane-bedrock-converse" type="button" role="tab" aria-controls="pane-bedrock-converse" aria-selected="false">Bedrock Converse</button>
-            </li>
-          </ul>
+          <!-- Page header -->
+          <div class="rd-form-model-header" id="external-model-header">
+            Connect external model
+          </div>
 
           <form action="/model/external" method="POST" class="d-flex flex-column rd-form-min-h-0" id="external-model-form" novalidate>
             <input type="hidden" name="provider" id="external-provider" value="openai_compatible">
 
-            <div class="tab-content overflow-y-auto rd-form-scroll rd-external-model-scroll">
+            <!-- Provider tabs -->
+            <div class="catalog-modality-header catalog-modality-header--form">
+              <div class="catalog-modality-tabs" id="external-model-tabs" role="tablist" aria-label="Provider type">
+                <button type="button" class="catalog-modality-tab active" id="tab-openai" data-bs-toggle="tab" data-bs-target="#pane-openai" role="tab" aria-controls="pane-openai" aria-selected="true">
+                  OpenAI Compatible
+                </button>
+                <button type="button" class="catalog-modality-tab" id="tab-bedrock" data-bs-toggle="tab" data-bs-target="#pane-bedrock" role="tab" aria-controls="pane-bedrock" aria-selected="false">
+                  Bedrock
+                </button>
+                <button type="button" class="catalog-modality-tab" id="tab-bedrock-converse" data-bs-toggle="tab" data-bs-target="#pane-bedrock-converse" role="tab" aria-controls="pane-bedrock-converse" aria-selected="false">
+                  Bedrock Converse
+                </button>
+              </div>
+            </div>
+
+            <!-- Scrollable form area -->
+            <div class="overflow-y-auto rd-form-scroll">
+              <div class="tab-content">
+
               <div class="tab-pane fade show active" id="pane-openai" role="tabpanel" aria-labelledby="tab-openai" tabindex="0">
                 <div class="c-form-row">
                   <div class="c-form-row__label">
-                    <label for="openai_display_name" class="fw-bold">Display name</label>
+                    <label for="openai_display_name" class="fw-bold">display_name</label>
                     <div class="text-danger small mt-1">*Required</div>
                   </div>
                   <div class="c-form-row__field">
-                    <input type="text" class="c-form-field" id="openai_display_name" name="display_name" placeholder="model_name" required>
-                    <div class="c-form-annotation">User-facing name for the model.</div>
+                    <input type="text" class="c-form-field" id="openai_display_name" name="display_name" placeholder="display_name" required>
+                    <div class="c-form-annotation">Display name for the model. Please make it unique.</div>
                   </div>
                 </div>
                 <div class="c-form-row">
                   <div class="c-form-row__label">
-                    <label for="openai_model_id" class="fw-bold">Model ID</label>
+                    <label for="openai_model_id" class="fw-bold">model_id</label>
                     <div class="text-danger small mt-1">*Required</div>
                   </div>
                   <div class="c-form-row__field">
-                    <input type="text" class="c-form-field" id="openai_model_id" name="model_id" placeholder="model" required>
+                    <input type="text" class="c-form-field" id="openai_model_id" name="model_id" placeholder="model_id" required>
                     <div class="c-form-annotation">Model identifier on the provider side.</div>
                   </div>
                 </div>
                 <div class="c-form-row">
                   <div class="c-form-row__label">
-                    <label for="openai_api_base" class="fw-bold">api_base</label>
+                    <label for="openai_api_base" class="fw-semibold">api_base</label>
                   </div>
                   <div class="c-form-row__field">
                     <input type="text" class="c-form-field" id="openai_api_base" name="api_base" placeholder="api_base">
@@ -116,7 +128,7 @@
                 </div>
                 <div class="c-form-row">
                   <div class="c-form-row__label">
-                    <label for="openai_api_key" class="fw-bold">api_key</label>
+                    <label for="openai_api_key" class="fw-semibold">api_key</label>
                   </div>
                   <div class="c-form-row__field">
                     <input type="password" class="c-form-field" id="openai_api_key" name="api_key" placeholder="api_key" autocomplete="off">
@@ -128,27 +140,27 @@
               <div class="tab-pane fade" id="pane-bedrock" role="tabpanel" aria-labelledby="tab-bedrock" tabindex="0">
                 <div class="c-form-row">
                   <div class="c-form-row__label">
-                    <label for="bedrock_display_name" class="fw-bold">Display name</label>
+                    <label for="bedrock_display_name" class="fw-bold">display_name</label>
                     <div class="text-danger small mt-1">*Required</div>
                   </div>
                   <div class="c-form-row__field">
-                    <input type="text" class="c-form-field js-external-field" id="bedrock_display_name" data-field="display_name" placeholder="model_name" disabled>
-                    <div class="c-form-annotation">User-facing name for the model.</div>
+                    <input type="text" class="c-form-field js-external-field" id="bedrock_display_name" data-field="display_name" placeholder="display_name" disabled>
+                    <div class="c-form-annotation">Display name for the model. Please make it unique.</div>
                   </div>
                 </div>
                 <div class="c-form-row">
                   <div class="c-form-row__label">
-                    <label for="bedrock_model_id" class="fw-bold">Model ID</label>
+                    <label for="bedrock_model_id" class="fw-bold">model_id</label>
                     <div class="text-danger small mt-1">*Required</div>
                   </div>
                   <div class="c-form-row__field">
-                    <input type="text" class="c-form-field js-external-field" id="bedrock_model_id" data-field="model_id" placeholder="model" disabled>
+                    <input type="text" class="c-form-field js-external-field" id="bedrock_model_id" data-field="model_id" placeholder="model_id" disabled>
                     <div class="c-form-annotation">Model identifier on the provider side.</div>
                   </div>
                 </div>
                 <div class="c-form-row">
                   <div class="c-form-row__label">
-                    <label for="bedrock_aws_region" class="fw-bold">aws_region</label>
+                    <label for="bedrock_aws_region" class="fw-semibold">aws_region</label>
                   </div>
                   <div class="c-form-row__field">
                     <input type="text" class="c-form-field js-external-field" id="bedrock_aws_region" data-field="aws_region" placeholder="aws_region" disabled>
@@ -157,7 +169,7 @@
                 </div>
                 <div class="c-form-row">
                   <div class="c-form-row__label">
-                    <label for="bedrock_aws_access_key_id" class="fw-bold">aws_access_key_id</label>
+                    <label for="bedrock_aws_access_key_id" class="fw-semibold">aws_access_key_id</label>
                   </div>
                   <div class="c-form-row__field">
                     <input type="text" class="c-form-field js-external-field" id="bedrock_aws_access_key_id" data-field="aws_access_key_id" placeholder="aws_access_key_id" disabled>
@@ -166,7 +178,7 @@
                 </div>
                 <div class="c-form-row">
                   <div class="c-form-row__label">
-                    <label for="bedrock_aws_secret_access_key" class="fw-bold">aws_secret_access_key</label>
+                    <label for="bedrock_aws_secret_access_key" class="fw-semibold">aws_secret_access_key</label>
                   </div>
                   <div class="c-form-row__field">
                     <input type="password" class="c-form-field js-external-field" id="bedrock_aws_secret_access_key" data-field="aws_secret_access_key" placeholder="aws_secret_access_key" autocomplete="off" disabled>
@@ -178,27 +190,27 @@
               <div class="tab-pane fade" id="pane-bedrock-converse" role="tabpanel" aria-labelledby="tab-bedrock-converse" tabindex="0">
                 <div class="c-form-row">
                   <div class="c-form-row__label">
-                    <label for="bedrock_converse_display_name" class="fw-bold">Display name</label>
+                    <label for="bedrock_converse_display_name" class="fw-bold">display_name</label>
                     <div class="text-danger small mt-1">*Required</div>
                   </div>
                   <div class="c-form-row__field">
-                    <input type="text" class="c-form-field js-external-field" id="bedrock_converse_display_name" data-field="display_name" placeholder="model_name" disabled>
-                    <div class="c-form-annotation">User-facing name for the model.</div>
+                    <input type="text" class="c-form-field js-external-field" id="bedrock_converse_display_name" data-field="display_name" placeholder="display_name" disabled>
+                    <div class="c-form-annotation">Display name for the model. Please make it unique.</div>
                   </div>
                 </div>
                 <div class="c-form-row">
                   <div class="c-form-row__label">
-                    <label for="bedrock_converse_model_id" class="fw-bold">Model ID</label>
+                    <label for="bedrock_converse_model_id" class="fw-bold">model_id</label>
                     <div class="text-danger small mt-1">*Required</div>
                   </div>
                   <div class="c-form-row__field">
-                    <input type="text" class="c-form-field js-external-field" id="bedrock_converse_model_id" data-field="model_id" placeholder="model" disabled>
+                    <input type="text" class="c-form-field js-external-field" id="bedrock_converse_model_id" data-field="model_id" placeholder="model_id" disabled>
                     <div class="c-form-annotation">Model identifier on the provider side.</div>
                   </div>
                 </div>
                 <div class="c-form-row">
                   <div class="c-form-row__label">
-                    <label for="bedrock_converse_aws_region" class="fw-bold">aws_region</label>
+                    <label for="bedrock_converse_aws_region" class="fw-semibold">aws_region</label>
                   </div>
                   <div class="c-form-row__field">
                     <input type="text" class="c-form-field js-external-field" id="bedrock_converse_aws_region" data-field="aws_region" placeholder="aws_region" disabled>
@@ -207,7 +219,7 @@
                 </div>
                 <div class="c-form-row">
                   <div class="c-form-row__label">
-                    <label for="bedrock_converse_aws_access_key_id" class="fw-bold">aws_access_key_id</label>
+                    <label for="bedrock_converse_aws_access_key_id" class="fw-semibold">aws_access_key_id</label>
                   </div>
                   <div class="c-form-row__field">
                     <input type="text" class="c-form-field js-external-field" id="bedrock_converse_aws_access_key_id" data-field="aws_access_key_id" placeholder="aws_access_key_id" disabled>
@@ -216,7 +228,7 @@
                 </div>
                 <div class="c-form-row">
                   <div class="c-form-row__label">
-                    <label for="bedrock_converse_aws_secret_access_key" class="fw-bold">aws_secret_access_key</label>
+                    <label for="bedrock_converse_aws_secret_access_key" class="fw-semibold">aws_secret_access_key</label>
                   </div>
                   <div class="c-form-row__field">
                     <input type="password" class="c-form-field js-external-field" id="bedrock_converse_aws_secret_access_key" data-field="aws_secret_access_key" placeholder="aws_secret_access_key" autocomplete="off" disabled>
@@ -224,16 +236,20 @@
                   </div>
                 </div>
               </div>
+
+              </div>
             </div>
 
+            <!-- Cancel / Submit buttons -->
             <div class="d-flex justify-content-end gap-3 py-4 pe-4 border-top flex-shrink-0">
               <button type="button" class="rd-btn-secondary" id="external-model-cancel">
                 <i class="bi bi-x" aria-hidden="true"></i> Cancel
               </button>
-              <button type="submit" class="btn btn-success rd-btn-action border-0">
+              <button type="submit" class="rd-btn-primary">
                 <i class="bi bi-plus-circle" aria-hidden="true"></i> Submit
               </button>
             </div>
+
           </form>
 
         </div>

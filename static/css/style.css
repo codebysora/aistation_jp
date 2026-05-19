@@ -948,28 +948,6 @@ button.cpybtn:hover {
     background: transparent;
 }
 
-/* Connect external model */
-.rd-external-model-title {
-    font-size: 1.25rem;
-    font-weight: 700;
-    margin: 0;
-    padding: 1rem 1.5rem 0;
-}
-
-.rd-external-model-tabs {
-    padding: 0 1.5rem;
-    margin-top: 0.25rem;
-}
-
-.rd-external-model-tabs.nav-tabs .nav-link.active {
-    color: var(--bs-body-color);
-    border-bottom-color: var(--bs-body-color);
-}
-
-.rd-external-model-scroll {
-    max-height: calc(100vh - var(--rd-header-height) - 260px);
-}
-
 /* ============================================
    Deploy Model Form
    ============================================ */
@@ -3598,6 +3576,11 @@ table.rd-table--border > tbody > tr {
 .catalog-modality-header__action {
     flex-shrink: 0;
     margin-bottom: 0.35rem;
+}
+
+/* Provider tabs inside deploy / external model forms */
+.catalog-modality-header--form {
+    padding-top: 0;
 }
 
 .catalog-modality-tabs {
