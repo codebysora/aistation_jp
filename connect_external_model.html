@@ -69,10 +69,12 @@
         </div>
         <div class="rd-card__body d-flex flex-column overflow-hidden">
 
-          <!-- Page header -->
           <div class="rd-form-model-header" id="external-model-header">
             Connect external model
           </div>
+          <p class="rd-external-form-intro mb-0">
+            Register a model hosted outside AIStation. Choose a provider type, then enter the connection details below.
+          </p>
 
           <form action="/model/external" method="POST" class="d-flex flex-column rd-form-min-h-0" id="external-model-form" novalidate>
             <input type="hidden" name="provider" id="external-provider" value="openai_compatible">
@@ -80,162 +82,145 @@
             <!-- Provider tabs -->
             <div class="catalog-modality-header catalog-modality-header--form">
               <div class="catalog-modality-tabs" id="external-model-tabs" role="tablist" aria-label="Provider type">
-                <button type="button" class="catalog-modality-tab active" id="tab-openai" data-bs-toggle="tab" data-bs-target="#pane-openai" role="tab" aria-controls="pane-openai" aria-selected="true">
-                  OpenAI Compatible
+                <button type="button" class="catalog-modality-tab active" id="tab-openai" role="tab" aria-selected="true" data-provider="openai_compatible">
+                  <i class="bi bi-plug" aria-hidden="true"></i> OpenAI Compatible
                 </button>
-                <button type="button" class="catalog-modality-tab" id="tab-bedrock" data-bs-toggle="tab" data-bs-target="#pane-bedrock" role="tab" aria-controls="pane-bedrock" aria-selected="false">
-                  Bedrock
+                <button type="button" class="catalog-modality-tab" id="tab-bedrock" role="tab" aria-selected="false" data-provider="bedrock">
+                  <i class="bi bi-cloud" aria-hidden="true"></i> Bedrock
                 </button>
-                <button type="button" class="catalog-modality-tab" id="tab-bedrock-converse" data-bs-toggle="tab" data-bs-target="#pane-bedrock-converse" role="tab" aria-controls="pane-bedrock-converse" aria-selected="false">
-                  Bedrock Converse
+                <button type="button" class="catalog-modality-tab" id="tab-bedrock-converse" role="tab" aria-selected="false" data-provider="bedrock_converse">
+                  <i class="bi bi-chat-left-text" aria-hidden="true"></i> Bedrock Converse
                 </button>
               </div>
             </div>
 
             <!-- Scrollable form area -->
             <div class="overflow-y-auto rd-form-scroll">
-              <div class="tab-content">
+              <div id="pane-external-form">
 
-              <div class="tab-pane fade show active" id="pane-openai" role="tabpanel" aria-labelledby="tab-openai" tabindex="0">
-                <div class="c-form-row">
-                  <div class="c-form-row__label">
-                    <label for="openai_display_name" class="fw-bold">display_name</label>
-                    <div class="text-danger small mt-1">*Required</div>
+                  <div class="rd-external-provider-hint" id="provider-hint" role="status">
+                    <i class="bi bi-info-circle rd-external-provider-hint__icon" aria-hidden="true"></i>
+                    <div class="rd-external-provider-hint__body">
+                      <div class="rd-external-provider-hint__title" id="provider-hint-title">OpenAI Compatible</div>
+                      <div id="provider-hint-text">Connect to any OpenAI-compatible HTTP API (vLLM, Ollama, LiteLLM, etc.). Set <code>api_base</code> to your server URL.</div>
+                    </div>
                   </div>
-                  <div class="c-form-row__field">
-                    <input type="text" class="c-form-field" id="openai_display_name" name="display_name" placeholder="display_name" required>
-                    <div class="c-form-annotation">Display name for the model. Please make it unique.</div>
-                  </div>
-                </div>
-                <div class="c-form-row">
-                  <div class="c-form-row__label">
-                    <label for="openai_model_id" class="fw-bold">model_id</label>
-                    <div class="text-danger small mt-1">*Required</div>
-                  </div>
-                  <div class="c-form-row__field">
-                    <input type="text" class="c-form-field" id="openai_model_id" name="model_id" placeholder="model_id" required>
-                    <div class="c-form-annotation">Model identifier on the provider side.</div>
-                  </div>
-                </div>
-                <div class="c-form-row">
-                  <div class="c-form-row__label">
-                    <label for="openai_api_base" class="fw-semibold">api_base</label>
-                  </div>
-                  <div class="c-form-row__field">
-                    <input type="text" class="c-form-field" id="openai_api_base" name="api_base" placeholder="api_base">
-                    <div class="c-form-annotation">Base URL of the inference server.</div>
-                  </div>
-                </div>
-                <div class="c-form-row">
-                  <div class="c-form-row__label">
-                    <label for="openai_api_key" class="fw-semibold">api_key</label>
-                  </div>
-                  <div class="c-form-row__field">
-                    <input type="password" class="c-form-field" id="openai_api_key" name="api_key" placeholder="api_key" autocomplete="off">
-                    <div class="c-form-annotation">API key for authentication.</div>
-                  </div>
-                </div>
-              </div>
 
-              <div class="tab-pane fade" id="pane-bedrock" role="tabpanel" aria-labelledby="tab-bedrock" tabindex="0">
-                <div class="c-form-row">
-                  <div class="c-form-row__label">
-                    <label for="bedrock_display_name" class="fw-bold">display_name</label>
-                    <div class="text-danger small mt-1">*Required</div>
+                  <!-- Model -->
+                  <div class="c-form-row c-form-row--section-header">
+                    <div class="c-form-row__label">
+                      <div class="fw-bold">Model</div>
+                    </div>
+                    <div class="c-form-row__field">
+                      <div class="c-form-annotation">How this model appears in AIStation and on the provider.</div>
+                    </div>
                   </div>
-                  <div class="c-form-row__field">
-                    <input type="text" class="c-form-field js-external-field" id="bedrock_display_name" data-field="display_name" placeholder="display_name" disabled>
-                    <div class="c-form-annotation">Display name for the model. Please make it unique.</div>
-                  </div>
-                </div>
-                <div class="c-form-row">
-                  <div class="c-form-row__label">
-                    <label for="bedrock_model_id" class="fw-bold">model_id</label>
-                    <div class="text-danger small mt-1">*Required</div>
-                  </div>
-                  <div class="c-form-row__field">
-                    <input type="text" class="c-form-field js-external-field" id="bedrock_model_id" data-field="model_id" placeholder="model_id" disabled>
-                    <div class="c-form-annotation">Model identifier on the provider side.</div>
-                  </div>
-                </div>
-                <div class="c-form-row">
-                  <div class="c-form-row__label">
-                    <label for="bedrock_aws_region" class="fw-semibold">aws_region</label>
-                  </div>
-                  <div class="c-form-row__field">
-                    <input type="text" class="c-form-field js-external-field" id="bedrock_aws_region" data-field="aws_region" placeholder="aws_region" disabled>
-                    <div class="c-form-annotation">AWS region for Bedrock.</div>
-                  </div>
-                </div>
-                <div class="c-form-row">
-                  <div class="c-form-row__label">
-                    <label for="bedrock_aws_access_key_id" class="fw-semibold">aws_access_key_id</label>
-                  </div>
-                  <div class="c-form-row__field">
-                    <input type="text" class="c-form-field js-external-field" id="bedrock_aws_access_key_id" data-field="aws_access_key_id" placeholder="aws_access_key_id" disabled>
-                    <div class="c-form-annotation">AWS access key ID for authentication.</div>
-                  </div>
-                </div>
-                <div class="c-form-row">
-                  <div class="c-form-row__label">
-                    <label for="bedrock_aws_secret_access_key" class="fw-semibold">aws_secret_access_key</label>
-                  </div>
-                  <div class="c-form-row__field">
-                    <input type="password" class="c-form-field js-external-field" id="bedrock_aws_secret_access_key" data-field="aws_secret_access_key" placeholder="aws_secret_access_key" autocomplete="off" disabled>
-                    <div class="c-form-annotation">AWS secret access key for authentication.</div>
-                  </div>
-                </div>
-              </div>
 
-              <div class="tab-pane fade" id="pane-bedrock-converse" role="tabpanel" aria-labelledby="tab-bedrock-converse" tabindex="0">
-                <div class="c-form-row">
-                  <div class="c-form-row__label">
-                    <label for="bedrock_converse_display_name" class="fw-bold">display_name</label>
-                    <div class="text-danger small mt-1">*Required</div>
+                  <div class="c-form-row">
+                    <div class="c-form-row__label">
+                      <label for="display_name" class="fw-bold">display_name</label>
+                      <div class="text-danger small mt-1">*Required</div>
+                    </div>
+                    <div class="c-form-row__field">
+                      <input type="text" class="c-form-field" id="display_name" name="display_name" placeholder="display_name" required autocomplete="off">
+                      <div class="c-form-annotation">Display name for the model. Please make it unique.</div>
+                    </div>
                   </div>
-                  <div class="c-form-row__field">
-                    <input type="text" class="c-form-field js-external-field" id="bedrock_converse_display_name" data-field="display_name" placeholder="display_name" disabled>
-                    <div class="c-form-annotation">Display name for the model. Please make it unique.</div>
+
+                  <div class="c-form-row">
+                    <div class="c-form-row__label">
+                      <label for="model_id" class="fw-bold">model_id</label>
+                      <div class="text-danger small mt-1">*Required</div>
+                    </div>
+                    <div class="c-form-row__field">
+                      <input type="text" class="c-form-field" id="model_id" name="model_id" placeholder="model_id" required autocomplete="off">
+                      <div class="c-form-annotation">Model identifier on the provider side (e.g. <code>gpt-4o</code>, <code>anthropic.claude-3-sonnet</code>).</div>
+                    </div>
                   </div>
-                </div>
-                <div class="c-form-row">
-                  <div class="c-form-row__label">
-                    <label for="bedrock_converse_model_id" class="fw-bold">model_id</label>
-                    <div class="text-danger small mt-1">*Required</div>
+
+                  <!-- OpenAI connection -->
+                  <div class="js-provider-section" data-providers="openai_compatible">
+                    <div class="c-form-row c-form-row--section-header">
+                      <div class="c-form-row__label">
+                        <div class="fw-bold">Connection</div>
+                      </div>
+                      <div class="c-form-row__field">
+                        <div class="c-form-annotation">Endpoint and credentials for the OpenAI-compatible API.</div>
+                      </div>
+                    </div>
+
+                    <div class="c-form-row">
+                      <div class="c-form-row__label">
+                        <label for="api_base" class="fw-semibold">api_base</label>
+                      </div>
+                      <div class="c-form-row__field">
+                        <input type="url" class="c-form-field" id="api_base" name="api_base" placeholder="https://api.example.com/v1" autocomplete="off">
+                        <div class="c-form-annotation">Base URL of the inference server (include <code>/v1</code> if required).</div>
+                      </div>
+                    </div>
+
+                    <div class="c-form-row">
+                      <div class="c-form-row__label">
+                        <label for="api_key" class="fw-semibold">api_key</label>
+                      </div>
+                      <div class="c-form-row__field">
+                        <div class="c-form-field-password">
+                          <input type="password" class="c-form-field js-password-input" id="api_key" name="api_key" placeholder="api_key" autocomplete="off">
+                          <button type="button" class="c-form-field-password__toggle js-password-toggle" aria-label="Show password" data-target="api_key">
+                            <i class="bi bi-eye" aria-hidden="true"></i>
+                          </button>
+                        </div>
+                        <div class="c-form-annotation">API key for authentication (optional if the server does not require one).</div>
+                      </div>
+                    </div>
                   </div>
-                  <div class="c-form-row__field">
-                    <input type="text" class="c-form-field js-external-field" id="bedrock_converse_model_id" data-field="model_id" placeholder="model_id" disabled>
-                    <div class="c-form-annotation">Model identifier on the provider side.</div>
+
+                  <!-- AWS credentials -->
+                  <div class="js-provider-section" data-providers="bedrock,bedrock_converse" hidden>
+                    <div class="c-form-row c-form-row--section-header">
+                      <div class="c-form-row__label">
+                        <div class="fw-bold">AWS credentials</div>
+                      </div>
+                      <div class="c-form-row__field">
+                        <div class="c-form-annotation" id="aws-section-hint">IAM credentials for Amazon Bedrock in your AWS account.</div>
+                      </div>
+                    </div>
+
+                    <div class="c-form-row">
+                      <div class="c-form-row__label">
+                        <label for="aws_region" class="fw-semibold">aws_region</label>
+                      </div>
+                      <div class="c-form-row__field">
+                        <input type="text" class="c-form-field" id="aws_region" name="aws_region" placeholder="us-east-1" autocomplete="off" disabled>
+                        <div class="c-form-annotation">AWS region where Bedrock is enabled (e.g. <code>us-east-1</code>, <code>ap-northeast-1</code>).</div>
+                      </div>
+                    </div>
+
+                    <div class="c-form-row">
+                      <div class="c-form-row__label">
+                        <label for="aws_access_key_id" class="fw-semibold">aws_access_key_id</label>
+                      </div>
+                      <div class="c-form-row__field">
+                        <input type="text" class="c-form-field" id="aws_access_key_id" name="aws_access_key_id" placeholder="aws_access_key_id" autocomplete="off" disabled>
+                        <div class="c-form-annotation">AWS access key ID for authentication.</div>
+                      </div>
+                    </div>
+
+                    <div class="c-form-row">
+                      <div class="c-form-row__label">
+                        <label for="aws_secret_access_key" class="fw-semibold">aws_secret_access_key</label>
+                      </div>
+                      <div class="c-form-row__field">
+                        <div class="c-form-field-password">
+                          <input type="password" class="c-form-field js-password-input" id="aws_secret_access_key" name="aws_secret_access_key" placeholder="aws_secret_access_key" autocomplete="off" disabled>
+                          <button type="button" class="c-form-field-password__toggle js-password-toggle" aria-label="Show password" data-target="aws_secret_access_key" disabled>
+                            <i class="bi bi-eye" aria-hidden="true"></i>
+                          </button>
+                        </div>
+                        <div class="c-form-annotation">AWS secret access key for authentication.</div>
+                      </div>
+                    </div>
                   </div>
-                </div>
-                <div class="c-form-row">
-                  <div class="c-form-row__label">
-                    <label for="bedrock_converse_aws_region" class="fw-semibold">aws_region</label>
-                  </div>
-                  <div class="c-form-row__field">
-                    <input type="text" class="c-form-field js-external-field" id="bedrock_converse_aws_region" data-field="aws_region" placeholder="aws_region" disabled>
-                    <div class="c-form-annotation">AWS region for Bedrock Converse.</div>
-                  </div>
-                </div>
-                <div class="c-form-row">
-                  <div class="c-form-row__label">
-                    <label for="bedrock_converse_aws_access_key_id" class="fw-semibold">aws_access_key_id</label>
-                  </div>
-                  <div class="c-form-row__field">
-                    <input type="text" class="c-form-field js-external-field" id="bedrock_converse_aws_access_key_id" data-field="aws_access_key_id" placeholder="aws_access_key_id" disabled>
-                    <div class="c-form-annotation">AWS access key ID for authentication.</div>
-                  </div>
-                </div>
-                <div class="c-form-row">
-                  <div class="c-form-row__label">
-                    <label for="bedrock_converse_aws_secret_access_key" class="fw-semibold">aws_secret_access_key</label>
-                  </div>
-                  <div class="c-form-row__field">
-                    <input type="password" class="c-form-field js-external-field" id="bedrock_converse_aws_secret_access_key" data-field="aws_secret_access_key" placeholder="aws_secret_access_key" autocomplete="off" disabled>
-                    <div class="c-form-annotation">AWS secret access key for authentication.</div>
-                  </div>
-                </div>
-              </div>
 
               </div>
             </div>
@@ -266,55 +251,106 @@
   <script src="./static/js/app.js"></script>
   <script>
   (function () {
-    var PROVIDERS = {
-      'pane-openai': 'openai_compatible',
-      'pane-bedrock': 'bedrock',
-      'pane-bedrock-converse': 'bedrock_converse'
-    };
-
-    var REQUIRED_FIELDS = {
-      'pane-openai': ['openai_display_name', 'openai_model_id'],
-      'pane-bedrock': ['bedrock_display_name', 'bedrock_model_id'],
-      'pane-bedrock-converse': ['bedrock_converse_display_name', 'bedrock_converse_model_id']
+    var PROVIDER_HINTS = {
+      openai_compatible: {
+        title: 'OpenAI Compatible',
+        text: 'Connect to any OpenAI-compatible HTTP API (vLLM, Ollama, LiteLLM, etc.). Set <code>api_base</code> to your server URL.'
+      },
+      bedrock: {
+        title: 'Amazon Bedrock',
+        text: 'Use the standard Bedrock runtime API. Provide the model ID from AWS and credentials for the target region.'
+      },
+      bedrock_converse: {
+        title: 'Bedrock Converse',
+        text: 'Use the Bedrock Converse API for multi-turn chat and streaming. Same AWS credentials as standard Bedrock.'
+      }
     };
 
     var tabList = document.getElementById('external-model-tabs');
     var providerInput = document.getElementById('external-provider');
     var form = document.getElementById('external-model-form');
+    var hintTitle = document.getElementById('provider-hint-title');
+    var hintText = document.getElementById('provider-hint-text');
+    var awsSectionHint = document.getElementById('aws-section-hint');
 
-    function setActivePane(paneId) {
-      document.querySelectorAll('.tab-pane').forEach(function (pane) {
-        var isActive = pane.id === paneId;
-        pane.querySelectorAll('.js-external-field, input[name]').forEach(function (el) {
-          if (el.type === 'hidden') return;
-          el.disabled = !isActive;
-          if (isActive && el.dataset.field) {
-            el.name = el.dataset.field;
-          } else if (!isActive && el.dataset.field) {
+    function setProvider(provider) {
+      providerInput.value = provider;
+
+      var hint = PROVIDER_HINTS[provider] || PROVIDER_HINTS.openai_compatible;
+      hintTitle.textContent = hint.title;
+      hintText.innerHTML = hint.text;
+
+      if (awsSectionHint) {
+        awsSectionHint.textContent = provider === 'bedrock_converse'
+          ? 'IAM credentials for Bedrock Converse in your AWS account.'
+          : 'IAM credentials for Amazon Bedrock in your AWS account.';
+      }
+
+      document.querySelectorAll('.js-provider-section').forEach(function (section) {
+        var providers = (section.dataset.providers || '').split(',');
+        var show = providers.indexOf(provider) !== -1;
+        section.hidden = !show;
+        section.querySelectorAll('input, button.js-password-toggle').forEach(function (el) {
+          if (el.classList.contains('js-password-toggle')) {
+            el.disabled = !show;
+            return;
+          }
+          el.disabled = !show;
+          if (!show) {
             el.removeAttribute('name');
+          } else if (el.id && !el.name) {
+            el.name = el.id;
           }
         });
       });
 
-      document.querySelectorAll('input[required]').forEach(function (el) {
-        el.required = false;
-      });
-      (REQUIRED_FIELDS[paneId] || []).forEach(function (id) {
+      /* OpenAI fields: only named when active */
+      var openaiFields = ['api_base', 'api_key'];
+      var isOpenai = provider === 'openai_compatible';
+      openaiFields.forEach(function (id) {
         var el = document.getElementById(id);
-        if (el) el.required = true;
+        if (!el) return;
+        el.disabled = !isOpenai;
+        if (isOpenai) {
+          el.name = id;
+        } else {
+          el.removeAttribute('name');
+        }
       });
-
-      providerInput.value = PROVIDERS[paneId] || 'openai_compatible';
     }
 
-    tabList.addEventListener('shown.bs.tab', function (e) {
-      var target = e.target.getAttribute('data-bs-target');
-      if (target && target.charAt(0) === '#') {
-        setActivePane(target.slice(1));
-      }
+    function syncTabActive(trigger) {
+      tabList.querySelectorAll('.catalog-modality-tab').forEach(function (tab) {
+        var isActive = tab === trigger;
+        tab.classList.toggle('active', isActive);
+        tab.setAttribute('aria-selected', isActive ? 'true' : 'false');
+      });
+    }
+
+    tabList.querySelectorAll('.catalog-modality-tab').forEach(function (tab) {
+      tab.addEventListener('click', function () {
+        var provider = tab.getAttribute('data-provider');
+        if (!provider) return;
+        setProvider(provider);
+        syncTabActive(tab);
+      });
     });
 
-    setActivePane('pane-openai');
+    document.querySelectorAll('.js-password-toggle').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var input = document.getElementById(btn.getAttribute('data-target'));
+        if (!input || input.disabled) return;
+        var show = input.type === 'password';
+        input.type = show ? 'text' : 'password';
+        var icon = btn.querySelector('i');
+        if (icon) {
+          icon.className = show ? 'bi bi-eye-slash' : 'bi bi-eye';
+        }
+        btn.setAttribute('aria-label', show ? 'Hide password' : 'Show password');
+      });
+    });
+
+    setProvider('openai_compatible');
 
     document.getElementById('external-model-cancel').addEventListener('click', function () {
       location.href = './model_settings.html';

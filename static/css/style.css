@@ -3583,6 +3583,86 @@ table.rd-table--border > tbody > tr {
     padding-top: 0;
 }
 
+/* Connect external model — intro, provider hint, password toggle */
+.rd-external-form-intro {
+    padding: 0.75rem 1.5rem;
+    font-size: 0.875rem;
+    color: var(--bs-secondary-color);
+    border-bottom: 1px solid var(--rd-border-subtle);
+    flex-shrink: 0;
+    line-height: 1.5;
+}
+
+.rd-external-provider-hint {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--rd-space-3);
+    margin: 1rem 1.5rem 0;
+    padding: var(--rd-space-3) var(--rd-space-4);
+    border-radius: var(--rd-radius-md);
+    border: 1px solid rgba(15, 102, 220, 0.2);
+    background: rgba(15, 102, 220, 0.06);
+    color: #0a4a9e;
+    font-size: 0.875rem;
+    line-height: 1.5;
+}
+
+.rd-external-provider-hint__icon {
+    flex-shrink: 0;
+    font-size: 1.125rem;
+    color: var(--bs-primary);
+    margin-top: 0.1rem;
+}
+
+.rd-external-provider-hint__body {
+    flex: 1;
+    min-width: 0;
+}
+
+.rd-external-provider-hint__title {
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+}
+
+.c-form-field-password {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    width: 100%;
+}
+
+.c-form-field-password .c-form-field {
+    flex: 1;
+    min-width: 0;
+}
+
+.c-form-field-password__toggle {
+    flex-shrink: 0;
+    appearance: none;
+    background: transparent;
+    border: none;
+    color: var(--bs-secondary-color);
+    padding: 0.25rem;
+    cursor: pointer;
+    line-height: 1;
+    border-radius: var(--rd-radius-sm);
+    transition: color 0.15s, background 0.15s;
+}
+
+.c-form-field-password__toggle:hover {
+    color: var(--bs-body-color);
+    background: var(--rd-bg-subtle);
+}
+
+.c-form-field-password__toggle:focus-visible {
+    outline: 2px solid var(--bs-primary);
+    outline-offset: 2px;
+}
+
+.js-provider-section[hidden] {
+    display: none !important;
+}
+
 .catalog-modality-tabs {
     display: flex;
     gap: 0.25rem;
