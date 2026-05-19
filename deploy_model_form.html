@@ -134,7 +134,7 @@
                    aria-controls="advanced-settings"
                    id="advanced-toggle">
                 <span>Advanced settings</span>
-                <i class="bi bi-chevron-down" id="advanced-chevron" aria-hidden="true"></i>
+                <i class="bi bi-chevron-down" id="advanced-chevron"></i>
               </div>
 
               <div class="collapse" id="advanced-settings">
@@ -157,11 +157,11 @@
                   <div class="c-form-row__field">
                     <div class="d-flex gap-4 py-1" role="radiogroup" aria-labelledby="resource-type-label">
                       <div class="form-check">
-                        <input class="form-check-input" type="radio" name="resource_type" id="resource-type-cpu" value="CPU" checked>
+                        <input class="form-check-input c-radio-black" type="radio" name="resource_type" id="resource-type-cpu" value="CPU" checked>
                         <label class="form-check-label ms-1" for="resource-type-cpu">CPU</label>
                       </div>
                       <div class="form-check">
-                        <input class="form-check-input" type="radio" name="resource_type" id="resource-type-gpu" value="GPU">
+                        <input class="form-check-input c-radio-black" type="radio" name="resource_type" id="resource-type-gpu" value="GPU">
                         <label class="form-check-label ms-1" for="resource-type-gpu">GPU</label>
                       </div>
                     </div>
@@ -191,7 +191,7 @@
                 </div>
 
                 <!-- ===== Parameters ===== -->
-                <div class="c-form-row c-form-row--section-header c-form-row--section-separated">
+                <div class="c-form-row c-form-row--section-header">
                   <div class="c-form-row__label">
                     <div class="fw-bold">Parameters</div>
                   </div>
@@ -249,7 +249,7 @@
                 <textarea name="parameters" id="parameters-json" hidden></textarea>
 
                 <!-- ===== Model Definition ===== -->
-                <div class="c-form-row c-form-row--section-header c-form-row--section-separated">
+                <div class="c-form-row c-form-row--section-header">
                   <div class="c-form-row__label">
                     <div class="fw-bold">Model definition</div>
                   </div>
@@ -561,17 +561,12 @@
     // ---- chevron toggle on advanced settings ----
     const advCollapse = document.getElementById('advanced-settings');
     const advChevron = document.getElementById('advanced-chevron');
-    var advToggle = document.getElementById('advanced-toggle');
-    if (advCollapse && advChevron && advToggle) {
+    if (advCollapse && advChevron) {
       advCollapse.addEventListener('show.bs.collapse', function() {
         advChevron.classList.add('rd-rotate-180');
-        advToggle.classList.add('c-advanced-toggle--open');
-        advToggle.setAttribute('aria-expanded', 'true');
       });
       advCollapse.addEventListener('hide.bs.collapse', function() {
         advChevron.classList.remove('rd-rotate-180');
-        advToggle.classList.remove('c-advanced-toggle--open');
-        advToggle.setAttribute('aria-expanded', 'false');
       });
     }
 
