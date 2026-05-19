@@ -3584,12 +3584,25 @@ table.rd-table--border > tbody > tr {
    filter groups, active filter relocation
    ============================================ */
 
-/* Top-level output modality tabs (Text / Embeddings) */
+/* Top-level output modality row (tabs + optional action) */
+.catalog-modality-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.75rem 1.5rem 0;
+    border-bottom: 1px solid var(--rd-border-subtle);
+    flex-shrink: 0;
+}
+
+.catalog-modality-header__action {
+    flex-shrink: 0;
+    margin-bottom: 0.35rem;
+}
+
 .catalog-modality-tabs {
     display: flex;
     gap: 0.25rem;
-    padding: 0.75rem 1.5rem 0;
-    border-bottom: 1px solid var(--rd-border-subtle);
     flex-shrink: 0;
 }
 

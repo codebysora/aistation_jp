@@ -70,21 +70,23 @@
         <div class="rd-card__body" style="display:flex;flex-direction:column;overflow:hidden">
 
           <!-- Modality tabs (output modality: Text vs Embeddings) -->
-          <div class="catalog-modality-tabs" role="tablist" aria-label="Output modality">
-            <button type="button" class="catalog-modality-tab active" role="tab" aria-selected="true" data-modality="text">
-              <i class="bi bi-fonts" aria-hidden="true"></i> Text
-            </button>
-            <button type="button" class="catalog-modality-tab" role="tab" aria-selected="false" data-modality="embeddings">
-              <i class="bi bi-diagram-3" aria-hidden="true"></i> Embeddings
-            </button>
+          <div class="catalog-modality-header">
+            <div class="catalog-modality-tabs" role="tablist" aria-label="Output modality">
+              <button type="button" class="catalog-modality-tab active" role="tab" aria-selected="true" data-modality="text">
+                <i class="bi bi-fonts" aria-hidden="true"></i> Text
+              </button>
+              <button type="button" class="catalog-modality-tab" role="tab" aria-selected="false" data-modality="embeddings">
+                <i class="bi bi-diagram-3" aria-hidden="true"></i> Embeddings
+              </button>
+            </div>
+            <a href="./deploy_model_form.html?scratch=1" class="rd-btn-primary text-decoration-none catalog-modality-header__action">
+              <i class="bi bi-pencil-square" aria-hidden="true"></i> Deploy from scratch
+            </a>
           </div>
 
           <!-- Toolbar -->
           <div class="catalog-toolbar">
             <div class="catalog-toolbar__left">
-              <a href="./deploy_model_form.html?scratch=1" class="rd-btn-secondary text-decoration-none">
-                <i class="bi bi-pencil-square" aria-hidden="true"></i> Deploy from scratch
-              </a>
               <div class="catalog-search">
                 <i class="bi bi-search catalog-search__icon" aria-hidden="true"></i>
                 <input type="search" id="catalog-search" class="catalog-search__input" placeholder="Search models...">
