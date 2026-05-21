@@ -702,7 +702,7 @@ function initEventDelegation() {
     showAdminHistoryDetail(row);
   });
 
-  // Admin history detail - JSON tab copy (hidden when Clipboard API unavailable; see histories.html)
+  // Admin history detail - JSON tab copy (hidden when Clipboard API unavailable; see admin_histories.html)
   $(document).on('click', '#admin-history-detail-json-copy', function () {
     var $btn = $(this);
     var text = $('#admin-history-detail-json').text();
