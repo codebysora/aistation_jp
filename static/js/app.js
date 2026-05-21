@@ -324,7 +324,23 @@ function formatHistoryMessageContent(content) {
   return escapeHtml(String(content));
 }
 
-function buildHistoryPreview(row) {
+function buildHistoryErrorDisplay(err, showTraceback) {
+  if (!err || typeof err !== 'object') return err;
+  if (showTraceback) return err;
+  var filtered = {};
+  var keys = Object.keys(err);
+  for (var i = 0; i < keys.length; i++) {
+    if (keys[i] !== 'traceback') {
+      filtered[keys[i]] = err[keys[i]];
+    }
+  }
+  return filtered;
+}
+
+function buildHistoryPreview(row, options) {
+  options = options || {};
+  var showMetadata = options.showMetadata !== false;
+  var showTraceback = options.showTraceback !== false;
   var html = '';
 
   // Tags
@@ -366,11 +382,14 @@ function buildHistoryPreview(row) {
   // Error info (failure cases)
   var err = row.metadata_ && row.metadata_.error_information;
   if (err) {
-    html += buildHistorySection('Error', buildHistoryKvTable(err), { danger: true });
+    var errDisplay = buildHistoryErrorDisplay(err, showTraceback);
+    if (Object.keys(errDisplay).length) {
+      html += buildHistorySection('Error', buildHistoryKvTable(errDisplay), { danger: true });
+    }
   }
 
-  // Metadata
-  if (row.metadata_) {
+  // Metadata (admin only)
+  if (showMetadata && row.metadata_) {
     var metaHtml = '<pre class="rd-history-meta">' +
       escapeHtml(JSON.stringify(row.metadata_, null, 2)) +
       '</pre>';
@@ -383,22 +402,38 @@ function buildHistoryPreview(row) {
   return html;
 }
 
-function showHistoryDetail(row) {
-  $('#history-detail-modal-label').text(row.request_id || 'Request Detail');
-  $('#history-detail-summary').html(buildHistorySummary(row));
-  $('#history-detail-preview').html(buildHistoryPreview(row));
+function showAdminHistoryDetail(row) {
+  $('#admin-history-detail-modal-label').text(row.request_id || 'Request Detail');
+  $('#admin-history-detail-summary').html(buildHistorySummary(row));
+  $('#admin-history-detail-preview').html(buildHistoryPreview(row, {
+    showMetadata: true,
+    showTraceback: true
+  }));
 
   var json;
   try { json = JSON.stringify(row, null, 2); } catch (e) { json = String(row); }
-  $('#history-detail-json').text(json);
+  $('#admin-history-detail-json').text(json);
 
-  // Reset to Preview tab on each open
-  var trigger = document.getElementById('history-tab-preview-trigger');
+  var trigger = document.getElementById('admin-history-tab-preview-trigger');
   if (trigger) {
     bootstrap.Tab.getOrCreateInstance(trigger).show();
   }
 
-  var modalEl = document.getElementById('history-detail-modal');
+  var modalEl = document.getElementById('admin-history-detail-modal');
+  if (modalEl) {
+    bootstrap.Modal.getOrCreateInstance(modalEl).show();
+  }
+}
+
+function showMyHistoryDetail(row) {
+  $('#myhistory-detail-modal-label').text(row.request_id || 'Request Detail');
+  $('#myhistory-detail-summary').html(buildHistorySummary(row));
+  $('#myhistory-detail-preview').html(buildHistoryPreview(row, {
+    showMetadata: false,
+    showTraceback: false
+  }));
+
+  var modalEl = document.getElementById('myhistory-detail-modal');
   if (modalEl) {
     bootstrap.Modal.getOrCreateInstance(modalEl).show();
   }
@@ -543,14 +578,17 @@ function initEventDelegation() {
   });
 
   // History detail - bootstrap-table row click
-  $('#myhistories-table, #admin-histories-table').on('click-row.bs.table', function (e, row) {
-    showHistoryDetail(row);
+  $('#myhistories-table').on('click-row.bs.table', function (e, row) {
+    showMyHistoryDetail(row);
+  });
+  $('#admin-histories-table').on('click-row.bs.table', function (e, row) {
+    showAdminHistoryDetail(row);
   });
 
-  // History detail - JSON tab copy button (hidden when Clipboard API unavailable; see histories / myhistories pages)
-  $(document).on('click', '#history-detail-json-copy', function () {
+  // Admin history detail - JSON tab copy (hidden when Clipboard API unavailable; see histories.html)
+  $(document).on('click', '#admin-history-detail-json-copy', function () {
     var $btn = $(this);
-    var text = $('#history-detail-json').text();
+    var text = $('#admin-history-detail-json').text();
     if (!text) return;
     navigator.clipboard.writeText(text).then(function () {
       var orig = $btn.html();
