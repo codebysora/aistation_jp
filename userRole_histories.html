@@ -85,7 +85,7 @@
 
   <!-- History Detail Modal -->
   <div class="modal fade" id="history-detail-modal" tabindex="-1" aria-labelledby="history-detail-modal-label" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable rd-modal rd-modal--big" style="max-width:1000px">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable rd-modal rd-modal--big rd-history-detail-modal">
       <div class="modal-content">
         <div class="modal-header flex-column align-items-stretch">
           <div class="d-flex align-items-start justify-content-between gap-3 w-100">
@@ -109,11 +109,11 @@
             </div>
             <div class="tab-pane fade" id="history-tab-json" role="tabpanel">
               <div class="d-flex justify-content-end mb-2">
-                <button type="button" id="history-detail-json-copy" class="btn btn-sm" style="background:#fff;border:none;margin-right:10px" title="Copy JSON">
+                <button type="button" id="history-detail-json-copy" class="btn btn-sm rd-history-json-copy" title="Copy JSON">
                   <i class="bi bi-copy" aria-hidden="true"></i> Copy
                 </button>
               </div>
-              <pre id="history-detail-json" class="mb-0 small bg-light rounded p-3" style="max-height:60vh;overflow:auto;white-space:pre-wrap;word-break:break-word"></pre>
+              <pre id="history-detail-json" class="rd-history-json-pre mb-0 small bg-light rounded p-3"></pre>
             </div>
           </div>
         </div>

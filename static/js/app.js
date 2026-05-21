@@ -287,6 +287,19 @@ function historyMsgRoleClass(role) {
   return 'rd-history-msg';
 }
 
+/** OpenAI multimodal APIs may return message content as an array of parts, not a plain string. */
+function formatHistoryMessageContent(content) {
+  if (content == null) return '';
+  if (Array.isArray(content) || (typeof content === 'object')) {
+    try {
+      return escapeHtml(JSON.stringify(content, null, 2));
+    } catch (e) {
+      return escapeHtml(String(content));
+    }
+  }
+  return escapeHtml(String(content));
+}
+
 function buildHistoryPreview(row) {
   var html = '';
 
@@ -309,7 +322,7 @@ function buildHistoryPreview(row) {
       var m = msgs[j] || {};
       inputHtml += '<div class="' + historyMsgRoleClass(m.role) + '">' +
         '<div class="rd-history-msg__role">' + escapeHtml(m.role || '-') + '</div>' +
-        '<pre class="rd-history-msg__content">' + escapeHtml(m.content || '') + '</pre>' +
+        '<pre class="rd-history-msg__content">' + formatHistoryMessageContent(m.content) + '</pre>' +
         '</div>';
     }
     html += buildHistorySection('Input', inputHtml);
@@ -357,10 +370,14 @@ function showHistoryDetail(row) {
 
   // Reset to Preview tab on each open
   var trigger = document.getElementById('history-tab-preview-trigger');
-  if (trigger) { new bootstrap.Tab(trigger).show(); }
+  if (trigger) {
+    bootstrap.Tab.getOrCreateInstance(trigger).show();
+  }
 
-  var modal = new bootstrap.Modal(document.getElementById('history-detail-modal'));
-  modal.show();
+  var modalEl = document.getElementById('history-detail-modal');
+  if (modalEl) {
+    bootstrap.Modal.getOrCreateInstance(modalEl).show();
+  }
 }
 
 
@@ -505,6 +522,12 @@ function initEventDelegation() {
   $('#histories-table').on('click-row.bs.table', function (e, row) {
     showHistoryDetail(row);
   });
+
+  // Hide JSON copy when Clipboard API is unavailable (non-HTTPS or unsupported browser)
+  if (!navigator.clipboard || !navigator.clipboard.writeText) {
+    var copyBtn = document.getElementById('history-detail-json-copy');
+    if (copyBtn) copyBtn.classList.add('d-none');
+  }
 
   // History detail - JSON tab copy button
   $(document).on('click', '#history-detail-json-copy', function () {

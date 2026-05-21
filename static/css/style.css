@@ -4261,3 +4261,20 @@ table.rd-table--border > tbody > tr {
     font-weight: 500;
     padding: 0.4em 0.6em;
 }
+
+.rd-history-detail-modal {
+    max-width: 1000px;
+}
+
+.rd-history-json-copy {
+    background: var(--bs-white);
+    border: none;
+    margin-right: 10px;
+}
+
+.rd-history-json-pre {
+    max-height: 60vh;
+    overflow: auto;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
