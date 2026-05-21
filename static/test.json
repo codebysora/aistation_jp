@@ -1,0 +1,528 @@
+{
+    "data": [
+        {
+            "request_id": "chatcmpl-9fd14284e21d5caf",
+            "call_type": "acompletion",
+            "api_key": "d663b9832e6715b414a16dc6db73633cd3709200ad8cc970820fb2e7bae924f2",
+            "spend": 0.0,
+            "total_tokens": 182,
+            "prompt_tokens": 26,
+            "completion_tokens": 156,
+            "start_time": "2026-04-10 05:45:59.724000",
+            "end_time": "2026-04-10 05:46:15.252000",
+            "completion_start_time": "2026-04-10 05:46:15.252000",
+            "model": "test-qwen3-0.6b-cpu",
+            "model_id": "ec8f8e81-96bc-44ba-9baa-f27a6fe88008",
+            "model_group": "test-qwen3-0.6b-cpu",
+            "custom_llm_provider": "openai",
+            "api_base": "http://aistation-dash-model-test-qwen3-0-6b-cpu-1.model.aistation:8000/v1/",
+            "user_id": "faef37b4-6f61-40f2-b653-1579bff4a138",
+            "team_id": "8cd285f9-ffd2-40b4-9ad8-a4eb52ace8b9",
+            "end_user": "",
+            "session_id": "8206dc81-95cf-4e19-9425-13369b234792",
+            "metadata_": {
+                "batch_models": null,
+                "usage_object": {
+                    "total_tokens": 182,
+                    "prompt_tokens": 26,
+                    "completion_tokens": 156,
+                    "prompt_tokens_details": null,
+                    "completion_tokens_details": null
+                },
+                "user_api_key": "d663b9832e6715b414a16dc6db73633cd3709200ad8cc970820fb2e7bae924f2",
+                "applied_guardrails": [],
+                "user_api_key_alias": null,
+                "user_api_key_org_id": null,
+                "requester_ip_address": "",
+                "user_api_key_team_id": "8cd285f9-ffd2-40b4-9ad8-a4eb52ace8b9",
+                "user_api_key_user_id": "faef37b4-6f61-40f2-b653-1579bff4a138",
+                "guardrail_information": null,
+                "model_map_information": {
+                    "model_map_key": "test-qwen3-0.6b-cpu",
+                    "model_map_value": {
+                        "key": "openai/test-qwen3-0.6b-cpu",
+                        "rpm": null,
+                        "tpm": null,
+                        "mode": null,
+                        "max_tokens": null,
+                        "supports_vision": null,
+                        "litellm_provider": "openai",
+                        "max_input_tokens": null,
+                        "max_output_tokens": null,
+                        "output_vector_size": null,
+                        "supports_pdf_input": null,
+                        "supports_reasoning": null,
+                        "supports_web_search": null,
+                        "input_cost_per_query": null,
+                        "input_cost_per_token": 0.0,
+                        "supports_audio_input": null,
+                        "supports_tool_choice": null,
+                        "supports_url_context": null,
+                        "input_cost_per_second": null,
+                        "output_cost_per_image": null,
+                        "output_cost_per_token": 0.0,
+                        "supports_audio_output": null,
+                        "supports_computer_use": null,
+                        "output_cost_per_second": null,
+                        "citation_cost_per_token": null,
+                        "supported_openai_params": [
+                            "frequency_penalty",
+                            "logit_bias",
+                            "logprobs",
+                            "top_logprobs",
+                            "max_tokens",
+                            "max_completion_tokens",
+                            "modalities",
+                            "prediction",
+                            "n",
+                            "presence_penalty",
+                            "seed",
+                            "stop",
+                            "stream",
+                            "stream_options",
+                            "temperature",
+                            "top_p",
+                            "tools",
+                            "tool_choice",
+                            "function_call",
+                            "functions",
+                            "max_retries",
+                            "extra_headers",
+                            "parallel_tool_calls",
+                            "audio",
+                            "web_search_options",
+                            "response_format"
+                        ],
+                        "supports_prompt_caching": null,
+                        "input_cost_per_character": null,
+                        "supports_response_schema": null,
+                        "supports_system_messages": null,
+                        "output_cost_per_character": null,
+                        "supports_function_calling": null,
+                        "supports_native_streaming": null,
+                        "input_cost_per_audio_token": null,
+                        "supports_assistant_prefill": null,
+                        "cache_read_input_token_cost": null,
+                        "output_cost_per_audio_token": null,
+                        "input_cost_per_token_batches": null,
+                        "output_cost_per_token_batches": null,
+                        "search_context_cost_per_query": null,
+                        "supports_embedding_image_input": null,
+                        "cache_creation_input_token_cost": null,
+                        "output_cost_per_reasoning_token": null,
+                        "input_cost_per_token_above_128k_tokens": null,
+                        "input_cost_per_token_above_200k_tokens": null,
+                        "output_cost_per_token_above_128k_tokens": null,
+                        "output_cost_per_token_above_200k_tokens": null,
+                        "output_cost_per_character_above_128k_tokens": null
+                    }
+                },
+                "mcp_tool_call_metadata": null,
+                "additional_usage_values": {
+                    "prompt_tokens_details": null,
+                    "completion_tokens_details": null
+                },
+                "user_api_key_team_alias": "8cd285f9-ffd2-40b4-9ad8-a4eb52ace8b9",
+                "vector_store_request_metadata": null
+            },
+            "request_tags": [
+                "User-Agent: curl",
+                "User-Agent: curl/8.5.0"
+            ],
+            "messages": {},
+            "response": {
+                "id": "chatcmpl-9fd14284e21d5caf",
+                "model": "test-qwen3-0.6b-cpu",
+                "usage": {
+                    "total_tokens": 182,
+                    "prompt_tokens": 26,
+                    "completion_tokens": 156,
+                    "prompt_tokens_details": null,
+                    "completion_tokens_details": null
+                },
+                "object": "chat.completion",
+                "choices": [
+                    {
+                        "index": 0,
+                        "message": {
+                            "role": "assistant",
+                            "content": "\n\nThe song \"Paradise City\" is by the band **Dream Theater**. It was released in 1989. Let me know if you'd like more information!",
+                            "tool_calls": null,
+                            "function_call": null,
+                            "reasoning_content": "\nOkay, the user is asking whose song is \"Paradise City.\" First, I need to confirm that \"Paradise City\" is indeed a song. From what I remember, \"Paradise City\" is the song by the band Dream Theater. Let me double-check that. Yes, Dream Theater released it in 1989. So the answer should be Dream Theater. I should make sure there's no confusion with other songs by different artists. If the user is unsure, it's best to provide the correct information and offer further help.\n"
+                        },
+                        "finish_reason": "stop",
+                        "provider_specific_fields": {
+                            "token_ids": null,
+                            "stop_reason": null
+                        }
+                    }
+                ],
+                "created": 1775799959,
+                "service_tier": null,
+                "prompt_logprobs": null,
+                "prompt_token_ids": null,
+                "kv_transfer_params": null,
+                "system_fingerprint": null
+            },
+            "proxy_server_request": {
+                "model": "test-qwen3-0.6b-cpu",
+                "messages": [
+                    {
+                        "role": "system",
+                        "content": "You are a helpful assistant."
+                    },
+                    {
+                        "role": "user",
+                        "content": "Whose song is Paradise City?"
+                    }
+                ]
+            },
+            "status": "success",
+            "cache_hit": "None",
+            "cache_key": "Cache OFF",
+            "requester_ip_address": "",
+            "is_streaming": false,
+            "e2el": "0:00:15.528000",
+            "ttft": null,
+            "tpot": null,
+            "tps": 11.72076249356002
+        },
+        {
+            "request_id": "chatcmpl-8893628a6c666873",
+            "call_type": "acompletion",
+            "api_key": "d663b9832e6715b414a16dc6db73633cd3709200ad8cc970820fb2e7bae924f2",
+            "spend": 0.0,
+            "total_tokens": 229,
+            "prompt_tokens": 31,
+            "completion_tokens": 198,
+            "start_time": "2026-04-10 05:41:51.057000",
+            "end_time": "2026-04-10 05:42:13.312000",
+            "completion_start_time": "2026-04-10 05:42:13.311000",
+            "model": "test-qwen3-0.6b-cpu",
+            "model_id": "ec8f8e81-96bc-44ba-9baa-f27a6fe88008",
+            "model_group": "test-qwen3-0.6b-cpu",
+            "custom_llm_provider": "openai",
+            "api_base": "http://aistation-dash-model-test-qwen3-0-6b-cpu-1.model.aistation:8000/v1/",
+            "user_id": "faef37b4-6f61-40f2-b653-1579bff4a138",
+            "team_id": "8cd285f9-ffd2-40b4-9ad8-a4eb52ace8b9",
+            "end_user": "",
+            "session_id": "6adab354-ddd5-40a2-b192-0a66925056ec",
+            "metadata_": {
+                "batch_models": null,
+                "usage_object": {
+                    "total_tokens": 229,
+                    "prompt_tokens": 31,
+                    "completion_tokens": 198,
+                    "prompt_tokens_details": null,
+                    "completion_tokens_details": null
+                },
+                "user_api_key": "d663b9832e6715b414a16dc6db73633cd3709200ad8cc970820fb2e7bae924f2",
+                "applied_guardrails": [],
+                "user_api_key_alias": null,
+                "user_api_key_org_id": null,
+                "requester_ip_address": "",
+                "user_api_key_team_id": "8cd285f9-ffd2-40b4-9ad8-a4eb52ace8b9",
+                "user_api_key_user_id": "faef37b4-6f61-40f2-b653-1579bff4a138",
+                "guardrail_information": null,
+                "model_map_information": {
+                    "model_map_key": "test-qwen3-0.6b-cpu",
+                    "model_map_value": {
+                        "key": "openai/test-qwen3-0.6b-cpu",
+                        "rpm": null,
+                        "tpm": null,
+                        "mode": null,
+                        "max_tokens": null,
+                        "supports_vision": null,
+                        "litellm_provider": "openai",
+                        "max_input_tokens": null,
+                        "max_output_tokens": null,
+                        "output_vector_size": null,
+                        "supports_pdf_input": null,
+                        "supports_reasoning": null,
+                        "supports_web_search": null,
+                        "input_cost_per_query": null,
+                        "input_cost_per_token": 0.0,
+                        "supports_audio_input": null,
+                        "supports_tool_choice": null,
+                        "supports_url_context": null,
+                        "input_cost_per_second": null,
+                        "output_cost_per_image": null,
+                        "output_cost_per_token": 0.0,
+                        "supports_audio_output": null,
+                        "supports_computer_use": null,
+                        "output_cost_per_second": null,
+                        "citation_cost_per_token": null,
+                        "supported_openai_params": [
+                            "frequency_penalty",
+                            "logit_bias",
+                            "logprobs",
+                            "top_logprobs",
+                            "max_tokens",
+                            "max_completion_tokens",
+                            "modalities",
+                            "prediction",
+                            "n",
+                            "presence_penalty",
+                            "seed",
+                            "stop",
+                            "stream",
+                            "stream_options",
+                            "temperature",
+                            "top_p",
+                            "tools",
+                            "tool_choice",
+                            "function_call",
+                            "functions",
+                            "max_retries",
+                            "extra_headers",
+                            "parallel_tool_calls",
+                            "audio",
+                            "web_search_options",
+                            "response_format"
+                        ],
+                        "supports_prompt_caching": null,
+                        "input_cost_per_character": null,
+                        "supports_response_schema": null,
+                        "supports_system_messages": null,
+                        "output_cost_per_character": null,
+                        "supports_function_calling": null,
+                        "supports_native_streaming": null,
+                        "input_cost_per_audio_token": null,
+                        "supports_assistant_prefill": null,
+                        "cache_read_input_token_cost": null,
+                        "output_cost_per_audio_token": null,
+                        "input_cost_per_token_batches": null,
+                        "output_cost_per_token_batches": null,
+                        "search_context_cost_per_query": null,
+                        "supports_embedding_image_input": null,
+                        "cache_creation_input_token_cost": null,
+                        "output_cost_per_reasoning_token": null,
+                        "input_cost_per_token_above_128k_tokens": null,
+                        "input_cost_per_token_above_200k_tokens": null,
+                        "output_cost_per_token_above_128k_tokens": null,
+                        "output_cost_per_token_above_200k_tokens": null,
+                        "output_cost_per_character_above_128k_tokens": null
+                    }
+                },
+                "mcp_tool_call_metadata": null,
+                "additional_usage_values": {
+                    "prompt_tokens_details": null,
+                    "completion_tokens_details": null
+                },
+                "user_api_key_team_alias": "8cd285f9-ffd2-40b4-9ad8-a4eb52ace8b9",
+                "vector_store_request_metadata": null
+            },
+            "request_tags": [
+                "User-Agent: curl",
+                "User-Agent: curl/8.5.0"
+            ],
+            "messages": {},
+            "response": {
+                "id": "chatcmpl-8893628a6c666873",
+                "model": "test-qwen3-0.6b-cpu",
+                "usage": {
+                    "total_tokens": 229,
+                    "prompt_tokens": 31,
+                    "completion_tokens": 198,
+                    "prompt_tokens_details": null,
+                    "completion_tokens_details": null
+                },
+                "object": "chat.completion",
+                "choices": [
+                    {
+                        "index": 0,
+                        "message": {
+                            "role": "assistant",
+                            "content": "\n\nThe New York Yankees won the 2020 MLB World Series.",
+                            "tool_calls": null,
+                            "function_call": null,
+                            "reasoning_content": "\nOkay, the user is asking who won the World Series in 2020. First, I need to confirm the context. The World Series is a baseball league, so it's likely referring to the 2020 MLB World Series. Let me check the history.\n\nI remember that the 2020 World Series was played between the New York Yankees and the Los Angeles Dodgers. The Yankees won. But wait, I should make sure there are no other teams involved. The Yankees are the reigning champions, so yes, they won. \n\nWait, maybe I should verify the exact year. The 2020 season was indeed the 2020 World Series, which ended in 2020. The answer should be the New York Yankees. I think that's correct. No other teams were involved, so the answer is the Yankees.\n"
+                        },
+                        "finish_reason": "stop",
+                        "provider_specific_fields": {
+                            "token_ids": null,
+                            "stop_reason": null
+                        }
+                    }
+                ],
+                "created": 1775799711,
+                "service_tier": null,
+                "prompt_logprobs": null,
+                "prompt_token_ids": null,
+                "kv_transfer_params": null,
+                "system_fingerprint": null
+            },
+            "proxy_server_request": {
+                "model": "test-qwen3-0.6b-cpu",
+                "messages": [
+                    {
+                        "role": "system",
+                        "content": "You are a helpful assistant."
+                    },
+                    {
+                        "role": "user",
+                        "content": "Who won the world series in 2020?"
+                    }
+                ]
+            },
+            "status": "success",
+            "cache_hit": "None",
+            "cache_key": "Cache OFF",
+            "requester_ip_address": "",
+            "is_streaming": false,
+            "e2el": "0:00:22.255000",
+            "ttft": null,
+            "tpot": null,
+            "tps": 10.289822511795103
+        },
+        {
+            "request_id": "32d77402-84ba-4f4c-89f6-5885c4a2924b",
+            "call_type": "",
+            "api_key": "",
+            "spend": 0.0,
+            "total_tokens": 0,
+            "prompt_tokens": 0,
+            "completion_tokens": 0,
+            "start_time": "2026-04-10 05:40:38.338000",
+            "end_time": "2026-04-10 05:40:38.338000",
+            "completion_start_time": "2026-04-10 05:40:38.338000",
+            "model": "cli-test-preset",
+            "model_id": "",
+            "model_group": "",
+            "custom_llm_provider": "",
+            "api_base": "",
+            "user_id": "faef37b4-6f61-40f2-b653-1579bff4a138",
+            "team_id": "8cd285f9-ffd2-40b4-9ad8-a4eb52ace8b9",
+            "end_user": "",
+            "session_id": "58fa90a5-a518-4c94-ae15-6309f38de66c",
+            "metadata_": {
+                "status": "failure",
+                "batch_models": null,
+                "usage_object": null,
+                "user_api_key": "d663b9832e6715b414a16dc6db73633cd3709200ad8cc970820fb2e7bae924f2",
+                "error_information": {
+                    "traceback": "  File \"/usr/lib/python3.13/site-packages/litellm/proxy/proxy_server.py\", line 3703, in chat_completion\n    return await base_llm_response_processor.base_process_llm_request(\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n    ...<16 lines>...\n    )\n    ^\n  File \"/usr/lib/python3.13/site-packages/litellm/proxy/common_request_processing.py\", line 413, in base_process_llm_request\n    llm_call = await route_request(\n               ^^^^^^^^^^^^^^^^^^^^\n    ...<4 lines>...\n    )\n    ^\n  File \"/usr/lib/python3.13/site-packages/litellm/proxy/route_llm_request.py\", line 166, in route_request\n    raise ProxyModelNotFoundError(\n    ...<2 lines>...\n    )\n",
+                    "error_code": "400",
+                    "error_class": "ProxyModelNotFoundError",
+                    "llm_provider": "",
+                    "error_message": "400: {'error': '/chat/completions: Invalid model name passed in model=cli-test-preset. Call `/v1/models` to view available models for your key.'}"
+                },
+                "applied_guardrails": null,
+                "user_api_key_alias": null,
+                "user_api_key_org_id": null,
+                "requester_ip_address": "",
+                "user_api_key_team_id": "8cd285f9-ffd2-40b4-9ad8-a4eb52ace8b9",
+                "user_api_key_user_id": "faef37b4-6f61-40f2-b653-1579bff4a138",
+                "guardrail_information": null,
+                "model_map_information": null,
+                "mcp_tool_call_metadata": null,
+                "additional_usage_values": {},
+                "user_api_key_team_alias": "8cd285f9-ffd2-40b4-9ad8-a4eb52ace8b9",
+                "vector_store_request_metadata": null
+            },
+            "request_tags": [],
+            "messages": {},
+            "response": {},
+            "proxy_server_request": {
+                "model": "cli-test-preset",
+                "messages": [
+                    {
+                        "role": "system",
+                        "content": "You are a helpful assistant."
+                    },
+                    {
+                        "role": "user",
+                        "content": "Who won the world series in 2020?"
+                    }
+                ]
+            },
+            "status": "failure",
+            "cache_hit": "False",
+            "cache_key": "Cache OFF",
+            "requester_ip_address": "",
+            "is_streaming": false,
+            "e2el": "0:00:00",
+            "ttft": null,
+            "tpot": null,
+            "tps": null
+        },
+        {
+            "request_id": "3cdd151e-92c2-4e43-a751-a70ac65ccc4b",
+            "call_type": "",
+            "api_key": "",
+            "spend": 0.0,
+            "total_tokens": 0,
+            "prompt_tokens": 0,
+            "completion_tokens": 0,
+            "start_time": "2026-04-10 05:38:46.271000",
+            "end_time": "2026-04-10 05:38:46.271000",
+            "completion_start_time": "2026-04-10 05:38:46.270000",
+            "model": "cli-test-preset",
+            "model_id": "",
+            "model_group": "",
+            "custom_llm_provider": "",
+            "api_base": "",
+            "user_id": "faef37b4-6f61-40f2-b653-1579bff4a138",
+            "team_id": "8cd285f9-ffd2-40b4-9ad8-a4eb52ace8b9",
+            "end_user": "",
+            "session_id": "3c1f6c4f-e312-4d09-abe8-a4b2c9b9eb2a",
+            "metadata_": {
+                "status": "failure",
+                "batch_models": null,
+                "usage_object": null,
+                "user_api_key": "d663b9832e6715b414a16dc6db73633cd3709200ad8cc970820fb2e7bae924f2",
+                "error_information": {
+                    "traceback": "  File \"/usr/lib/python3.13/site-packages/litellm/proxy/proxy_server.py\", line 3703, in chat_completion\n    return await base_llm_response_processor.base_process_llm_request(\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n    ...<16 lines>...\n    )\n    ^\n  File \"/usr/lib/python3.13/site-packages/litellm/proxy/common_request_processing.py\", line 413, in base_process_llm_request\n    llm_call = await route_request(\n               ^^^^^^^^^^^^^^^^^^^^\n    ...<4 lines>...\n    )\n    ^\n  File \"/usr/lib/python3.13/site-packages/litellm/proxy/route_llm_request.py\", line 166, in route_request\n    raise ProxyModelNotFoundError(\n    ...<2 lines>...\n    )\n",
+                    "error_code": "400",
+                    "error_class": "ProxyModelNotFoundError",
+                    "llm_provider": "",
+                    "error_message": "400: {'error': '/chat/completions: Invalid model name passed in model=cli-test-preset. Call `/v1/models` to view available models for your key.'}"
+                },
+                "applied_guardrails": null,
+                "user_api_key_alias": null,
+                "user_api_key_org_id": null,
+                "requester_ip_address": "",
+                "user_api_key_team_id": "8cd285f9-ffd2-40b4-9ad8-a4eb52ace8b9",
+                "user_api_key_user_id": "faef37b4-6f61-40f2-b653-1579bff4a138",
+                "guardrail_information": null,
+                "model_map_information": null,
+                "mcp_tool_call_metadata": null,
+                "additional_usage_values": {},
+                "user_api_key_team_alias": "8cd285f9-ffd2-40b4-9ad8-a4eb52ace8b9",
+                "vector_store_request_metadata": null
+            },
+            "request_tags": [],
+            "messages": {},
+            "response": {},
+            "proxy_server_request": {
+                "model": "cli-test-preset",
+                "messages": [
+                    {
+                        "role": "system",
+                        "content": "You are a helpful assistant."
+                    },
+                    {
+                        "role": "user",
+                        "content": "Who won the world series in 2020?"
+                    }
+                ]
+            },
+            "status": "failure",
+            "cache_hit": "False",
+            "cache_key": "Cache OFF",
+            "requester_ip_address": "",
+            "is_streaming": false,
+            "e2el": "0:00:00",
+            "ttft": null,
+            "tpot": null,
+            "tps": null
+        }
+    ],
+    "meta": {
+        "page": 1,
+        "per_page": 20,
+        "total": 4,
+        "total_pages": 1
+    }
+}
