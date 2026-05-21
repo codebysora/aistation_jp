@@ -4122,6 +4122,23 @@ table.rd-table--border > tbody > tr {
 /* ============================================
    History detail modal
    ============================================ */
+/* Admin histories - search bar (padding aligned with bootstrap-table toolbar / table cells) */
+.rd-histories-search {
+    padding: 1rem 1.5rem 1.25rem;
+    border-bottom: 1px solid var(--rd-border-subtle);
+    background: var(--rd-bg-subtle);
+    flex-shrink: 0;
+}
+
+.rd-histories-search .form-label {
+    margin-bottom: 0.5rem;
+}
+
+.rd-histories-search .form-control,
+.rd-histories-search .btn {
+    min-height: 2.375rem;
+}
+
 .rd-history-section {
     padding-bottom: 1rem;
     margin-bottom: 1rem;

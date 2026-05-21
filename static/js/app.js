@@ -223,6 +223,30 @@ function historyRequestIdFormatter(value) {
   return '<span class="text-body-secondary" title="' + escapeHtml(v) + '">' + escapeHtml(short) + '</span>';
 }
 
+/** Admin histories table: merge bootstrap-table params with search form values for server requests. */
+function adminHistoriesQueryParams(params) {
+  return {
+    search: params.search,
+    sort: params.sort,
+    order: params.order,
+    offset: params.offset,
+    limit: params.limit,
+    username: $('#histories-search-username').val() || '',
+    date_from: $('#histories-search-date-from').val() || '',
+    date_to: $('#histories-search-date-to').val() || ''
+  };
+}
+
+function initAdminHistoriesSearch() {
+  var $form = $('#histories-search-form');
+  var $table = $('#admin-histories-table');
+  if (!$form.length || !$table.length) return;
+  $form.on('submit', function (e) {
+    e.preventDefault();
+    $table.bootstrapTable('refresh');
+  });
+}
+
 function formatLatency(e2el) {
   if (!e2el) return '-';
   var m = String(e2el).match(/^(\d+):(\d+):(\d+(?:\.\d+)?)/);
@@ -519,11 +543,11 @@ function initEventDelegation() {
   });
 
   // History detail - bootstrap-table row click
-  $('#histories-table').on('click-row.bs.table', function (e, row) {
+  $('#myhistories-table, #admin-histories-table').on('click-row.bs.table', function (e, row) {
     showHistoryDetail(row);
   });
 
-  // History detail - JSON tab copy button (hidden on this page when Clipboard API unavailable; see userRole_histories.html)
+  // History detail - JSON tab copy button (hidden when Clipboard API unavailable; see histories / myhistories pages)
   $(document).on('click', '#history-detail-json-copy', function () {
     var $btn = $(this);
     var text = $('#history-detail-json').text();
@@ -921,4 +945,5 @@ $(function () {
   initFieldValidation();
   initFormSubmit();
   initFadeIn();
+  initAdminHistoriesSearch();
 });
