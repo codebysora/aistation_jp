@@ -523,13 +523,7 @@ function initEventDelegation() {
     showHistoryDetail(row);
   });
 
-  // Hide JSON copy when Clipboard API is unavailable (non-HTTPS or unsupported browser)
-  if (!navigator.clipboard || !navigator.clipboard.writeText) {
-    var copyBtn = document.getElementById('history-detail-json-copy');
-    if (copyBtn) copyBtn.classList.add('d-none');
-  }
-
-  // History detail - JSON tab copy button
+  // History detail - JSON tab copy button (hidden on this page when Clipboard API unavailable; see userRole_histories.html)
   $(document).on('click', '#history-detail-json-copy', function () {
     var $btn = $(this);
     var text = $('#history-detail-json').text();

@@ -125,5 +125,18 @@
   <script src="./static/js/bootstrap.bundle.min.js"></script>
   <script src="./static/js/bootstrap-table.min.js"></script>
   <script src="./static/js/app.js"></script>
+  <script>
+    // Clipboard API requires a secure context (HTTPS or localhost).
+    // Internal HTTP deployments may not support copy — hide the button when unavailable.
+    (function () {
+      var canCopy = window.isSecureContext &&
+        navigator.clipboard &&
+        typeof navigator.clipboard.writeText === 'function';
+      var copyBtn = document.getElementById('history-detail-json-copy');
+      if (copyBtn && !canCopy) {
+        copyBtn.style.display = 'none';
+      }
+    })();
+  </script>
 </body>
 </html>
