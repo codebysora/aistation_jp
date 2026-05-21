@@ -55,7 +55,7 @@
 
     <!-- Content -->
     <main class="rd-content bg-body">
-      <div class="rd-card rd-fade-in">
+      <div class="rd-card">
         <div class="rd-card__header">
           <nav aria-label="breadcrumb">
             <ol class="breadcrumb mb-0">
@@ -65,43 +65,39 @@
         </div>
         <div class="rd-card__body--padded rd-mail-form">
 
-          <!-- Error container -->
-          <div id="mail-form-error" class="rd-alert rd-alert--error mb-3" style="display:none" role="alert"><div class="rd-alert__body"></div></div>
-
           <form action="/mail/settings" method="POST" novalidate="novalidate">
             <input id="csrf_token" name="csrf_token" type="hidden" value="">
 
             <div class="row mb-3 align-items-center">
-              <label for="mail_server" class="col-sm-4 col-xl-3 col-form-label">Mail Server <span class="rd-required-mark">*</span></label>
+              <label for="mail_server" class="col-sm-4 col-xl-3 col-form-label">MAIL_SERVER</label>
               <div class="col-sm-8 col-xl-9">
                 <input class="form-control" id="mail_server" name="mail_server" placeholder="smtp.example.com" required type="text" value="">
               </div>
             </div>
 
             <div class="row mb-3 align-items-center">
-              <label for="mail_port" class="col-sm-4 col-xl-3 col-form-label">Port <span class="rd-required-mark">*</span></label>
+              <label for="mail_port" class="col-sm-4 col-xl-3 col-form-label">MAIL_PORT</label>
               <div class="col-sm-8 col-xl-9">
                 <input class="form-control" id="mail_port" name="mail_port" placeholder="587" required type="text" value="">
-                <div class="rd-help-text">Common values: 587 (TLS), 465 (SSL), 25 (unencrypted)</div>
               </div>
             </div>
 
             <div class="row mb-3 align-items-center">
-              <label for="mail_username" class="col-sm-4 col-xl-3 col-form-label">Username <span class="rd-required-mark">*</span></label>
+              <label for="mail_username" class="col-sm-4 col-xl-3 col-form-label">MAIL_USERNAME</label>
               <div class="col-sm-8 col-xl-9">
                 <input class="form-control" id="mail_username" name="mail_username" placeholder="user@example.com" required type="text" value="">
               </div>
             </div>
 
             <div class="row mb-3 align-items-center">
-              <label for="mail_password" class="col-sm-4 col-xl-3 col-form-label">Password <span class="rd-required-mark">*</span></label>
+              <label for="mail_password" class="col-sm-4 col-xl-3 col-form-label">MAIL_PASSWORD</label>
               <div class="col-sm-8 col-xl-9">
                 <input class="form-control" id="mail_password" name="mail_password" placeholder="********" required type="password" value="">
               </div>
             </div>
 
             <div class="row mb-3 align-items-center">
-              <label class="col-sm-4 col-xl-3 col-form-label" id="mail_use_tls_label">Enable TLS</label>
+              <label class="col-sm-4 col-xl-3 col-form-label" id="mail_use_tls_label">MAIL_USE_TLS</label>
               <div class="col-sm-8 col-xl-9">
                 <div class="d-flex gap-4 py-2" role="radiogroup" aria-labelledby="mail_use_tls_label">
                   <div class="form-check">
@@ -113,12 +109,11 @@
                     <label class="form-check-label ms-1" for="mail_use_tls-1">False</label>
                   </div>
                 </div>
-                <div class="rd-help-text">Recommended for secure connections</div>
               </div>
             </div>
 
             <div class="row mb-3 align-items-center">
-              <label class="col-sm-4 col-xl-3 col-form-label" id="mail_use_ssl_label">Enable SSL</label>
+              <label class="col-sm-4 col-xl-3 col-form-label" id="mail_use_ssl_label">MAIL_USE_SSL</label>
               <div class="col-sm-8 col-xl-9">
                 <div class="d-flex gap-4 py-2" role="radiogroup" aria-labelledby="mail_use_ssl_label">
                   <div class="form-check">
@@ -134,15 +129,14 @@
             </div>
 
             <div class="row mb-3 align-items-center">
-              <label for="mail_default_sender" class="col-sm-4 col-xl-3 col-form-label">Default Sender</label>
+              <label for="mail_default_sender" class="col-sm-4 col-xl-3 col-form-label">MAIL_DEFAULT_SENDER</label>
               <div class="col-sm-8 col-xl-9">
                 <input class="form-control" id="mail_default_sender" name="mail_default_sender" placeholder="noreply@example.com" type="text" value="">
-                <div class="rd-help-text">e.g., noreply@example.com</div>
               </div>
             </div>
 
             <div class="d-flex justify-content-end pt-3 border-top">
-              <button type="submit" class="rd-btn-primary">
+              <button type="submit" class="btn btn-success rd-btn-action border-0">
                 <i class="bi bi-check"></i> Submit
               </button>
             </div>
@@ -154,7 +148,6 @@
 
   </div>
 
-  <div id="toast-container" class="position-fixed top-0 end-0 p-3" style="z-index:1080"></div>
   <script src="./static/js/jquery-3.7.1.min.js"></script>
   <script src="./static/js/bootstrap.bundle.min.js"></script>
   <script src="./static/js/bootstrap-table.min.js"></script>

@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html class="h-100" lang="ja">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,15 +9,13 @@
   <meta name="robots" content="noindex,nofollow">
   <title>AIStation Dashboard - Home</title>
 </head>
-
 <body class="h-100">
 
   <!-- Header -->
   <header>
     <nav class="navbar navbar-expand-sm rd-navbar" aria-label="Top navigation">
       <a class="navbar-brand" href="./">AIStation Dashboard</a>
-      <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse" id="navbarNav">
@@ -44,160 +41,39 @@
     <nav class="rd-sidebar" aria-label="Main navigation">
       <ul class="nav flex-column m-0">
         <li class="rd-sidebar__section-label">Admin</li>
-        <li class="nav-item"><a class="nav-link" href="./keys.html"><i class="bi bi-key" aria-hidden="true"></i> API
-            Keys</a></li>
-        <li class="nav-item"><a class="nav-link" href="./teams.html"><i class="bi bi-people" aria-hidden="true"></i>
-            Teams</a></li>
-        <li class="nav-item"><a class="nav-link" href="#"><i class="bi bi-clock-history" aria-hidden="true"></i>
-            Histories</a></li>
-        <li>
-          <div class="rd-sidebar__separator"></div>
-        </li>
+        <li class="nav-item"><a class="nav-link" href="./keys.html"><i class="bi bi-key" aria-hidden="true"></i> API Keys</a></li>
+        <li class="nav-item"><a class="nav-link" href="./teams.html"><i class="bi bi-people" aria-hidden="true"></i> Teams</a></li>
+        <li class="nav-item"><a class="nav-link" href="#"><i class="bi bi-clock-history" aria-hidden="true"></i> Histories</a></li>
+        <li><div class="rd-sidebar__separator"></div></li>
         <li class="rd-sidebar__separator-label">Management</li>
-        <li class="nav-item"><a class="nav-link" href="./model_settings.html"><i class="bi bi-robot"
-              aria-hidden="true"></i> Model management</a></li>
-        <li class="nav-item"><a class="nav-link" href="./team_management.html"><i class="bi bi-diagram-3"
-              aria-hidden="true"></i> Team management</a></li>
-        <li class="nav-item"><a class="nav-link" href="./user_management.html"><i class="bi bi-person"
-              aria-hidden="true"></i> User management</a></li>
-        <li class="nav-item"><a class="nav-link" href="./mail_settings.html"><i class="bi bi-envelope"
-              aria-hidden="true"></i> Mail settings</a></li>
-        <li class="nav-item"><a class="nav-link" href="./model_catalog.html"><i class="bi bi-grid-3x3-gap"
-              aria-hidden="true"></i> Model Catalog</a></li>
+        <li class="nav-item"><a class="nav-link" href="./model_settings.html"><i class="bi bi-robot" aria-hidden="true"></i> Model management</a></li>
+        <li class="nav-item"><a class="nav-link" href="./team_management.html"><i class="bi bi-diagram-3" aria-hidden="true"></i> Team management</a></li>
+        <li class="nav-item"><a class="nav-link" href="./user_management.html"><i class="bi bi-person" aria-hidden="true"></i> User management</a></li>
+        <li class="nav-item"><a class="nav-link" href="./mail_settings.html"><i class="bi bi-envelope" aria-hidden="true"></i> Mail settings</a></li>
       </ul>
     </nav>
 
     <!-- Content -->
     <main class="rd-content bg-body">
-
-      <!-- Stats Row -->
-      <div class="row g-3 mb-4">
-        <div class="col-sm-6 col-xl-3">
-          <div class="rd-stat-card rd-fade-in">
-            <div class="rd-stat-card__icon" style="background:rgba(15,102,220,0.1);color:var(--bs-primary)">
-              <i class="bi bi-robot"></i>
-            </div>
-            <div>
-              <div class="rd-stat-card__value">3</div>
-              <div class="rd-stat-card__label">Active Models</div>
-            </div>
-          </div>
+      <div class="rd-card">
+        <div class="rd-card__header">
+          Pages
         </div>
-        <div class="col-sm-6 col-xl-3">
-          <div class="rd-stat-card rd-fade-in">
-            <div class="rd-stat-card__icon" style="background:rgba(119,200,69,0.1);color:var(--bs-success)">
-              <i class="bi bi-key"></i>
-            </div>
-            <div>
-              <div class="rd-stat-card__value">14</div>
-              <div class="rd-stat-card__label">API Keys</div>
-            </div>
-          </div>
-        </div>
-        <div class="col-sm-6 col-xl-3">
-          <div class="rd-stat-card rd-fade-in">
-            <div class="rd-stat-card__icon" style="background:rgba(47,197,251,0.1);color:var(--bs-secondary)">
-              <i class="bi bi-people"></i>
-            </div>
-            <div>
-              <div class="rd-stat-card__value">7</div>
-              <div class="rd-stat-card__label">Teams</div>
-            </div>
-          </div>
-        </div>
-        <div class="col-sm-6 col-xl-3">
-          <div class="rd-stat-card rd-fade-in">
-            <div class="rd-stat-card__icon" style="background:rgba(80,80,80,0.1);color:var(--bs-tertiary)">
-              <i class="bi bi-person"></i>
-            </div>
-            <div>
-              <div class="rd-stat-card__value">11</div>
-              <div class="rd-stat-card__label">Users</div>
-            </div>
-          </div>
+        <div class="rd-card__body">
+          <ul class="rd-nav-hub mb-0 ps-0">
+            <li><a href="./keys.html"><i class="bi bi-key me-2" aria-hidden="true"></i>API Keys</a></li>
+            <li><a href="./teams.html"><i class="bi bi-people me-2" aria-hidden="true"></i>Teams</a></li>
+            <li><a href="./team_management.html"><i class="bi bi-diagram-3 me-2" aria-hidden="true"></i>Team Management</a></li>
+            <li><a href="./user_management.html"><i class="bi bi-person me-2" aria-hidden="true"></i>User Management</a></li>
+            <li><a href="./team_edit.html"><i class="bi bi-pencil-square me-2" aria-hidden="true"></i>Team Member Edit (Admin)</a></li>
+            <li><a href="./user_edit.html"><i class="bi bi-pencil-square me-2" aria-hidden="true"></i>User Edit</a></li>
+            <li><a href="./mail_settings.html"><i class="bi bi-envelope me-2" aria-hidden="true"></i>Mail Settings</a></li>
+            <li><a href="./model_settings.html"><i class="bi bi-robot me-2" aria-hidden="true"></i>Model Management</a></li>
+            <li><a href="./deploy_model_select.html"><i class="bi bi-grid me-2" aria-hidden="true"></i>Deploy Model Select</a></li>
+            <li><a href="./deploy_model_form.html"><i class="bi bi-file-earmark-text me-2" aria-hidden="true"></i>Deploy Model Form</a></li>
+          </ul>
         </div>
       </div>
-
-      <!-- Quick Actions + All Pages -->
-      <div class="row g-3">
-        <!-- Quick Actions -->
-        <div class="col-lg-6">
-          <div class="rd-card rd-card--hover rd-fade-in">
-            <div class="rd-card__header">Quick Actions</div>
-            <div class="rd-card__body">
-              <div class="row g-3">
-                <div class="col-6">
-                  <a href="./deploy_model_select.html"
-                    class="rd-btn-primary d-flex align-items-center gap-2 text-decoration-none justify-content-center py-3 rounded">
-                    <i class="bi bi-rocket-takeoff fs-5"></i> Deploy Model
-                  </a>
-                </div>
-                <div class="col-6">
-                  <a href="./keys.html"
-                    class="rd-btn-primary d-flex align-items-center gap-2 text-decoration-none justify-content-center py-3 rounded">
-                    <i class="bi bi-key fs-5"></i> Add API Key
-                  </a>
-                </div>
-                <div class="col-6">
-                  <a href="./team_management.html"
-                    class="rd-btn-ghost d-flex align-items-center gap-2 text-decoration-none justify-content-center py-3 rounded">
-                    <i class="bi bi-people fs-5"></i> Create Team
-                  </a>
-                </div>
-                <div class="col-6">
-                  <a href="./user_management.html"
-                    class="rd-btn-ghost d-flex align-items-center gap-2 text-decoration-none justify-content-center py-3 rounded">
-                    <i class="bi bi-person-plus fs-5"></i> Manage Users
-                  </a>
-                </div>
-                <div class="col-6">
-                  <a href="./model_settings.html"
-                    class="rd-btn-ghost d-flex align-items-center gap-2 text-decoration-none justify-content-center py-3 rounded">
-                    <i class="bi bi-robot fs-5"></i> Model Settings
-                  </a>
-                </div>
-                <div class="col-6">
-                  <a href="./mail_settings.html"
-                    class="rd-btn-ghost d-flex align-items-center gap-2 text-decoration-none justify-content-center py-3 rounded">
-                    <i class="bi bi-envelope fs-5"></i> Mail Settings
-                  </a>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <!-- All Pages -->
-        <div class="col-lg-6">
-          <div class="rd-card rd-fade-in">
-            <div class="rd-card__header">All Pages</div>
-            <div class="rd-card__body">
-              <ul class="rd-nav-hub mb-0 ps-0">
-                <li><a href="./keys.html"><i class="bi bi-key me-2" aria-hidden="true"></i>API Keys</a></li>
-                <li><a href="./teams.html"><i class="bi bi-people me-2" aria-hidden="true"></i>Teams</a></li>
-                <li><a href="./team_management.html"><i class="bi bi-diagram-3 me-2" aria-hidden="true"></i>Team
-                    Management</a></li>
-                <li><a href="./user_management.html"><i class="bi bi-person me-2" aria-hidden="true"></i>User
-                    Management</a></li>
-                <li><a href="./team_edit.html"><i class="bi bi-pencil-square me-2" aria-hidden="true"></i>Team Member
-                    Edit (Admin)</a></li>
-                <li><a href="./user_edit.html"><i class="bi bi-pencil-square me-2" aria-hidden="true"></i>User Edit</a>
-                </li>
-                <li><a href="./mail_settings.html"><i class="bi bi-envelope me-2" aria-hidden="true"></i>Mail
-                    Settings</a></li>
-                <li><a href="./model_settings.html"><i class="bi bi-robot me-2" aria-hidden="true"></i>Model
-                    Management</a></li>
-                <li><a href="./deploy_model_select.html"><i class="bi bi-grid me-2" aria-hidden="true"></i>Deploy Model
-                    Select</a></li>
-                <li><a href="./deploy_model_form.html"><i class="bi bi-file-earmark-text me-2"
-                      aria-hidden="true"></i>Deploy Model Form</a></li>
-                <li><a href="./model_catalog.html"><i class="bi bi-grid-3x3-gap me-2" aria-hidden="true"></i>Model
-                    Catalog</a></li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      </div>
-
     </main>
 
   </div>
@@ -205,7 +81,5 @@
   <script src="./static/js/jquery-3.7.1.min.js"></script>
   <script src="./static/js/bootstrap.bundle.min.js"></script>
   <script src="./static/js/app.js"></script>
-  <div id="toast-container" class="position-fixed top-0 end-0 p-3" style="z-index:1080"></div>
 </body>
-
 </html>

@@ -5,6 +5,7 @@
   <meta name="robots" content="noindex,nofollow">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="./static/css/bootstrap.min.css">
+  <link rel="stylesheet" href="./static/css/bootstrap-table.min.css">
   <link rel="stylesheet" href="./static/font/bootstrap-icons.css">
   <link rel="stylesheet" href="./static/css/style.css">
   <title>AIStation Dashboard - Histories</title>
@@ -44,14 +45,12 @@
         <li class="nav-item"><a class="nav-link" href="./userRole_teams.html"><i class="bi bi-people" aria-hidden="true"></i> Teams</a></li>
         <li class="nav-item"><a class="nav-link active" href="./userRole_histories.html"><i class="bi bi-clock-history" aria-hidden="true"></i> Histories</a></li>
         <li class="nav-item"><a class="nav-link" href="./userRole_models.html"><i class="bi bi-robot" aria-hidden="true"></i> Models</a></li>
-        <li class="nav-item"><a class="nav-link" href="./model_catalog.html"><i class="bi bi-grid-3x3-gap" aria-hidden="true"></i> Model Catalog</a></li>
       </ul>
     </nav>
 
     <!-- Content -->
     <main class="rd-content bg-body">
-
-      <div class="rd-card rd-fade-in">
+      <div class="rd-card">
         <div class="rd-card__header">
           <nav aria-label="breadcrumb">
             <ol class="breadcrumb mb-0">
@@ -59,162 +58,72 @@
             </ol>
           </nav>
         </div>
-        <div class="rd-card__body--padded" style="overflow-y:auto">
-
-          <!-- API Requests (Line chart) -->
-          <h6 class="fw-bold mb-3">API Requests (Last 30 days)</h6>
-          <div class="position-relative" style="min-width:0;height:30vh;min-height:160px">
-            <canvas id="chart-requests"></canvas>
-          </div>
-
-          <hr class="my-4">
-
-          <!-- Token Usage (Bar) + Requests by Model (Doughnut) -->
-          <div class="row g-4">
-            <div class="col-md-7">
-              <h6 class="fw-bold mb-3">Token Usage (Last 30 days)</h6>
-              <div class="position-relative" style="min-width:0;height:28vh;min-height:160px">
-                <canvas id="chart-tokens"></canvas>
-              </div>
-              <hr class="my-4 d-md-none">
-            </div>
-            <div class="col-md-5">
-              <h6 class="fw-bold mb-3">Requests by Model</h6>
-              <div class="position-relative d-flex justify-content-center" style="min-width:0;height:28vh;min-height:160px">
-                <canvas id="chart-models" style="max-width:320px"></canvas>
-              </div>
-            </div>
-          </div>
-
+        <div class="rd-card__body">
+          <table class="table table-borderless table-hover table-striped table-sm" id="histories-table"
+            data-unique-id="request_id" data-toggle="table"
+            data-pagination="true" data-search="true"
+            data-url="./static/test.json"
+            data-data-field="data">
+            <thead>
+              <tr>
+                <th data-sortable="true" data-field="status" data-formatter="historyStatusFormatter">Status</th>
+                <th data-sortable="true" data-field="start_time" data-formatter="historyTimeFormatter">Time</th>
+                <th data-sortable="true" data-field="model">Model</th>
+                <th data-sortable="true" data-field="prompt_tokens" data-formatter="historyNumberFormatter">Prompt</th>
+                <th data-sortable="true" data-field="completion_tokens" data-formatter="historyNumberFormatter">Completion</th>
+                <th data-sortable="true" data-field="total_tokens" data-formatter="historyNumberFormatter">Total</th>
+                <th data-sortable="true" data-field="e2el">Latency</th>
+                <th data-sortable="true" data-field="request_id" data-formatter="historyRequestIdFormatter">Request ID</th>
+              </tr>
+            </thead>
+          </table>
         </div>
       </div>
-
     </main>
 
   </div>
 
-  <div id="toast-container" class="position-fixed top-0 end-0 p-3" style="z-index:1080"></div>
+  <!-- History Detail Modal -->
+  <div class="modal fade" id="history-detail-modal" tabindex="-1" aria-labelledby="history-detail-modal-label" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable rd-modal rd-modal--big" style="max-width:1000px">
+      <div class="modal-content">
+        <div class="modal-header flex-column align-items-stretch">
+          <div class="d-flex align-items-start justify-content-between gap-3 w-100">
+            <h5 class="modal-title text-truncate" id="history-detail-modal-label">Request Detail</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div id="history-detail-summary" class="d-flex flex-wrap gap-2 align-items-center mt-2"></div>
+        </div>
+        <div class="modal-body pt-0">
+          <ul class="nav nav-tabs mb-3" role="tablist">
+            <li class="nav-item" role="presentation">
+              <button class="nav-link active" id="history-tab-preview-trigger" data-bs-toggle="tab" data-bs-target="#history-tab-preview" type="button" role="tab">Preview</button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button class="nav-link" id="history-tab-json-trigger" data-bs-toggle="tab" data-bs-target="#history-tab-json" type="button" role="tab">JSON</button>
+            </li>
+          </ul>
+          <div class="tab-content">
+            <div class="tab-pane fade show active" id="history-tab-preview" role="tabpanel">
+              <div id="history-detail-preview"></div>
+            </div>
+            <div class="tab-pane fade" id="history-tab-json" role="tabpanel">
+              <div class="d-flex justify-content-end mb-2">
+                <button type="button" id="history-detail-json-copy" class="btn btn-sm" style="background:#fff;border:none;margin-right:10px" title="Copy JSON">
+                  <i class="bi bi-copy" aria-hidden="true"></i> Copy
+                </button>
+              </div>
+              <pre id="history-detail-json" class="mb-0 small bg-light rounded p-3" style="max-height:60vh;overflow:auto;white-space:pre-wrap;word-break:break-word"></pre>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <script src="./static/js/jquery-3.7.1.min.js"></script>
   <script src="./static/js/bootstrap.bundle.min.js"></script>
-  <script src="./static/js/chart.umd.min.js"></script>
+  <script src="./static/js/bootstrap-table.min.js"></script>
   <script src="./static/js/app.js"></script>
-  <script>
-  $(function () {
-    // --- Mock data: last 30 days ---
-    var labels = [];
-    var requestsData = [];
-    var promptTokens = [];
-    var completionTokens = [];
-    var today = new Date();
-    for (var i = 29; i >= 0; i--) {
-      var d = new Date(today);
-      d.setDate(d.getDate() - i);
-      labels.push((d.getMonth() + 1) + '/' + d.getDate());
-      requestsData.push(Math.floor(Math.random() * 400 + 100));
-      promptTokens.push(Math.floor(Math.random() * 50000 + 20000));
-      completionTokens.push(Math.floor(Math.random() * 30000 + 10000));
-    }
-
-    var chartColors = {
-      primary: 'rgba(15, 102, 220, 1)',
-      primaryLight: 'rgba(15, 102, 220, 0.15)',
-      success: 'rgba(119, 200, 69, 1)',
-      successLight: 'rgba(119, 200, 69, 0.6)',
-      secondary: 'rgba(47, 197, 251, 1)',
-      secondaryLight: 'rgba(47, 197, 251, 0.6)',
-      warning: 'rgba(240, 201, 135, 1)',
-      danger: 'rgba(218, 80, 80, 1)',
-      grey: 'rgba(80, 80, 80, 0.15)'
-    };
-
-    var defaultOptions = {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: { labels: { font: { size: 12 }, usePointStyle: true, pointStyle: 'circle' } }
-      },
-      scales: {
-        x: { grid: { display: false }, ticks: { font: { size: 11 }, maxTicksLimit: 10 } },
-        y: { grid: { color: chartColors.grey }, ticks: { font: { size: 11 } }, beginAtZero: true }
-      }
-    };
-
-    // 1. API Requests - Line chart
-    new Chart(document.getElementById('chart-requests'), {
-      type: 'line',
-      data: {
-        labels: labels,
-        datasets: [{
-          label: 'Requests',
-          data: requestsData,
-          borderColor: chartColors.primary,
-          backgroundColor: chartColors.primaryLight,
-          fill: true,
-          tension: 0.3,
-          pointRadius: 2,
-          pointHoverRadius: 5
-        }]
-      },
-      options: defaultOptions
-    });
-
-    // 2. Token Usage - Stacked Bar chart
-    new Chart(document.getElementById('chart-tokens'), {
-      type: 'bar',
-      data: {
-        labels: labels,
-        datasets: [
-          {
-            label: 'Prompt Tokens',
-            data: promptTokens,
-            backgroundColor: chartColors.secondaryLight,
-            borderRadius: 2
-          },
-          {
-            label: 'Completion Tokens',
-            data: completionTokens,
-            backgroundColor: chartColors.successLight,
-            borderRadius: 2
-          }
-        ]
-      },
-      options: Object.assign({}, defaultOptions, {
-        scales: Object.assign({}, defaultOptions.scales, {
-          x: Object.assign({}, defaultOptions.scales.x, { stacked: true }),
-          y: Object.assign({}, defaultOptions.scales.y, { stacked: true })
-        })
-      })
-    });
-
-    // 3. Requests by Model - Doughnut chart
-    new Chart(document.getElementById('chart-models'), {
-      type: 'doughnut',
-      data: {
-        labels: ['sample-Qwen3-0.6b-gpu', 'llama3-8b-instruct', 'mistral-7b-v0.3', 'phi-3-mini-128k', 'Other'],
-        datasets: [{
-          data: [3200, 2100, 1800, 1200, 700],
-          backgroundColor: [
-            chartColors.primary,
-            chartColors.secondary,
-            chartColors.success,
-            chartColors.warning,
-            chartColors.danger
-          ]
-        }]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          legend: {
-            position: 'bottom',
-            labels: { font: { size: 11 }, usePointStyle: true, pointStyle: 'circle', padding: 16 }
-          }
-        }
-      }
-    });
-  });
-  </script>
 </body>
 </html>

@@ -55,7 +55,7 @@
 
     <!-- Content -->
     <main class="rd-content bg-body">
-      <div class="rd-card rd-fade-in">
+      <div class="rd-card">
         <div class="rd-card__header">
           <nav aria-label="breadcrumb">
             <ol class="breadcrumb mb-0">
@@ -67,17 +67,13 @@
           </nav>
         </div>
         <div class="rd-card__body--padded rd-card__body--form rd-team-edit-body">
-
-          <!-- Error container -->
-          <div id="team-form-error" class="rd-alert rd-alert--error mb-3" style="display:none" role="alert"><div class="rd-alert__body"></div></div>
-
           <form action="/team/edit" method="POST" novalidate="novalidate" class="rd-team-edit-form">
             <input id="csrf_token" name="csrf_token" type="hidden" value="">
 
             <!-- Team Name -->
             <div class="mb-2">
               <label for="team_name" class="form-label fw-bold">
-                <i class="bi bi-diagram-3 me-2" aria-hidden="true"></i>Team Name <span class="rd-required-mark">*</span>
+                <i class="bi bi-diagram-3 me-2" aria-hidden="true"></i>Team Name
               </label>
               <input class="form-control bg-light border-0" id="team_name" name="team_name" type="text" value="sample" readonly>
             </div>
@@ -85,8 +81,7 @@
             <!-- Members Table -->
             <div class="rd-team-edit-members">
               <div id="members-toolbar">
-                <h6 class="fw-bold mb-0">Current Members</h6>
-                <div class="rd-help-text">Manage existing team members and their roles</div>
+                <h6 class="fw-bold mb-0">Members</h6>
               </div>
               <table class="table table-borderless table-hover table-sm" id="members-table"
                 data-unique-id="user_id" data-toggle="table"
@@ -105,8 +100,7 @@
 
             <!-- Add Members -->
             <div class="mb-4 pt-3 border-top">
-              <label for="emailInput" class="form-label fw-bold mb-3">Add New Members</label>
-              <div class="rd-help-text mb-2">Select users from the dropdown to add them to this team</div>
+              <label for="emailInput" class="form-label fw-bold mb-3">Add Members</label>
               <input type="email" id="emailInput" class="p-selected-members__input" multiple>
 
               <div class="dropdown c-member-dropdown">
@@ -150,7 +144,7 @@
 
             <!-- Role Selection -->
             <fieldset class="mb-4">
-              <legend class="form-label fw-bold mb-3">Role for New Members <span class="rd-required-mark">*</span></legend>
+              <legend class="form-label fw-bold mb-3">Member Role</legend>
               <div class="d-flex justify-content-between align-items-center">
                 <div class="border rounded-1 d-inline-flex gap-4 px-3 py-2 bg-white">
                   <div>
@@ -162,19 +156,18 @@
                     <label class="form-check-label ms-1" for="role-owner">Owner</label>
                   </div>
                 </div>
-                <button type="button" class="rd-btn-primary d-inline-flex align-items-center gap-1">
+                <button type="button" class="btn btn-success border-0 d-inline-flex align-items-center gap-1">
                   <i class="bi bi-plus-circle"></i> Add Members
                 </button>
               </div>
-              <div class="rd-help-text mt-2">Select the role to assign when adding new members</div>
             </fieldset>
 
             <!-- Form Actions -->
             <div class="d-flex justify-content-end gap-3 pt-3 border-top">
-              <a href="./team_management.html" class="rd-btn-secondary">
+              <a href="./team_management.html" class="btn btn-light rd-btn-action border-0">
                 <i class="bi bi-x"></i> Cancel
               </a>
-              <button type="submit" class="rd-btn-primary">
+              <button type="submit" class="btn btn-success rd-btn-action border-0">
                 <i class="bi bi-check"></i> Submit
               </button>
             </div>
@@ -185,7 +178,6 @@
 
   </div>
 
-  <div id="toast-container" class="position-fixed top-0 end-0 p-3" style="z-index:1080"></div>
   <script src="./static/js/jquery-3.7.1.min.js"></script>
   <script src="./static/js/bootstrap.bundle.min.js"></script>
   <script src="./static/js/bootstrap-table.min.js"></script>

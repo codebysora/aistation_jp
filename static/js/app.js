@@ -193,6 +193,178 @@ function setTeamRoleTarget(team_id, team_role) {
 }
 
 /* ============================================
+   Table formatters - Histories
+   ============================================ */
+function historyStatusFormatter(value) {
+  if (value === 'success') {
+    return '<span class="c-model-status--active">success</span>';
+  }
+  if (value === 'failure') {
+    return '<span class="c-model-status--failed">failure</span>';
+  }
+  return escapeHtml(value || '-');
+}
+
+function historyTimeFormatter(value) {
+  if (!value) return '-';
+  // Trim microseconds for readability: "2026-04-10 05:45:59.724000" -> "2026-04-10 05:45:59"
+  return escapeHtml(String(value).replace(/\.\d+$/, ''));
+}
+
+function historyNumberFormatter(value) {
+  if (value == null) return '-';
+  return Number(value).toLocaleString();
+}
+
+function historyRequestIdFormatter(value) {
+  if (!value) return '-';
+  var v = String(value);
+  var short = v.length > 16 ? v.slice(0, 16) + '…' : v;
+  return '<span class="text-body-secondary" title="' + escapeHtml(v) + '">' + escapeHtml(short) + '</span>';
+}
+
+function formatLatency(e2el) {
+  if (!e2el) return '-';
+  var m = String(e2el).match(/^(\d+):(\d+):(\d+(?:\.\d+)?)/);
+  if (!m) return String(e2el);
+  var s = parseInt(m[1], 10) * 3600 + parseInt(m[2], 10) * 60 + parseFloat(m[3]);
+  return s.toFixed(2) + 's';
+}
+
+function buildHistorySummary(row) {
+  var statusBadge = row.status === 'success'
+    ? '<span class="c-model-status--active">success</span>'
+    : '<span class="c-model-status--failed">' + escapeHtml(row.status || '-') + '</span>';
+  var time = String(row.start_time || '').replace(/\.\d+$/, '');
+  var prompt = Number(row.prompt_tokens || 0).toLocaleString();
+  var completion = Number(row.completion_tokens || 0).toLocaleString();
+  return statusBadge +
+    '<span class="badge bg-light text-dark border fw-normal">' + escapeHtml(time || '-') + '</span>' +
+    '<span class="badge bg-light text-dark border fw-normal">Latency: ' + escapeHtml(formatLatency(row.e2el)) + '</span>' +
+    '<span class="badge bg-light text-dark border fw-normal">Model: ' + escapeHtml(row.model || '-') + '</span>' +
+    '<span class="badge bg-light text-dark border fw-normal">' + prompt + ' prompt &rarr; ' + completion + ' completion</span>';
+}
+
+function buildHistorySection(title, bodyHtml, opts) {
+  opts = opts || {};
+  var titleClass = 'rd-history-section__title' + (opts.danger ? ' rd-history-section__title--danger' : '');
+  return '<section class="rd-history-section">' +
+    '<div class="' + titleClass + '">' + escapeHtml(title) + '</div>' +
+    bodyHtml +
+    '</section>';
+}
+
+function buildHistoryKvTable(obj) {
+  var keys = Object.keys(obj || {});
+  if (!keys.length) return '<div class="text-body-secondary small">empty</div>';
+  var html = '<table class="rd-history-kv">' +
+    '<thead><tr><th style="width:30%">Path</th><th>Value</th></tr></thead>' +
+    '<tbody>';
+  for (var i = 0; i < keys.length; i++) {
+    var k = keys[i];
+    var v = obj[k];
+    var rendered;
+    if (v == null) {
+      rendered = '<span class="text-body-secondary">null</span>';
+    } else if (typeof v === 'string') {
+      rendered = '<pre>' + escapeHtml(v) + '</pre>';
+    } else {
+      rendered = '<pre>' + escapeHtml(JSON.stringify(v, null, 2)) + '</pre>';
+    }
+    html += '<tr>' +
+      '<td class="rd-history-kv__key">' + escapeHtml(k) + '</td>' +
+      '<td class="rd-history-kv__value">' + rendered + '</td>' +
+      '</tr>';
+  }
+  html += '</tbody></table>';
+  return html;
+}
+
+function historyMsgRoleClass(role) {
+  if (role === 'system') return 'rd-history-msg rd-history-msg--system';
+  if (role === 'user') return 'rd-history-msg rd-history-msg--user';
+  if (role === 'assistant') return 'rd-history-msg rd-history-msg--assistant';
+  return 'rd-history-msg';
+}
+
+function buildHistoryPreview(row) {
+  var html = '';
+
+  // Tags
+  var tags = row.request_tags || [];
+  if (tags.length) {
+    var tagsHtml = '<div class="d-flex flex-wrap gap-2">';
+    for (var i = 0; i < tags.length; i++) {
+      tagsHtml += '<span class="badge bg-light text-dark border fw-normal">' + escapeHtml(tags[i]) + '</span>';
+    }
+    tagsHtml += '</div>';
+    html += buildHistorySection('Tags', tagsHtml);
+  }
+
+  // Input messages (proxy_server_request.messages)
+  var msgs = (row.proxy_server_request && row.proxy_server_request.messages) || [];
+  if (msgs.length) {
+    var inputHtml = '';
+    for (var j = 0; j < msgs.length; j++) {
+      var m = msgs[j] || {};
+      inputHtml += '<div class="' + historyMsgRoleClass(m.role) + '">' +
+        '<div class="rd-history-msg__role">' + escapeHtml(m.role || '-') + '</div>' +
+        '<pre class="rd-history-msg__content">' + escapeHtml(m.content || '') + '</pre>' +
+        '</div>';
+    }
+    html += buildHistorySection('Input', inputHtml);
+  }
+
+  // Output (response.choices[*].message)
+  var choices = (row.response && row.response.choices) || [];
+  if (choices.length) {
+    var outHtml = '';
+    for (var k = 0; k < choices.length; k++) {
+      var msgA = (choices[k] || {}).message || {};
+      outHtml += buildHistoryKvTable(msgA);
+    }
+    html += buildHistorySection('Output', outHtml);
+  }
+
+  // Error info (failure cases)
+  var err = row.metadata_ && row.metadata_.error_information;
+  if (err) {
+    html += buildHistorySection('Error', buildHistoryKvTable(err), { danger: true });
+  }
+
+  // Metadata
+  if (row.metadata_) {
+    var metaHtml = '<pre class="rd-history-meta">' +
+      escapeHtml(JSON.stringify(row.metadata_, null, 2)) +
+      '</pre>';
+    html += buildHistorySection('Metadata', metaHtml);
+  }
+
+  if (!html) {
+    html = '<div class="text-body-secondary">No preview content.</div>';
+  }
+  return html;
+}
+
+function showHistoryDetail(row) {
+  $('#history-detail-modal-label').text(row.request_id || 'Request Detail');
+  $('#history-detail-summary').html(buildHistorySummary(row));
+  $('#history-detail-preview').html(buildHistoryPreview(row));
+
+  var json;
+  try { json = JSON.stringify(row, null, 2); } catch (e) { json = String(row); }
+  $('#history-detail-json').text(json);
+
+  // Reset to Preview tab on each open
+  var trigger = document.getElementById('history-tab-preview-trigger');
+  if (trigger) { new bootstrap.Tab(trigger).show(); }
+
+  var modal = new bootstrap.Modal(document.getElementById('history-detail-modal'));
+  modal.show();
+}
+
+
+/* ============================================
    Model detail modal
    ============================================ */
 function buildModelDetailHtml(data) {
@@ -324,9 +496,28 @@ function initEventDelegation() {
   });
 
   // Model detail - bootstrap-table row click (admin & user)
-  $('#model-settings-table, #models-table').on('click-row.bs.table', function (e, row, $el, field) {
+ $('#model-settings-table, #models-table').on('click-row.bs.table', function (e, row, $el, field) {
     if (field === 'action') return;
     showModelDetail(row);
+  });
+
+  // History detail - bootstrap-table row click
+  $('#histories-table').on('click-row.bs.table', function (e, row) {
+    showHistoryDetail(row);
+  });
+
+  // History detail - JSON tab copy button
+  $(document).on('click', '#history-detail-json-copy', function () {
+    var $btn = $(this);
+    var text = $('#history-detail-json').text();
+    if (!text) return;
+    navigator.clipboard.writeText(text).then(function () {
+      var orig = $btn.html();
+      $btn.html('<i class="bi bi-check2" aria-hidden="true"></i> Copied');
+      setTimeout(function () { $btn.html(orig); }, 1200);
+    }).catch(function () {
+      // clipboard write failed — silently ignore
+    });
   });
 }
 

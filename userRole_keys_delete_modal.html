@@ -44,13 +44,12 @@
         <li class="nav-item"><a class="nav-link" href="./userRole_teams.html"><i class="bi bi-people" aria-hidden="true"></i> Teams</a></li>
         <li class="nav-item"><a class="nav-link" href="./userRole_histories.html"><i class="bi bi-clock-history" aria-hidden="true"></i> Histories</a></li>
         <li class="nav-item"><a class="nav-link" href="./userRole_models.html"><i class="bi bi-robot" aria-hidden="true"></i> Models</a></li>
-        <li class="nav-item"><a class="nav-link" href="./model_catalog.html"><i class="bi bi-grid-3x3-gap" aria-hidden="true"></i> Model Catalog</a></li>
       </ul>
     </nav>
 
     <!-- Content -->
     <main class="rd-content bg-body">
-      <div class="rd-card rd-fade-in">
+      <div class="rd-card">
         <div class="rd-card__header">
           <nav aria-label="breadcrumb">
             <ol class="breadcrumb mb-0">
@@ -59,7 +58,6 @@
           </nav>
         </div>
         <div class="rd-card__body">
-          <div class="rd-table-responsive">
           <table class="table table-borderless table-hover table-striped table-sm" id="keys-table"
             data-unique-id="key_id" data-toggle="table"
             data-pagination="true" data-search="true"
@@ -75,7 +73,6 @@
               </tr>
             </thead>
           </table>
-          </div>
         </div>
       </div>
     </main>
@@ -84,7 +81,7 @@
 
   <!-- Delete Modal (shown) -->
   <div class="modal fade show" id="key-delete-modal" tabindex="-1" aria-labelledby="key-delete-modal-label" aria-modal="true" role="dialog" style="display: block;">
-    <div class="modal-dialog modal-dialog-centered rd-modal rd-modal--destructive">
+    <div class="modal-dialog modal-dialog-centered rd-modal">
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title" id="key-delete-modal-label">Delete API Key</h5>
@@ -93,18 +90,9 @@
         <form id="key-delete-form" action="/key/delete" method="POST" novalidate="novalidate">
           <input id="csrf_token" name="csrf_token" type="hidden" value="">
           <div class="modal-body">
-            <div class="rd-modal__warning mb-3">
-              <i class="bi bi-exclamation-triangle me-1"></i> This action cannot be undone. Any applications using this key will lose access.
-            </div>
             <div class="rd-modal__info mb-3">
               <input type="hidden" name="key_id" value="" id="key-delete-key-id">
               Delete api key: [<span id="key-delete-key-masked">sk-...e51w</span>]
-            </div>
-            <div class="rd-modal__checkbox-confirm">
-              <div class="form-check">
-                <input class="form-check-input" type="checkbox" id="key-delete-confirm" required>
-                <label class="form-check-label" for="key-delete-confirm">I understand this action is irreversible</label>
-              </div>
             </div>
           </div>
           <div class="modal-footer">
@@ -112,8 +100,8 @@
               <button type="button" class="btn btn-light rd-btn-action border-0" data-bs-dismiss="modal">
                 <i class="bi bi-x"></i> Cancel
               </button>
-              <button type="submit" class="btn btn-danger rd-btn-action border-0">
-                <i class="bi bi-trash"></i> Delete
+              <button type="submit" class="btn btn-success rd-btn-action border-0">
+                <i class="bi bi-check"></i> Submit
               </button>
             </div>
           </div>
@@ -122,8 +110,6 @@
     </div>
   </div>
   <div class="modal-backdrop fade show"></div>
-
-  <div id="toast-container" class="position-fixed top-0 end-0 p-3" style="z-index:1080"></div>
 
   <script src="./static/js/jquery-3.7.1.min.js"></script>
   <script src="./static/js/bootstrap.bundle.min.js"></script>
