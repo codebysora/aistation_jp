@@ -68,7 +68,7 @@
             <div class="row g-3 align-items-end">
               <div class="col-sm-6 col-lg-4">
                 <label for="histories-search-username" class="form-label">Username</label>
-                <input type="text" class="form-control" id="histories-search-username" name="username" autocomplete="username" placeholder="user@example.com">
+                <input type="text" class="form-control" id="histories-search-username" name="username" autocomplete="off" placeholder="user@example.com">
               </div>
               <div class="col-sm-6 col-lg-3">
                 <label for="histories-search-date-from" class="form-label">From</label>
@@ -89,6 +89,7 @@
             data-unique-id="request_id" data-toggle="table"
             data-pagination="true" data-search="false"
             data-query-params="adminHistoriesQueryParams"
+            data-response-handler="adminHistoriesResponseHandler"
             data-url="./static/test.json"
             data-data-field="data">
             <thead>

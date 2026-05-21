@@ -223,27 +223,144 @@ function historyRequestIdFormatter(value) {
   return '<span class="text-body-secondary" title="' + escapeHtml(v) + '">' + escapeHtml(short) + '</span>';
 }
 
+/** Read admin histories search form values (trimmed). */
+function getAdminHistoriesSearchFilters() {
+  return {
+    username: ($('#histories-search-username').val() || '').trim().toLowerCase(),
+    date_from: $('#histories-search-date-from').val() || '',
+    date_to: $('#histories-search-date-to').val() || ''
+  };
+}
+
+function historyRowUsername(row) {
+  if (row.username) return String(row.username);
+  if (row.end_user) return String(row.end_user);
+  var meta = row.metadata_ || row.metadata || {};
+  if (meta.user_email) return String(meta.user_email);
+  if (meta.user_api_key_alias) return String(meta.user_api_key_alias);
+  return String(row.user_id || '');
+}
+
+function historyRowStartDate(row) {
+  if (!row.start_time) return '';
+  return String(row.start_time).slice(0, 10);
+}
+
+function matchesAdminHistoriesFilters(row, filters) {
+  if (filters.username) {
+    if (historyRowUsername(row).toLowerCase().indexOf(filters.username) === -1) {
+      return false;
+    }
+  }
+  var day = historyRowStartDate(row);
+  if (filters.date_from && (!day || day < filters.date_from)) return false;
+  if (filters.date_to && (!day || day > filters.date_to)) return false;
+  return true;
+}
+
 /** Admin histories table: merge bootstrap-table params with search form values for server requests. */
 function adminHistoriesQueryParams(params) {
+  var filters = getAdminHistoriesSearchFilters();
   return {
     search: params.search,
     sort: params.sort,
     order: params.order,
     offset: params.offset,
     limit: params.limit,
-    username: $('#histories-search-username').val() || '',
-    date_from: $('#histories-search-date-from').val() || '',
-    date_to: $('#histories-search-date-to').val() || ''
+    username: filters.username,
+    date_from: filters.date_from,
+    date_to: filters.date_to
   };
+}
+
+function normalizeHistoryRows(data) {
+  if (Array.isArray(data)) return data;
+  if (data && Array.isArray(data.data)) return data.data;
+  return [];
+}
+
+function filterAdminHistoriesRows(rows, filters) {
+  if (!filters.username && !filters.date_from && !filters.date_to) return rows;
+  return rows.filter(function (row) {
+    return matchesAdminHistoriesFilters(row, filters);
+  });
+}
+
+/** Apply search filters client-side (static JSON / mock endpoints ignore query params). */
+function adminHistoriesResponseHandler(res) {
+  var rows = Array.isArray(res) ? res : (res && Array.isArray(res.data) ? res.data : null);
+  if (!rows) return res;
+  var filters = getAdminHistoriesSearchFilters();
+  var filtered = filterAdminHistoriesRows(rows, filters);
+  if (Array.isArray(res)) return filtered;
+  var out = $.extend(true, {}, res, { data: filtered });
+  if (out.meta) {
+    out.meta.total = filtered.length;
+    var perPage = out.meta.per_page || 20;
+    out.meta.total_pages = Math.max(1, Math.ceil(filtered.length / perPage));
+  }
+  return out;
+}
+
+function applyAdminHistoriesSearch($table) {
+  var filters = getAdminHistoriesSearchFilters();
+  var cached = $table.data('historiesSourceRows');
+
+  function showFiltered(rows) {
+    $table.data('historiesSkipCache', true);
+    $table.bootstrapTable('load', filterAdminHistoriesRows(rows, filters));
+    $table.bootstrapTable('selectPage', 1);
+  }
+
+  if (cached && cached.length) {
+    showFiltered(cached);
+    return;
+  }
+
+  var url = $table.bootstrapTable('getOptions').url;
+  $.getJSON(url).done(function (res) {
+    var rows = Array.isArray(res) ? res : (res && res.data) || [];
+    rows = rows.slice();
+    $table.data('historiesSourceRows', rows);
+    showFiltered(rows);
+  });
 }
 
 function initAdminHistoriesSearch() {
   var $form = $('#histories-search-form');
   var $table = $('#admin-histories-table');
   if (!$form.length || !$table.length) return;
+
+  $table.bootstrapTable('refreshOptions', {
+    responseHandler: adminHistoriesResponseHandler
+  });
+
+  $table.on('load-success.bs.table', function (e, data) {
+    if ($table.data('historiesSkipCache')) {
+      $table.data('historiesSkipCache', false);
+      return;
+    }
+    var rows = normalizeHistoryRows(data);
+    if (rows.length) {
+      $table.data('historiesSourceRows', rows.slice());
+    }
+  });
+
+  // Table may finish loading before load-success is bound — seed cache from JSON
+  setTimeout(function () {
+    if ($table.data('historiesSourceRows')) return;
+    var url = $table.bootstrapTable('getOptions').url;
+    if (!url) return;
+    $.getJSON(url).done(function (res) {
+      if ($table.data('historiesSourceRows')) return;
+      var rows = Array.isArray(res) ? res : (res && res.data) || [];
+      if (rows.length) $table.data('historiesSourceRows', rows.slice());
+    });
+  }, 0);
+
   $form.on('submit', function (e) {
     e.preventDefault();
-    $table.bootstrapTable('refresh');
+    applyAdminHistoriesSearch($table);
   });
 }
 
