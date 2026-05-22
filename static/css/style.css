@@ -129,6 +129,25 @@ body {
     letter-spacing: 0.02em;
 }
 
+.rd-navbar .rd-nav-user.dropdown-toggle::after {
+    margin-left: 0.2rem;
+    vertical-align: 0.2em;
+    border-top-color: rgba(255, 255, 255, 0.9);
+}
+
+.rd-navbar .rd-nav-user-menu {
+    --bs-dropdown-min-width: 12rem;
+    margin-top: 0.35rem;
+}
+
+.rd-navbar .rd-nav-user-menu .dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.875rem;
+    padding: 0.5rem 1rem;
+}
+
 .rd-nav-logout {
     color: var(--bs-white);
     text-decoration: none;

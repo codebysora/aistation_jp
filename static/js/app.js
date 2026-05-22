@@ -834,6 +834,158 @@ function initModelManagement() {
 }
 
 /* ============================================
+   Nav user menu — password change
+   ============================================ */
+function ensurePasswordChangeModal() {
+  if ($('#password-change-modal').length) return;
+
+  var html =
+    '<div class="modal fade" id="password-change-modal" tabindex="-1" aria-labelledby="password-change-modal-label" aria-hidden="true">' +
+      '<div class="modal-dialog modal-dialog-centered rd-modal">' +
+        '<div class="modal-content">' +
+          '<div class="modal-header">' +
+            '<h5 class="modal-title" id="password-change-modal-label">パスワード変更</h5>' +
+            '<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>' +
+          '</div>' +
+          '<form id="password-change-form" action="/password/change" method="POST" novalidate="novalidate">' +
+            '<div class="modal-body pt-3">' +
+              '<p class="text-muted small mb-3">ログイン用のパスワードを変更します。</p>' +
+              '<div id="password-change-form-error" class="rd-alert rd-alert--error mb-3" style="display:none">' +
+                '<div class="rd-alert__body"></div>' +
+              '</div>' +
+              '<div class="mb-3">' +
+                '<label for="password-current" class="form-label">現在のパスワード</label>' +
+                '<input type="password" class="form-control" id="password-current" name="current_password" autocomplete="current-password" required>' +
+              '</div>' +
+              '<div class="mb-3">' +
+                '<label for="password-new" class="form-label">新しいパスワード</label>' +
+                '<input type="password" class="form-control" id="password-new" name="new_password" autocomplete="new-password" required>' +
+                '<div class="form-text">8文字以上で設定してください。</div>' +
+              '</div>' +
+              '<div class="mb-4">' +
+                '<label for="password-confirm" class="form-label">新しいパスワード（確認）</label>' +
+                '<input type="password" class="form-control" id="password-confirm" name="confirm_password" autocomplete="new-password" required>' +
+              '</div>' +
+              '<div class="d-flex justify-content-end gap-3">' +
+                '<button type="button" class="btn btn-light rd-btn-action border-0" data-bs-dismiss="modal">' +
+                  '<i class="bi bi-x" aria-hidden="true"></i> Cancel' +
+                '</button>' +
+                '<button type="submit" class="btn btn-success rd-btn-action border-0">' +
+                  '<i class="bi bi-check" aria-hidden="true"></i> 変更する' +
+                '</button>' +
+              '</div>' +
+            '</div>' +
+          '</form>' +
+        '</div>' +
+      '</div>' +
+    '</div>';
+
+  $('body').append(html);
+}
+
+function resetPasswordChangeForm() {
+  var $form = $('#password-change-form');
+  if (!$form.length) return;
+  $form[0].reset();
+  hideFormError('#password-change-form-error');
+  $form.find('.form-control').each(function () {
+    clearFieldError($(this));
+  });
+}
+
+function initNavUserMenu() {
+  if (!$('a.rd-nav-user').length) return;
+
+  ensurePasswordChangeModal();
+
+  $('a.rd-nav-user').each(function (idx) {
+    var $link = $(this);
+    if ($link.attr('data-bs-toggle') === 'dropdown') return;
+
+    var $li = $link.closest('.nav-item');
+    $li.addClass('dropdown');
+
+    var toggleId = 'rd-nav-user-toggle-' + idx;
+    $link
+      .addClass('dropdown-toggle')
+      .attr({
+        id: toggleId,
+        'data-bs-toggle': 'dropdown',
+        role: 'button',
+        'aria-expanded': 'false'
+      })
+      .on('click', function (e) {
+        e.preventDefault();
+      });
+
+    var $menu = $(
+      '<ul class="dropdown-menu dropdown-menu-end rd-nav-user-menu" aria-labelledby="' + toggleId + '">' +
+        '<li>' +
+          '<button type="button" class="dropdown-item js-open-password-change">' +
+            '<i class="bi bi-key" aria-hidden="true"></i>パスワード変更' +
+          '</button>' +
+        '</li>' +
+      '</ul>'
+    );
+    $li.append($menu);
+  });
+
+  $(document).on('click', '.js-open-password-change', function () {
+    resetPasswordChangeForm();
+    var el = document.getElementById('password-change-modal');
+    if (el) bootstrap.Modal.getOrCreateInstance(el).show();
+  });
+
+  $(document).on('submit', '#password-change-form', function (e) {
+    e.preventDefault();
+    var $form = $(this);
+    var $btn = $form.find('[type="submit"]');
+    hideFormError('#password-change-form-error');
+
+    var valid = true;
+    var fields = [
+      { id: 'password-current', msg: '現在のパスワードを入力してください' },
+      { id: 'password-new', msg: '新しいパスワードを入力してください' },
+      { id: 'password-confirm', msg: '確認用パスワードを入力してください' }
+    ];
+
+    for (var i = 0; i < fields.length; i++) {
+      if (!validateRequired(fields[i].id, fields[i].msg)) valid = false;
+    }
+
+    var newPw = $('#password-new').val();
+    var confirmPw = $('#password-confirm').val();
+    if (valid && newPw.length < 8) {
+      showFieldError($('#password-new'), 'パスワードは8文字以上で設定してください');
+      valid = false;
+    }
+    if (valid && newPw !== confirmPw) {
+      showFieldError($('#password-confirm'), '新しいパスワードが一致しません');
+      valid = false;
+    }
+
+    if (!valid) {
+      showFormError('#password-change-form-error', '入力内容を確認してください。');
+      return;
+    }
+
+    setButtonLoading($btn, true);
+    setTimeout(function () {
+      setButtonLoading($btn, false);
+      var modalEl = document.getElementById('password-change-modal');
+      if (modalEl) {
+        var modal = bootstrap.Modal.getInstance(modalEl);
+        if (modal) modal.hide();
+      }
+      resetPasswordChangeForm();
+      showToast('パスワードを変更しました', 'success');
+    }, 800);
+  });
+
+  $(document).on('hidden.bs.modal', '#password-change-modal', resetPasswordChangeForm);
+}
+
+/* ============================================
    Toast Notification System
    ============================================ */
 function showToast(message, type) {
@@ -1154,4 +1306,5 @@ $(function () {
   initFormSubmit();
   initFadeIn();
   initAdminHistoriesSearch();
+  initNavUserMenu();
 });
