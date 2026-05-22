@@ -2,6 +2,9 @@
  * AIStation Dashboard - Redesign Common JS
  */
 
+/** Model row pending removal (model_settings confirmation modal). */
+var pendingModelRemoveRow = null;
+
 /* ============================================
    HTML escape helper (XSS prevention)
    ============================================ */
@@ -106,8 +109,16 @@ function modelStatusFormatter(value) {
 }
 
 function modelRemoveFormatter(value, row) {
-  return '<button type="button" class="btn btn-link rd-link-danger p-0 border-0 js-remove-model">' +
+  var label = row.label || row.model_name || '-';
+  return '<button type="button" class="btn btn-link rd-link-danger p-0 border-0 js-remove-model"' +
+    ' data-model-label="' + escapeHtml(label) + '"' +
+    ' data-model-name="' + escapeHtml(row.model_name || '') + '">' +
     '<i class="bi bi-x-circle me-1"></i>Remove</button>';
+}
+
+function setModelRemoveTarget(label, modelName) {
+  $('#model-remove-label').text(label || modelName || '-');
+  $('#model-remove-model-name').val(modelName || '');
 }
 
 /* ============================================
@@ -702,6 +713,22 @@ function initEventDelegation() {
     showAdminHistoryDetail(row);
   });
 
+  // Model Remove (model_settings) — open confirmation modal
+  $(document).on('click', '.js-remove-model', function (e) {
+    e.stopPropagation();
+    var $btn = $(this);
+    pendingModelRemoveRow = $btn.closest('tr');
+    setModelRemoveTarget($btn.attr('data-model-label'), $btn.attr('data-model-name'));
+    var modalEl = document.getElementById('model-remove-modal');
+    if (!modalEl) return;
+    var modal = new bootstrap.Modal(modalEl);
+    modal.show();
+  });
+
+  $(document).on('hidden.bs.modal', '#model-remove-modal', function () {
+    pendingModelRemoveRow = null;
+  });
+
   // Admin history detail - JSON tab copy (hidden when Clipboard API unavailable; see admin_histories.html)
   $(document).on('click', '#admin-history-detail-json-copy', function () {
     var $btn = $(this);
@@ -1027,6 +1054,43 @@ function initFormSubmit() {
     }, 800);
   });
 
+  // --- Model Remove (model_settings) — submit after confirmation ---
+  $(document).on('submit', '#model-remove-form', function (e) {
+    e.preventDefault();
+    var $form = $(this);
+    var $btn = $form.find('[type="submit"]');
+    var $row = pendingModelRemoveRow;
+    setButtonLoading($btn, true);
+
+    setTimeout(function () {
+      var modalEl = document.getElementById('model-remove-modal');
+      if (modalEl) {
+        var modal = bootstrap.Modal.getInstance(modalEl);
+        if (modal) modal.hide();
+      }
+      setButtonLoading($btn, false);
+
+      if ($row && $row.length) {
+        var rowIndex = $row.data('index');
+        $row.css({
+          'transition': 'opacity 0.4s, transform 0.4s',
+          'opacity': '0',
+          'transform': 'translateX(20px)'
+        });
+        setTimeout(function () {
+          var $table = $('#model-settings-table');
+          if ($table.length && rowIndex != null && rowIndex !== '') {
+            $table.bootstrapTable('remove', { field: '$index', values: [rowIndex] });
+          } else {
+            $row.remove();
+          }
+          showToast('Model removed successfully', 'success');
+          pendingModelRemoveRow = null;
+        }, 400);
+      }
+    }, 600);
+  });
+
   // --- Add Key Modal (teams page) ---
   $(document).on('submit', '#key-new-form', function (e) {
     e.preventDefault();
@@ -1045,25 +1109,6 @@ function initFormSubmit() {
     }, 800);
   });
 
-  // --- Model Remove (model_settings) ---
-  $(document).on('click', '.js-remove-model', function (e) {
-    e.stopPropagation();
-    var $btn = $(this);
-    var $row = $btn.closest('tr');
-
-    $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm"></span>');
-    setTimeout(function () {
-      $row.css({
-        'transition': 'opacity 0.4s, transform 0.4s',
-        'opacity': '0',
-        'transform': 'translateX(20px)'
-      });
-      setTimeout(function () {
-        $row.remove();
-        showToast('Model removed successfully', 'success');
-      }, 400);
-    }, 600);
-  });
 }
 
 /* Helper: show/hide form-level error */
