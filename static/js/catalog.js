@@ -650,6 +650,17 @@ function appendPresetBenchHeaders(html) {
   return html;
 }
 
+/** Deploy CTA — matches admin pages (btn-dark rd-btn-action). */
+function catalogDeployButtonHtml(modelId, small, label) {
+  var href = './deploy_model_form.html?model=' + encodeURIComponent(modelId);
+  var cls = small
+    ? 'btn btn-sm btn-dark rd-btn-action border-0 text-decoration-none'
+    : 'btn btn-dark rd-btn-action border-0 text-decoration-none';
+  var text = label || 'Deploy';
+  return '<a href="' + href + '" class="' + cls + '" onclick="event.stopPropagation()">' +
+    '<i class="bi bi-rocket-takeoff" aria-hidden="true"></i> ' + escapeHtml(text) + '</a>';
+}
+
 function presetMetricValue(p, key) {
   if (!p) return null;
   switch (key) {
@@ -969,7 +980,7 @@ function renderListView(models) {
 
     html += '<td class="catalog-list-td"><span class="catalog-tag catalog-tag--license">' + escapeHtml(m.license) + '</span></td>';
     if (catalogUsesPresetBenchmarks()) {
-      html += '<td class="catalog-list-td"><a href="./deploy_model_form.html?model=' + encodeURIComponent(m.id) + '" class="rd-btn-primary text-decoration-none" style="font-size:0.75rem;padding:0.25rem 0.75rem" onclick="event.stopPropagation()"><i class="bi bi-rocket-takeoff"></i> Deploy</a></td>';
+      html += '<td class="catalog-list-td">' + catalogDeployButtonHtml(m.id, true) + '</td>';
     }
     html += '</tr>';
   }
@@ -1049,7 +1060,7 @@ function renderDetailView(models) {
 
     html += '<td class="catalog-list-td"><span class="catalog-tag catalog-tag--license">' + escapeHtml(m.license) + '</span></td>';
     if (catalogUsesPresetBenchmarks()) {
-      html += '<td class="catalog-list-td"><a href="./deploy_model_form.html?model=' + encodeURIComponent(m.id) + '" class="rd-btn-primary text-decoration-none" style="font-size:0.75rem;padding:0.25rem 0.75rem" onclick="event.stopPropagation()"><i class="bi bi-rocket-takeoff"></i> Deploy</a></td>';
+      html += '<td class="catalog-list-td">' + catalogDeployButtonHtml(m.id, true) + '</td>';
     }
     html += '</tr>';
 
@@ -1476,6 +1487,7 @@ if (typeof window !== 'undefined') {
   window.getModelPreset = getModelPreset;
   window.benchmarksFromPreset = benchmarksFromPreset;
   window.catalogUsesPresetBenchmarks = catalogUsesPresetBenchmarks;
+  window.catalogDeployButtonHtml = catalogDeployButtonHtml;
 }
 
 $(function () {

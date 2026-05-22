@@ -1659,7 +1659,7 @@ button.cpybtn:hover {
 }
 
 .catalog-view-btn.active {
-    background: var(--bs-primary);
+    background: var(--bs-tertiary);
     color: var(--bs-white);
 }
 
@@ -1683,9 +1683,9 @@ button.cpybtn:hover {
 }
 
 .catalog-filter-toggle.active {
-    background: var(--bs-primary);
+    background: var(--bs-tertiary);
     color: var(--bs-white);
-    border-color: var(--bs-primary);
+    border-color: var(--bs-tertiary);
 }
 
 /* ============================================
@@ -3695,8 +3695,8 @@ table.rd-table--border > tbody > tr {
 }
 
 .catalog-modality-tab.active {
-    color: var(--bs-primary);
-    border-bottom-color: var(--bs-primary);
+    color: var(--bs-tertiary);
+    border-bottom-color: var(--bs-tertiary);
 }
 
 .catalog-modality-tab i {
