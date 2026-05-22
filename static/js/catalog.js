@@ -338,6 +338,24 @@ var catalogState = {
   }
 };
 
+/** Deploy model select uses preset.json metrics (Int / Cod / Mat / Spd / TTFT). */
+var isDeployMode = typeof location !== 'undefined' &&
+  location.pathname.indexOf('deploy_model_select') !== -1;
+
+/** Set true on deploy_model_select.html — benchmarks come only from preset.json. */
+function catalogUsesPresetBenchmarks() {
+  return !!(window.CATALOG_USE_PRESET_BENCHMARKS || isDeployMode);
+}
+
+/** Column defs for preset.json → UI (matches card view bar labels). */
+var PRESET_BENCH_COLUMNS = [
+  { key: 'int', label: 'Int' },
+  { key: 'cod', label: 'Cod' },
+  { key: 'mat', label: 'Mat' },
+  { key: 'spd', label: 'Spd' },
+  { key: 'ttft', label: 'TTFT' }
+];
+
 var CONTEXT_STEPS = [0, 4096, 8192, 32768, 131072, 1048576];
 var CONTEXT_LABELS = ['All', '4K', '8K', '32K', '128K', '1M+'];
 var SIZE_STEPS = [0, 3, 13, 70, 9999];
@@ -607,20 +625,174 @@ function filterModels(data) {
 }
 
 /* ============================================
+   Preset benchmarks (Artificial Analysis — deploy model select)
+   ============================================ */
+function getModelPreset(m) {
+  return m && m._preset ? m._preset : null;
+}
+
+/** Map preset.json perf fields to catalog benchmark keys (display + sort). */
+function benchmarksFromPreset(p) {
+  if (!p) return {};
+  return {
+    int: p.intelligence_index != null ? p.intelligence_index : null,
+    cod: p.coding_index != null ? p.coding_index : null,
+    mat: p.math_index != null ? p.math_index : null,
+    spd: p.median_output_tokens_per_second != null ? p.median_output_tokens_per_second : null,
+    ttft: p.ttft != null ? p.ttft : null
+  };
+}
+
+function appendPresetBenchHeaders(html) {
+  for (var i = 0; i < PRESET_BENCH_COLUMNS.length; i++) {
+    html += '<th class="catalog-list-th catalog-list-th--bench">' + PRESET_BENCH_COLUMNS[i].label + '</th>';
+  }
+  return html;
+}
+
+function presetMetricValue(p, key) {
+  if (!p) return null;
+  switch (key) {
+    case 'int': return p.intelligence_index;
+    case 'cod': return p.coding_index;
+    case 'mat': return p.math_index;
+    case 'spd': return p.median_output_tokens_per_second;
+    case 'ttft': return p.ttft;
+    default: return null;
+  }
+}
+
+function presetSortComparable(p, key, opts) {
+  opts = opts || {};
+  if (!p) return opts.missing;
+  var v = presetMetricValue(p, key);
+  if (v == null) return opts.missing;
+  if (opts.zeroMissing && v === 0) return opts.missing;
+  return v;
+}
+
+function comparePresetSort(a, b, sortKey) {
+  var pa = getModelPreset(a);
+  var pb = getModelPreset(b);
+  var MISSING_LOW = -Infinity;
+  var MISSING_HIGH = Infinity;
+
+  switch (sortKey) {
+    case 'name': return a.name.localeCompare(b.name);
+    case 'context_desc': return (b.context || 0) - (a.context || 0);
+    case 'released_desc': return (b.released || '').localeCompare(a.released || '');
+    case 'int_desc':
+      return presetSortComparable(pb, 'int', { missing: MISSING_LOW }) -
+        presetSortComparable(pa, 'int', { missing: MISSING_LOW });
+    case 'cod_desc':
+      return presetSortComparable(pb, 'cod', { missing: MISSING_LOW }) -
+        presetSortComparable(pa, 'cod', { missing: MISSING_LOW });
+    case 'mat_desc':
+      return presetSortComparable(pb, 'mat', { missing: MISSING_LOW }) -
+        presetSortComparable(pa, 'mat', { missing: MISSING_LOW });
+    case 'spd_desc':
+      return presetSortComparable(pb, 'spd', { missing: MISSING_LOW, zeroMissing: true }) -
+        presetSortComparable(pa, 'spd', { missing: MISSING_LOW, zeroMissing: true });
+    case 'ttft_asc':
+      return presetSortComparable(pa, 'ttft', { missing: MISSING_HIGH, zeroMissing: true }) -
+        presetSortComparable(pb, 'ttft', { missing: MISSING_HIGH, zeroMissing: true });
+    default: return 0;
+  }
+}
+
+function fmtPresetScore(v) {
+  if (v == null) return '';
+  if (Math.abs(v) >= 100) return v.toFixed(0);
+  if (Number.isInteger(v)) return String(v);
+  return v.toFixed(1);
+}
+
+function renderPresetBarRow(label, value, maxVal, opts) {
+  opts = opts || {};
+  if (value == null) return '';
+  if (opts.zeroIsUnmeasured && value === 0) {
+    return '<div class="catalog-bench-row">' +
+      '<span class="catalog-bench-row__label">' + escapeHtml(label) + '</span>' +
+      '<span class="catalog-bench-row__bar"></span>' +
+      '<span class="catalog-bench-row__score catalog-bench-row__score--unmeasured">未計測</span>' +
+      '</div>';
+  }
+  var pct = Math.max(0, Math.min(100, (value / maxVal) * 100));
+  return '<div class="catalog-bench-row">' +
+    '<span class="catalog-bench-row__label">' + escapeHtml(label) + '</span>' +
+    '<span class="catalog-bench-row__bar"><span class="catalog-bench-row__fill" style="width:' + pct +
+    '%;background:' + benchmarkColor(pct) + '"></span></span>' +
+    '<span class="catalog-bench-row__score">' + fmtPresetScore(value) + '</span>' +
+    '</div>';
+}
+
+function renderPresetTtftRow(value) {
+  if (value == null) return '';
+  var html = '<div class="catalog-bench-row catalog-bench-row--ttft">';
+  html += '<span class="catalog-bench-row__label">TTFT</span>';
+  if (value === 0) {
+    html += '<span class="catalog-ttft-chip catalog-ttft-chip--unmeasured" title="TTFT (Time to First Token) — 未計測">' +
+      '<i class="bi bi-stopwatch"></i> 未計測</span>';
+  } else {
+    var cls, icon;
+    if (value <= 1) { cls = 'catalog-ttft-chip--fast'; icon = 'bi-lightning-charge-fill'; }
+    else if (value <= 3) { cls = 'catalog-ttft-chip--med'; icon = 'bi-stopwatch'; }
+    else { cls = 'catalog-ttft-chip--slow'; icon = 'bi-hourglass-split'; }
+    html += '<span class="catalog-ttft-chip ' + cls + '" title="TTFT (Time to First Token)">' +
+      '<i class="bi ' + icon + '"></i> ' + value.toFixed(2) + 's</span>';
+  }
+  html += '</div>';
+  return html;
+}
+
+function renderPresetScoreList(p) {
+  if (!p) return '';
+  var html = '<div class="catalog-card__benchmarks">';
+  html += renderPresetBarRow('Int', p.intelligence_index, 20);
+  html += renderPresetBarRow('Cod', p.coding_index, 20);
+  html += renderPresetBarRow('Mat', p.math_index, 20);
+  html += renderPresetBarRow('Spd', p.median_output_tokens_per_second, 400, { zeroIsUnmeasured: true });
+  html += renderPresetTtftRow(p.ttft);
+  html += '</div>';
+  return html;
+}
+
+function formatPresetBenchTableCell(p, key) {
+  if (!p) return '<span class="text-muted">—</span>';
+  if (key === 'ttft') {
+    var ttft = p.ttft;
+    if (ttft == null || ttft === 0) return '<span class="text-muted">未計測</span>';
+    return '<span>' + ttft.toFixed(2) + 's</span>';
+  }
+  if (key === 'spd') {
+    var spd = p.median_output_tokens_per_second;
+    if (spd == null || spd === 0) return '<span class="text-muted">未計測</span>';
+    return '<span class="' + benchmarkColorClass(Math.min((spd / 400) * 100, 100)) + '">' + fmtPresetScore(spd) + '</span>';
+  }
+  var v = presetMetricValue(p, key);
+  if (v == null) return '<span class="text-muted">—</span>';
+  var pct = Math.min((v / 20) * 100, 100);
+  return '<span class="' + benchmarkColorClass(pct) + '">' + fmtPresetScore(v) + '</span>';
+}
+
+/* ============================================
    Sorting
    ============================================ */
 function sortModels(data) {
   var s = catalogState.sort;
   var sorted = data.slice();
   sorted.sort(function (a, b) {
+    if (catalogUsesPresetBenchmarks()) {
+      return comparePresetSort(a, b, s);
+    }
     switch (s) {
       case 'name': return a.name.localeCompare(b.name);
       case 'size_desc': return b.size_num - a.size_num;
       case 'size_asc': return a.size_num - b.size_num;
       case 'context_desc': return b.context - a.context;
-      case 'mmlu_desc': return b.benchmarks.mmlu - a.benchmarks.mmlu;
-      case 'humaneval_desc': return b.benchmarks.humaneval - a.benchmarks.humaneval;
-      case 'math_desc': return b.benchmarks.math - a.benchmarks.math;
+      case 'mmlu_desc': return (b.benchmarks.mmlu || 0) - (a.benchmarks.mmlu || 0);
+      case 'humaneval_desc': return (b.benchmarks.humaneval || 0) - (a.benchmarks.humaneval || 0);
+      case 'math_desc': return (b.benchmarks.math || 0) - (a.benchmarks.math || 0);
       case 'released_desc': return b.released.localeCompare(a.released);
       default: return 0;
     }
@@ -631,7 +803,6 @@ function sortModels(data) {
 /* ============================================
    Renderers
    ============================================ */
-var isDeployMode = location.pathname.indexOf('deploy_model_select') !== -1;
 
 // --- Card View (beginner-friendly) ---
 function renderCardView(models) {
@@ -668,33 +839,38 @@ function renderCardView(models) {
     html += '<span class="catalog-tag catalog-tag--neutral catalog-tag--context">' + formatContext(m.context) + ' ctx</span>';
     html += '</div>';
 
-    // Benchmark bars — branched by modality
-    html += '<div class="catalog-card__benchmarks">';
-    var benchmarks;
-    if ((m.modality || 'text') === 'embeddings') {
-      benchmarks = [
-        { key: 'mteb', label: 'MTEB' },
-        { key: 'retrieval', label: 'Retr.' },
-        { key: 'classification', label: 'Class.' }
-      ];
+    // Benchmark bars — preset.json on deploy select; sample CATALOG_DATA elsewhere
+    var preset = getModelPreset(m);
+    if (preset) {
+      html += renderPresetScoreList(preset);
     } else {
-      benchmarks = [
-        { key: 'mmlu', label: 'MMLU' },
-        { key: 'humaneval', label: 'Code' },
-        { key: 'math', label: 'Math' }
-      ];
-    }
-    for (var b = 0; b < benchmarks.length; b++) {
-      var score = m.benchmarks[benchmarks[b].key];
-      if (typeof score !== 'number') continue;
-      var pct = Math.min(score, 100);
-      html += '<div class="catalog-bench-row">';
-      html += '<span class="catalog-bench-row__label">' + benchmarks[b].label + '</span>';
-      html += '<span class="catalog-bench-row__bar"><span class="catalog-bench-row__fill" style="width:' + pct + '%;background:' + benchmarkColor(score) + '"></span></span>';
-      html += '<span class="catalog-bench-row__score">' + score.toFixed(1) + '</span>';
+      html += '<div class="catalog-card__benchmarks">';
+      var benchmarks;
+      if ((m.modality || 'text') === 'embeddings') {
+        benchmarks = [
+          { key: 'mteb', label: 'MTEB' },
+          { key: 'retrieval', label: 'Retr.' },
+          { key: 'classification', label: 'Class.' }
+        ];
+      } else {
+        benchmarks = [
+          { key: 'mmlu', label: 'MMLU' },
+          { key: 'humaneval', label: 'Code' },
+          { key: 'math', label: 'Math' }
+        ];
+      }
+      for (var b = 0; b < benchmarks.length; b++) {
+        var score = m.benchmarks[benchmarks[b].key];
+        if (typeof score !== 'number') continue;
+        var pct = Math.min(score, 100);
+        html += '<div class="catalog-bench-row">';
+        html += '<span class="catalog-bench-row__label">' + benchmarks[b].label + '</span>';
+        html += '<span class="catalog-bench-row__bar"><span class="catalog-bench-row__fill" style="width:' + pct + '%;background:' + benchmarkColor(score) + '"></span></span>';
+        html += '<span class="catalog-bench-row__score">' + score.toFixed(1) + '</span>';
+        html += '</div>';
+      }
       html += '</div>';
     }
-    html += '</div>';
 
     // Capability icons
     if (m.capabilities.length > 0) {
@@ -725,16 +901,21 @@ function renderListView(models) {
   html += '<th class="catalog-list-th">Provider</th>';
   html += '<th class="catalog-list-th">Size</th>';
   html += '<th class="catalog-list-th">Context</th>';
-  html += '<th class="catalog-list-th catalog-list-th--bench">MMLU</th>';
-  html += '<th class="catalog-list-th catalog-list-th--bench">HumanEval</th>';
-  html += '<th class="catalog-list-th catalog-list-th--bench">MATH</th>';
-  html += '<th class="catalog-list-th catalog-list-th--bench">MT-Bench</th>';
+  if (catalogUsesPresetBenchmarks()) {
+    html = appendPresetBenchHeaders(html);
+  } else {
+    html += '<th class="catalog-list-th catalog-list-th--bench">MMLU</th>';
+    html += '<th class="catalog-list-th catalog-list-th--bench">HumanEval</th>';
+    html += '<th class="catalog-list-th catalog-list-th--bench">MATH</th>';
+    html += '<th class="catalog-list-th catalog-list-th--bench">MT-Bench</th>';
+  }
   html += '<th class="catalog-list-th">License</th>';
-  if (isDeployMode) html += '<th class="catalog-list-th"></th>';
+  if (catalogUsesPresetBenchmarks()) html += '<th class="catalog-list-th"></th>';
   html += '</tr></thead><tbody>';
 
   for (var i = 0; i < models.length; i++) {
     var m = models[i];
+    var preset = getModelPreset(m);
     html += '<tr class="catalog-list-row" data-model-id="' + m.id + '">';
     html += '<td class="catalog-list-td"><span class="catalog-list-name">' + escapeHtml(m.name) + '</span>';
 
@@ -764,24 +945,30 @@ function renderListView(models) {
     html += '<td class="catalog-list-td"><span class="catalog-tag catalog-tag--size-sm">' + escapeHtml(m.size) + '</span></td>';
     html += '<td class="catalog-list-td">' + formatContext(m.context) + '</td>';
 
-    // Benchmark scores with color (text models). Embeddings: blank cells in shared cols.
-    var isEmb = (m.modality || 'text') === 'embeddings';
-    var benchKeys = isEmb
-      ? ['mteb', 'retrieval', 'classification', null]
-      : ['mmlu', 'humaneval', 'math', 'mt_bench'];
-    for (var b = 0; b < benchKeys.length; b++) {
-      var key = benchKeys[b];
-      var score = key ? m.benchmarks[key] : undefined;
-      if (typeof score === 'number') {
-        var cls = benchmarkColorClass(score);
-        html += '<td class="catalog-list-td catalog-list-td--bench"><span class="' + cls + '">' + score.toFixed(1) + '</span></td>';
-      } else {
-        html += '<td class="catalog-list-td catalog-list-td--bench"><span class="text-muted">—</span></td>';
+    if (catalogUsesPresetBenchmarks()) {
+      for (var pb = 0; pb < PRESET_BENCH_COLUMNS.length; pb++) {
+        html += '<td class="catalog-list-td catalog-list-td--bench">' +
+          formatPresetBenchTableCell(preset, PRESET_BENCH_COLUMNS[pb].key) + '</td>';
+      }
+    } else {
+      var isEmb = (m.modality || 'text') === 'embeddings';
+      var benchKeys = isEmb
+        ? ['mteb', 'retrieval', 'classification', null]
+        : ['mmlu', 'humaneval', 'math', 'mt_bench'];
+      for (var b = 0; b < benchKeys.length; b++) {
+        var key = benchKeys[b];
+        var score = key ? m.benchmarks[key] : undefined;
+        if (typeof score === 'number') {
+          var cls = benchmarkColorClass(score);
+          html += '<td class="catalog-list-td catalog-list-td--bench"><span class="' + cls + '">' + score.toFixed(1) + '</span></td>';
+        } else {
+          html += '<td class="catalog-list-td catalog-list-td--bench"><span class="text-muted">—</span></td>';
+        }
       }
     }
 
     html += '<td class="catalog-list-td"><span class="catalog-tag catalog-tag--license">' + escapeHtml(m.license) + '</span></td>';
-    if (isDeployMode) {
+    if (catalogUsesPresetBenchmarks()) {
       html += '<td class="catalog-list-td"><a href="./deploy_model_form.html?model=' + encodeURIComponent(m.id) + '" class="rd-btn-primary text-decoration-none" style="font-size:0.75rem;padding:0.25rem 0.75rem" onclick="event.stopPropagation()"><i class="bi bi-rocket-takeoff"></i> Deploy</a></td>';
     }
     html += '</tr>';
@@ -802,17 +989,22 @@ function renderDetailView(models) {
   html += '<th class="catalog-list-th">Provider</th>';
   html += '<th class="catalog-list-th">Size</th>';
   html += '<th class="catalog-list-th">Context</th>';
-  html += '<th class="catalog-list-th catalog-list-th--bench">MMLU</th>';
-  html += '<th class="catalog-list-th catalog-list-th--bench">HumanEval</th>';
-  html += '<th class="catalog-list-th catalog-list-th--bench">MATH</th>';
-  html += '<th class="catalog-list-th catalog-list-th--bench">MT-Bench</th>';
+  if (catalogUsesPresetBenchmarks()) {
+    html = appendPresetBenchHeaders(html);
+  } else {
+    html += '<th class="catalog-list-th catalog-list-th--bench">MMLU</th>';
+    html += '<th class="catalog-list-th catalog-list-th--bench">HumanEval</th>';
+    html += '<th class="catalog-list-th catalog-list-th--bench">MATH</th>';
+    html += '<th class="catalog-list-th catalog-list-th--bench">MT-Bench</th>';
+  }
   html += '<th class="catalog-list-th">License</th>';
-  if (isDeployMode) html += '<th class="catalog-list-th"></th>';
+  if (catalogUsesPresetBenchmarks()) html += '<th class="catalog-list-th"></th>';
   html += '</tr></thead><tbody>';
 
   for (var i = 0; i < models.length; i++) {
     var m = models[i];
     var isExpanded = catalogState.expandedId === m.id;
+    var preset = getModelPreset(m);
 
     // Summary row
     html += '<tr class="catalog-detail-row' + (isExpanded ? ' catalog-detail-row--expanded' : '') + '" data-model-id="' + m.id + '">';
@@ -833,30 +1025,37 @@ function renderDetailView(models) {
     html += '<td class="catalog-list-td"><span class="catalog-tag catalog-tag--size-sm">' + escapeHtml(m.size) + '</span></td>';
     html += '<td class="catalog-list-td">' + formatContext(m.context) + '</td>';
 
-    var dvIsEmb = (m.modality || 'text') === 'embeddings';
-    var dvBenchKeys = dvIsEmb
-      ? ['mteb', 'retrieval', 'classification', null]
-      : ['mmlu', 'humaneval', 'math', 'mt_bench'];
-    for (var b = 0; b < dvBenchKeys.length; b++) {
-      var dvKey = dvBenchKeys[b];
-      var dvScore = dvKey ? m.benchmarks[dvKey] : undefined;
-      if (typeof dvScore === 'number') {
-        var dvCls = benchmarkColorClass(dvScore);
-        html += '<td class="catalog-list-td catalog-list-td--bench"><span class="' + dvCls + '">' + dvScore.toFixed(1) + '</span></td>';
-      } else {
-        html += '<td class="catalog-list-td catalog-list-td--bench"><span class="text-muted">—</span></td>';
+    if (catalogUsesPresetBenchmarks()) {
+      for (var pb = 0; pb < PRESET_BENCH_COLUMNS.length; pb++) {
+        html += '<td class="catalog-list-td catalog-list-td--bench">' +
+          formatPresetBenchTableCell(preset, PRESET_BENCH_COLUMNS[pb].key) + '</td>';
+      }
+    } else {
+      var dvIsEmb = (m.modality || 'text') === 'embeddings';
+      var dvBenchKeys = dvIsEmb
+        ? ['mteb', 'retrieval', 'classification', null]
+        : ['mmlu', 'humaneval', 'math', 'mt_bench'];
+      for (var b = 0; b < dvBenchKeys.length; b++) {
+        var dvKey = dvBenchKeys[b];
+        var dvScore = dvKey ? m.benchmarks[dvKey] : undefined;
+        if (typeof dvScore === 'number') {
+          var dvCls = benchmarkColorClass(dvScore);
+          html += '<td class="catalog-list-td catalog-list-td--bench"><span class="' + dvCls + '">' + dvScore.toFixed(1) + '</span></td>';
+        } else {
+          html += '<td class="catalog-list-td catalog-list-td--bench"><span class="text-muted">—</span></td>';
+        }
       }
     }
 
     html += '<td class="catalog-list-td"><span class="catalog-tag catalog-tag--license">' + escapeHtml(m.license) + '</span></td>';
-    if (isDeployMode) {
+    if (catalogUsesPresetBenchmarks()) {
       html += '<td class="catalog-list-td"><a href="./deploy_model_form.html?model=' + encodeURIComponent(m.id) + '" class="rd-btn-primary text-decoration-none" style="font-size:0.75rem;padding:0.25rem 0.75rem" onclick="event.stopPropagation()"><i class="bi bi-rocket-takeoff"></i> Deploy</a></td>';
     }
     html += '</tr>';
 
     // Detail panel row (hidden unless expanded)
     if (isExpanded) {
-      var detailColspan = isDeployMode ? 11 : 10;
+      var detailColspan = catalogUsesPresetBenchmarks() ? 12 : 10;
       html += '<tr class="catalog-detail-panel-row"><td colspan="' + detailColspan + '">';
       html += renderDetailPanel(m);
       html += '</td></tr>';
@@ -902,35 +1101,40 @@ function renderDetailPanel(m) {
   html += '<div class="catalog-detail-panel__benchmarks">';
   html += '<div class="catalog-detail-panel__section">';
   html += '<h5 class="catalog-detail-bench-title">Benchmarks</h5>';
-  var benchmarks;
-  if ((m.modality || 'text') === 'embeddings') {
-    benchmarks = [
-      { key: 'mteb', label: 'MTEB', desc: 'Massive text embedding benchmark' },
-      { key: 'retrieval', label: 'Retrieval', desc: 'Document retrieval' },
-      { key: 'classification', label: 'Classification', desc: 'Text classification' }
-    ];
+  var preset = getModelPreset(m);
+  if (preset) {
+    html += '<div class="catalog-detail-panel__preset-bench">' + renderPresetScoreList(preset) + '</div>';
   } else {
-    benchmarks = [
-      { key: 'mmlu', label: 'MMLU', desc: 'General knowledge' },
-      { key: 'humaneval', label: 'HumanEval', desc: 'Code generation' },
-      { key: 'math', label: 'MATH', desc: 'Mathematical reasoning' },
-      { key: 'mt_bench', label: 'MT-Bench', desc: 'Multi-turn conversation', max: 10 }
-    ];
-  }
-  for (var b = 0; b < benchmarks.length; b++) {
-    var bm = benchmarks[b];
-    var score = m.benchmarks[bm.key];
-    if (typeof score !== 'number') continue;
-    var max = bm.max || 100;
-    var pct = Math.min((score / max) * 100, 100);
-    html += '<div class="catalog-detail-bench-item">';
-    html += '<div class="catalog-detail-bench-item__header">';
-    html += '<span class="catalog-detail-bench-item__label">' + bm.label + '</span>';
-    html += '<span class="catalog-detail-bench-item__desc">' + bm.desc + '</span>';
-    html += '<span class="catalog-detail-bench-item__score ' + benchmarkColorClass(bm.max === 10 ? score * 10 : score) + '">' + score.toFixed(1) + (bm.max === 10 ? '/10' : '') + '</span>';
-    html += '</div>';
-    html += '<div class="catalog-bench-row__bar catalog-bench-row__bar--detail"><span class="catalog-bench-row__fill" style="width:' + pct + '%;background:' + benchmarkColor(bm.max === 10 ? score * 10 : score) + '"></span></div>';
-    html += '</div>';
+    var benchmarks;
+    if ((m.modality || 'text') === 'embeddings') {
+      benchmarks = [
+        { key: 'mteb', label: 'MTEB', desc: 'Massive text embedding benchmark' },
+        { key: 'retrieval', label: 'Retrieval', desc: 'Document retrieval' },
+        { key: 'classification', label: 'Classification', desc: 'Text classification' }
+      ];
+    } else {
+      benchmarks = [
+        { key: 'mmlu', label: 'MMLU', desc: 'General knowledge' },
+        { key: 'humaneval', label: 'HumanEval', desc: 'Code generation' },
+        { key: 'math', label: 'MATH', desc: 'Mathematical reasoning' },
+        { key: 'mt_bench', label: 'MT-Bench', desc: 'Multi-turn conversation', max: 10 }
+      ];
+    }
+    for (var b = 0; b < benchmarks.length; b++) {
+      var bm = benchmarks[b];
+      var score = m.benchmarks[bm.key];
+      if (typeof score !== 'number') continue;
+      var max = bm.max || 100;
+      var pct = Math.min((score / max) * 100, 100);
+      html += '<div class="catalog-detail-bench-item">';
+      html += '<div class="catalog-detail-bench-item__header">';
+      html += '<span class="catalog-detail-bench-item__label">' + bm.label + '</span>';
+      html += '<span class="catalog-detail-bench-item__desc">' + bm.desc + '</span>';
+      html += '<span class="catalog-detail-bench-item__score ' + benchmarkColorClass(bm.max === 10 ? score * 10 : score) + '">' + score.toFixed(1) + (bm.max === 10 ? '/10' : '') + '</span>';
+      html += '</div>';
+      html += '<div class="catalog-bench-row__bar catalog-bench-row__bar--detail"><span class="catalog-bench-row__fill" style="width:' + pct + '%;background:' + benchmarkColor(bm.max === 10 ? score * 10 : score) + '"></span></div>';
+      html += '</div>';
+    }
   }
   html += '</div>';
   html += '</div>';
@@ -1266,6 +1470,14 @@ function showCatalogModal(m) {
 /* ============================================
    DOM Ready
    ============================================ */
+/* Expose preset benchmark renderers for deploy_model_select.html overrides */
+if (typeof window !== 'undefined') {
+  window.renderPresetScoreList = renderPresetScoreList;
+  window.getModelPreset = getModelPreset;
+  window.benchmarksFromPreset = benchmarksFromPreset;
+  window.catalogUsesPresetBenchmarks = catalogUsesPresetBenchmarks;
+}
+
 $(function () {
   if ($('#catalog-content').length) {
     initCatalog();

@@ -2338,6 +2338,10 @@ button.cpybtn:hover {
     min-width: 0;
 }
 
+.catalog-detail-panel__preset-bench .catalog-card__benchmarks {
+    margin-top: 0;
+}
+
 .catalog-detail-panel__title {
     font-size: 1rem;
     font-weight: 700;

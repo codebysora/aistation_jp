@@ -97,12 +97,12 @@
                 <label class="catalog-sort__label" for="catalog-sort-select">Sort:</label>
                 <select id="catalog-sort-select" class="catalog-sort__select">
                   <option value="name">Name</option>
-                  <option value="size_desc">Size (large first)</option>
-                  <option value="size_asc">Size (small first)</option>
                   <option value="context_desc">Context (large first)</option>
-                  <option value="mmlu_desc">MMLU (high first)</option>
-                  <option value="humaneval_desc">HumanEval (high first)</option>
-                  <option value="math_desc">MATH (high first)</option>
+                  <option value="int_desc">Int (high first)</option>
+                  <option value="cod_desc">Cod (high first)</option>
+                  <option value="mat_desc">Mat (high first)</option>
+                  <option value="spd_desc">Spd (high first)</option>
+                  <option value="ttft_asc">TTFT (fast first)</option>
                   <option value="released_desc">Newest first</option>
                 </select>
               </div>
@@ -233,6 +233,9 @@
   <script src="./static/js/catalog.js"></script>
   <script src="./static/js/preset_data.js"></script>
   <script>
+  /* All benchmark display on this page uses preset.json only (not sample CATALOG_DATA). */
+  window.CATALOG_USE_PRESET_BENCHMARKS = true;
+
   /* =========================================================================
      deploy_model_select — preset.json データ + 案A スタイルカード
      方針:
@@ -290,7 +293,7 @@
         context: p.max_input_tokens,
         size: describeSize(p),
         size_num: 0,
-        benchmarks: {},
+        benchmarks: typeof benchmarksFromPreset === 'function' ? benchmarksFromPreset(p) : {},
         released: p.release_data || '',
         _preset: p
       };
@@ -334,72 +337,6 @@
         html += '<i class="bi ' + window.modalityIcon(outs[j]) + '" title="' + window.modalityLabel(outs[j]) + '"></i>';
       }
       html += '</span>';
-      return html;
-    }
-
-    /* ---- 先方 macro `score_row` のスケール (max_val) は踏襲、
-           表示は元の横バー型インジケータ (catalog-bench-row) に戻す。
-           pct = clamp(value/max_val*100, 0, 100)
-           TTFT は引き続きチップ表示（0=未計測 / invert の罠回避） ---- */
-    function benchColor100(score) {
-      if (score >= 80) return 'var(--bs-success)';
-      if (score >= 60) return 'var(--bs-primary)';
-      if (score >= 40) return 'var(--bs-warning)';
-      return 'var(--bs-danger)';
-    }
-    function fmtScore(v) {
-      if (Math.abs(v) >= 100) return v.toFixed(0);
-      if (Number.isInteger(v)) return String(v);
-      return v.toFixed(1);
-    }
-    function renderBarRow(label, value, maxVal, opts) {
-      opts = opts || {};
-      if (value == null) return ''; // macro: if value is not none
-      if (opts.zeroIsUnmeasured && value === 0) {
-        return '<div class="catalog-bench-row">' +
-          '<span class="catalog-bench-row__label">' + escHtml(label) + '</span>' +
-          '<span class="catalog-bench-row__bar"></span>' +
-          '<span class="catalog-bench-row__score catalog-bench-row__score--unmeasured">未計測</span>' +
-          '</div>';
-      }
-      var pct = Math.max(0, Math.min(100, (value / maxVal) * 100));
-      return '<div class="catalog-bench-row">' +
-        '<span class="catalog-bench-row__label">' + escHtml(label) + '</span>' +
-        '<span class="catalog-bench-row__bar"><span class="catalog-bench-row__fill" style="width:' + pct + '%;background:' + benchColor100(pct) + '"></span></span>' +
-        '<span class="catalog-bench-row__score">' + fmtScore(value) + '</span>' +
-        '</div>';
-    }
-    /* TTFT — 「0 が良い値」系メトリクスはバーで表すと invert + 未計測の判別が困難。
-       fast (≤1s) / med (≤3s) / slow (>3s) の 3 段階チップで提示。 */
-    function renderTtftRow(value) {
-      if (value == null) return '';
-      var html = '<div class="catalog-bench-row catalog-bench-row--ttft">';
-      html += '<span class="catalog-bench-row__label">TTFT</span>';
-      if (value === 0) {
-        html += '<span class="catalog-ttft-chip catalog-ttft-chip--unmeasured" title="TTFT (Time to First Token) — 未計測">' +
-          '<i class="bi bi-stopwatch"></i> 未計測</span>';
-      } else {
-        var cls, icon;
-        if (value <= 1) { cls = 'catalog-ttft-chip--fast'; icon = 'bi-lightning-charge-fill'; }
-        else if (value <= 3) { cls = 'catalog-ttft-chip--med'; icon = 'bi-stopwatch'; }
-        else { cls = 'catalog-ttft-chip--slow'; icon = 'bi-hourglass-split'; }
-        html += '<span class="catalog-ttft-chip ' + cls + '" title="TTFT (Time to First Token)">' +
-          '<i class="bi ' + icon + '"></i> ' + value.toFixed(2) + 's</span>';
-      }
-      html += '</div>';
-      return html;
-    }
-
-    /* 1 カラム横バー（Int / Cod / Mat / Spd / TTFT） */
-    function renderScoreList(p) {
-      if (!p) return '';
-      var html = '<div class="catalog-card__benchmarks">';
-      html += renderBarRow('Int', p.intelligence_index, 20);
-      html += renderBarRow('Cod', p.coding_index, 20);
-      html += renderBarRow('Mat', p.math_index, 20);
-      html += renderBarRow('Spd', p.median_output_tokens_per_second, 400, { zeroIsUnmeasured: true });
-      html += renderTtftRow(p.ttft);
-      html += '</div>';
       return html;
     }
 
@@ -458,8 +395,8 @@
         html += '<span class="catalog-tag catalog-tag--neutral catalog-tag--context">' + fmtCtx(m.context) + ' ctx</span>';
         html += '</div>';
 
-        // Score list (1 column bar rows + TTFT chip)
-        html += renderScoreList(p);
+        // Score list (Int / Cod / Mat / Spd / TTFT — shared with detail view via catalog.js)
+        html += window.renderPresetScoreList ? window.renderPresetScoreList(p) : '';
         html += renderCapsRow(m);
 
         html += '</div>';
