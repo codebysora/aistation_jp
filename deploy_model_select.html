@@ -423,19 +423,9 @@
         location.href = './deploy_model_form.html?model=' + encodeURIComponent(id);
       });
 
-      // Detail view: keep expand/collapse, add deploy button inside panel
-      var _origRenderDetailPanel = window.renderDetailPanel;
-      if (typeof _origRenderDetailPanel === 'function') {
-        window.renderDetailPanel = function (m) {
-          var html = _origRenderDetailPanel(m);
-          var deployBtn = '<div class="mt-3 pt-3 border-top d-flex justify-content-end">' +
-            (typeof window.catalogDeployButtonHtml === 'function'
-              ? window.catalogDeployButtonHtml(m.id, false, 'Deploy this model')
-              : '') + '</div>';
-          html = html.slice(0, html.lastIndexOf('</div>')) + deployBtn + '</div>';
-          return html;
-        };
-      }
+      /* Detail view: Deploy CTA is only on each summary row (catalogDeployButtonHtml).
+         No button inside the expanded panel — avoids flex-stretch layout issues and
+         matches the original design (row action only). */
     });
   })();
   </script>
