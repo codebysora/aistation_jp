@@ -1259,7 +1259,7 @@ function showKeyCreatedToast(payload, onNavigate) {
     $container = $('#toast-container');
   }
 
-  var $toast = $('<div class="rd-toast rd-toast--success rd-toast--clickable" role="button" tabindex="0"></div>');
+  var $toast = $('<div class="rd-toast rd-toast--success rd-toast--clickable rd-toast--persistent" role="button" tabindex="0"></div>');
   $toast.append('<i class="bi bi-check-circle-fill rd-toast__icon" aria-hidden="true"></i>');
 
   var $body = $('<div class="rd-toast__body"></div>');
@@ -1300,9 +1300,6 @@ function showKeyCreatedToast(payload, onNavigate) {
     e.stopPropagation();
     dismissToast($toast);
   });
-
-  var timer = setTimeout(function () { dismissToast($toast); }, 8000);
-  $toast.on('click keydown', function () { clearTimeout(timer); });
 }
 
 function redirectToKeysWithNewKey(payload) {
