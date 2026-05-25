@@ -294,10 +294,6 @@
                         <span class="input-group-text">output</span>
                         <input type="number" id="pricing-output" class="form-control" step="any" min="0" placeholder="0.0">
                       </div>
-                      <div class="input-group input-group-sm c-input-group--w160">
-                        <span class="input-group-text">currency</span>
-                        <input type="text" id="pricing-currency" class="form-control" placeholder="USD">
-                      </div>
                     </div>
                     <div class="c-form-annotation">Price per 1M tokens.</div>
                   </div>
@@ -460,7 +456,6 @@
       const pricing = data.pricing || {};
       if (pricing.input != null) document.getElementById('pricing-input').value = pricing.input;
       if (pricing.output != null) document.getElementById('pricing-output').value = pricing.output;
-      if (pricing.currency) document.getElementById('pricing-currency').value = pricing.currency;
 
       const ctx = data.context || {};
       if (ctx.max_input_tokens != null) document.getElementById('context-max-input').value = ctx.max_input_tokens;
@@ -510,10 +505,8 @@
       const pricing = {};
       const pIn  = document.getElementById('pricing-input').value;
       const pOut = document.getElementById('pricing-output').value;
-      const pCur = document.getElementById('pricing-currency').value.trim();
       if (pIn !== '')  pricing.input  = parseFloat(pIn);
       if (pOut !== '') pricing.output = parseFloat(pOut);
-      if (pCur)        pricing.currency = pCur;
 
       const ctx = {};
       const cIn  = document.getElementById('context-max-input').value;
