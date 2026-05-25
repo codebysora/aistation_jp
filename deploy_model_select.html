@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html class="h-100" lang="ja">
+
 <head>
   <meta charset="UTF-8">
   <meta name="robots" content="noindex,nofollow">
@@ -10,13 +11,15 @@
   <link rel="stylesheet" href="./static/css/style.css">
   <title>AIStation Dashboard - Deploy Model</title>
 </head>
+
 <body class="h-100">
 
   <!-- Header -->
   <header>
     <nav class="navbar navbar-expand-sm rd-navbar" aria-label="Top navigation">
       <a class="navbar-brand" href="./">AIStation Dashboard</a>
-      <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse" id="navbarNav">
@@ -41,15 +44,24 @@
     <nav class="rd-sidebar" aria-label="Main navigation">
       <ul class="nav flex-column m-0">
         <li class="rd-sidebar__section-label">Admin</li>
-        <li class="nav-item"><a class="nav-link" href="./keys.html"><i class="bi bi-key" aria-hidden="true"></i> API Keys</a></li>
-        <li class="nav-item"><a class="nav-link" href="./teams.html"><i class="bi bi-people" aria-hidden="true"></i> Teams</a></li>
-        <li class="nav-item"><a class="nav-link" href="./admin_histories.html"><i class="bi bi-clock-history" aria-hidden="true"></i> Histories</a></li>
-        <li><div class="rd-sidebar__separator"></div></li>
+        <li class="nav-item"><a class="nav-link" href="./keys.html"><i class="bi bi-key" aria-hidden="true"></i> API
+            Keys</a></li>
+        <li class="nav-item"><a class="nav-link" href="./teams.html"><i class="bi bi-people" aria-hidden="true"></i>
+            Teams</a></li>
+        <li class="nav-item"><a class="nav-link" href="./admin_histories.html"><i class="bi bi-clock-history"
+              aria-hidden="true"></i> Histories</a></li>
+        <li>
+          <div class="rd-sidebar__separator"></div>
+        </li>
         <li class="rd-sidebar__separator-label">Management</li>
-        <li class="nav-item"><a class="nav-link active" href="./model_management.html"><i class="bi bi-robot" aria-hidden="true"></i> Model management</a></li>
-        <li class="nav-item"><a class="nav-link" href="./team_management.html"><i class="bi bi-diagram-3" aria-hidden="true"></i> Team management</a></li>
-        <li class="nav-item"><a class="nav-link" href="./user_management.html"><i class="bi bi-person" aria-hidden="true"></i> User management</a></li>
-        <li class="nav-item"><a class="nav-link" href="./mail_settings.html"><i class="bi bi-envelope" aria-hidden="true"></i> Mail settings</a></li>
+        <li class="nav-item"><a class="nav-link active" href="./model_management.html"><i class="bi bi-robot"
+              aria-hidden="true"></i> Model management</a></li>
+        <li class="nav-item"><a class="nav-link" href="./team_management.html"><i class="bi bi-diagram-3"
+              aria-hidden="true"></i> Team management</a></li>
+        <li class="nav-item"><a class="nav-link" href="./user_management.html"><i class="bi bi-person"
+              aria-hidden="true"></i> User management</a></li>
+        <li class="nav-item"><a class="nav-link" href="./mail_settings.html"><i class="bi bi-envelope"
+              aria-hidden="true"></i> Mail settings</a></li>
       </ul>
     </nav>
 
@@ -72,14 +84,17 @@
           <!-- Modality tabs (output modality: Text vs Embeddings) -->
           <div class="catalog-modality-header">
             <div class="catalog-modality-tabs" role="tablist" aria-label="Output modality">
-              <button type="button" class="catalog-modality-tab active" role="tab" aria-selected="true" data-modality="text">
+              <button type="button" class="catalog-modality-tab active" role="tab" aria-selected="true"
+                data-modality="text">
                 <i class="bi bi-fonts" aria-hidden="true"></i> Text
               </button>
-              <button type="button" class="catalog-modality-tab" role="tab" aria-selected="false" data-modality="embeddings">
+              <button type="button" class="catalog-modality-tab" role="tab" aria-selected="false"
+                data-modality="embeddings">
                 <i class="bi bi-diagram-3" aria-hidden="true"></i> Embeddings
               </button>
             </div>
-            <a href="./deploy_model_form.html?scratch=1" class="btn btn-dark rd-btn-action border-0 text-decoration-none catalog-modality-header__action">
+            <a href="./deploy_model_form.html?scratch=1"
+              class="btn btn-dark rd-btn-action border-0 text-decoration-none catalog-modality-header__action">
               <i class="bi bi-pencil-square" aria-hidden="true"></i> Deploy from scratch
             </a>
           </div>
@@ -130,34 +145,47 @@
                 <div class="catalog-filter-section">
                   <div class="catalog-filter-section__title">Input modality</div>
                   <div class="catalog-filter-section__body">
-                    <label class="catalog-checkbox"><input type="checkbox" data-filter="interfaces" value="vision"> <span>Vision</span></label>
-                    <label class="catalog-checkbox"><input type="checkbox" data-filter="interfaces" value="audio"> <span>Audio</span></label>
+                    <label class="catalog-checkbox"><input type="checkbox" data-filter="interfaces" value="vision">
+                      <span>Vision</span></label>
+                    <label class="catalog-checkbox"><input type="checkbox" data-filter="interfaces" value="audio">
+                      <span>Audio</span></label>
                   </div>
                 </div>
                 <div class="catalog-filter-section">
                   <div class="catalog-filter-section__title">Publisher region</div>
                   <div class="catalog-filter-section__body">
-                    <label class="catalog-checkbox"><input type="checkbox" data-filter="publisher_region" value="western"> <span>Western (欧米)</span></label>
-                    <label class="catalog-checkbox"><input type="checkbox" data-filter="publisher_region" value="chinese"> <span>Chinese (中国)</span></label>
-                    <label class="catalog-checkbox"><input type="checkbox" data-filter="publisher_region" value="other"> <span>Other</span></label>
+                    <label class="catalog-checkbox"><input type="checkbox" data-filter="publisher_region"
+                        value="western"> <span>Western (欧米)</span></label>
+                    <label class="catalog-checkbox"><input type="checkbox" data-filter="publisher_region"
+                        value="chinese"> <span>Chinese (中国)</span></label>
+                    <label class="catalog-checkbox"><input type="checkbox" data-filter="publisher_region" value="other">
+                      <span>Other</span></label>
                   </div>
                 </div>
                 <div class="catalog-filter-section">
                   <div class="catalog-filter-section__title">License</div>
                   <div class="catalog-filter-section__body">
-                    <label class="catalog-checkbox"><input type="checkbox" data-filter="license" value="Apache 2.0"> <span>Apache 2.0</span></label>
-                    <label class="catalog-checkbox"><input type="checkbox" data-filter="license" value="MIT"> <span>MIT</span></label>
-                    <label class="catalog-checkbox"><input type="checkbox" data-filter="license" value="Llama"> <span>Llama</span></label>
-                    <label class="catalog-checkbox"><input type="checkbox" data-filter="license" value="Gemma"> <span>Gemma</span></label>
-                    <label class="catalog-checkbox"><input type="checkbox" data-filter="license" value="CC-BY-NC"> <span>CC-BY-NC</span></label>
+                    <label class="catalog-checkbox"><input type="checkbox" data-filter="license" value="Apache 2.0">
+                      <span>Apache 2.0</span></label>
+                    <label class="catalog-checkbox"><input type="checkbox" data-filter="license" value="MIT">
+                      <span>MIT</span></label>
+                    <label class="catalog-checkbox"><input type="checkbox" data-filter="license" value="Llama">
+                      <span>Llama</span></label>
+                    <label class="catalog-checkbox"><input type="checkbox" data-filter="license" value="Gemma">
+                      <span>Gemma</span></label>
+                    <label class="catalog-checkbox"><input type="checkbox" data-filter="license" value="CC-BY-NC">
+                      <span>CC-BY-NC</span></label>
                   </div>
                 </div>
                 <div class="catalog-filter-section catalog-filter-section--wide">
                   <div class="catalog-filter-section__title">Min context</div>
                   <div class="catalog-filter-section__body">
                     <div class="catalog-range">
-                      <input type="range" id="filter-context" class="catalog-range__input" min="0" max="5" step="1" value="0">
-                      <div class="catalog-range__labels"><span>All</span><span>4K</span><span>8K</span><span>32K</span><span>128K</span><span>1M+</span></div>
+                      <input type="range" id="filter-context" class="catalog-range__input" min="0" max="5" step="1"
+                        value="0">
+                      <div class="catalog-range__labels">
+                        <span>All</span><span>4K</span><span>8K</span><span>32K</span><span>128K</span><span>1M+</span>
+                      </div>
                       <div class="catalog-range__value" id="filter-context-val">All</div>
                     </div>
                   </div>
@@ -172,18 +200,29 @@
                 <div class="catalog-filter-section">
                   <div class="catalog-filter-section__title">Capabilities</div>
                   <div class="catalog-filter-section__body">
-                    <label class="catalog-switch"><input type="checkbox" data-filter="capability" value="reasoning"><span class="catalog-switch__track"><span class="catalog-switch__thumb"></span></span><span>Reasoning</span></label>
-                    <label class="catalog-switch"><input type="checkbox" data-filter="capability" value="code"><span class="catalog-switch__track"><span class="catalog-switch__thumb"></span></span><span>Code</span></label>
-                    <label class="catalog-switch"><input type="checkbox" data-filter="capability" value="vision"><span class="catalog-switch__track"><span class="catalog-switch__thumb"></span></span><span>Vision</span></label>
-                    <label class="catalog-switch"><input type="checkbox" data-filter="capability" value="tool_use"><span class="catalog-switch__track"><span class="catalog-switch__thumb"></span></span><span>Tool Use</span></label>
+                    <label class="catalog-switch"><input type="checkbox" data-filter="capability"
+                        value="reasoning"><span class="catalog-switch__track"><span
+                          class="catalog-switch__thumb"></span></span><span>Reasoning</span></label>
+                    <label class="catalog-switch"><input type="checkbox" data-filter="capability" value="code"><span
+                        class="catalog-switch__track"><span
+                          class="catalog-switch__thumb"></span></span><span>Code</span></label>
+                    <label class="catalog-switch"><input type="checkbox" data-filter="capability" value="vision"><span
+                        class="catalog-switch__track"><span
+                          class="catalog-switch__thumb"></span></span><span>Vision</span></label>
+                    <label class="catalog-switch"><input type="checkbox" data-filter="capability" value="tool_use"><span
+                        class="catalog-switch__track"><span class="catalog-switch__thumb"></span></span><span>Tool
+                        Use</span></label>
                   </div>
                 </div>
                 <div class="catalog-filter-section catalog-filter-section--wide">
                   <div class="catalog-filter-section__title">Model size</div>
                   <div class="catalog-filter-section__body">
                     <div class="catalog-range">
-                      <input type="range" id="filter-size" class="catalog-range__input" min="0" max="4" step="1" value="0">
-                      <div class="catalog-range__labels"><span>All</span><span>&lt;3B</span><span>3-13B</span><span>13-70B</span><span>70B+</span></div>
+                      <input type="range" id="filter-size" class="catalog-range__input" min="0" max="4" step="1"
+                        value="0">
+                      <div class="catalog-range__labels">
+                        <span>All</span><span>&lt;3B</span><span>3-13B</span><span>13-70B</span><span>70B+</span>
+                      </div>
                       <div class="catalog-range__value" id="filter-size-val">All</div>
                     </div>
                   </div>
@@ -192,7 +231,8 @@
             </div>
 
             <div class="catalog-filter-actions">
-              <button type="button" class="btn btn-sm btn-light rd-btn-action border-0" id="catalog-filter-reset"><i class="bi bi-x-circle"></i> Reset Filters</button>
+              <button type="button" class="btn btn-sm btn-light rd-btn-action border-0" id="catalog-filter-reset"><i
+                  class="bi bi-x-circle"></i> Reset Filters</button>
             </div>
           </div>
 
@@ -224,6 +264,19 @@
 
   </div>
 
+  <!-- Model Detail Modal (catalog.js showCatalogModal — list view etc.) -->
+  <div class="modal fade" id="model-detail-modal" tabindex="-1" aria-labelledby="model-detail-modal-label" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered rd-modal rd-modal--big">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="model-detail-modal-label">Model Detail</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body pt-0" id="model-detail-body"></div>
+      </div>
+    </div>
+  </div>
+
   <div id="toast-container" class="position-fixed top-0 end-0 p-3" style="z-index:1080"></div>
 
   <script src="./static/js/jquery-3.7.1.min.js"></script>
@@ -233,201 +286,217 @@
   <script src="./static/js/catalog.js"></script>
   <script src="./static/js/preset_data.js"></script>
   <script>
-  /* All benchmark display on this page uses preset.json only (not sample CATALOG_DATA). */
-  window.CATALOG_USE_PRESET_BENCHMARKS = true;
+    /* All benchmark display on this page uses preset.json only (not sample CATALOG_DATA). */
+    window.CATALOG_USE_PRESET_BENCHMARKS = true;
+    /* Advanced Settings → capabilities checkboxes (deploy_model_form.html) */
+    window.DEPLOY_FEATURE_KEYS = ['tool_use', 'reasoning'];
 
-  /* =========================================================================
-     deploy_model_select — preset.json データ + 案A スタイルカード
-     方針:
-       - 既存 catalog.js のフィルタ/ソート/ビュー切替/モーダル流用
-       - CATALOG_DATA は preset_data.js (sample_data/preset.json) で置換
-       - renderCardView を 2 カラムスコアグリッド (Int/Cod/Mat | Spd/TTFT) に上書き
-       - 5 つの円スコアは先方 jinja2 macro `score_row` の計算式を忠実に JS 実装
-           filled = clamp(floor(value/max_val*5), 0, 5)            (normal)
-           filled = clamp(floor(5 - value/max_val*5), 0, 5)        (invert)
-       - TTFT は macro inversion + value=0=未計測 の罠を避けるため、
-         インジケータでなく fast/med/slow セマンティクスのチップで表示
-       - Spd / TTFT の value=0 は「未計測」プレースホルダ（preset.json の
-         実値 0 は事実上未計測ケース）
-     カードクリック → ./deploy_model_form.html?model=<id> (deploy mode)
-     ========================================================================= */
+    /* =========================================================================
+       deploy_model_select — preset.json データ + 案A スタイルカード
+       方針:
+         - 既存 catalog.js のフィルタ/ソート/ビュー切替/モーダル流用
+         - CATALOG_DATA は preset_data.js (sample_data/preset.json) で置換
+         - renderCardView を 2 カラムスコアグリッド (Int/Cod/Mat | Spd/TTFT) に上書き
+         - 5 つの円スコアは先方 jinja2 macro `score_row` の計算式を忠実に JS 実装
+             filled = clamp(floor(value/max_val*5), 0, 5)            (normal)
+             filled = clamp(floor(5 - value/max_val*5), 0, 5)        (invert)
+         - TTFT は macro inversion + value=0=未計測 の罠を避けるため、
+           インジケータでなく fast/med/slow セマンティクスのチップで表示
+         - Spd / TTFT の value=0 は「未計測」プレースホルダ（preset.json の
+           実値 0 は事実上未計測ケース）
+       カードクリック → ./deploy_model_form.html?model=<id> (deploy mode)
+       ========================================================================= */
 
-  /* ---- Bridge: preset_data.js list → CATALOG_DATA shape (catalog.js 互換) ---- */
-  (function () {
-    if (!window.PresetData || !Array.isArray(window.PresetData.list)) return;
+    /* ---- Bridge: preset_data.js list → CATALOG_DATA shape (catalog.js 互換) ---- */
+    (function () {
+      if (!window.PresetData || !Array.isArray(window.PresetData.list)) return;
 
-    function mapRegion(dev) {
-      var lc = String(dev || '').toLowerCase();
-      if (lc.indexOf('alibaba') >= 0 || lc.indexOf('qwen') >= 0 || lc.indexOf('deepseek') >= 0 || lc.indexOf('zhipu') >= 0 || lc.indexOf('baidu') >= 0) return 'chinese';
-      if (lc.indexOf('google') >= 0 || lc.indexOf('meta') >= 0 || lc.indexOf('microsoft') >= 0 || lc.indexOf('mistral') >= 0 || lc.indexOf('anthropic') >= 0 || lc.indexOf('openai') >= 0) return 'western';
-      return 'other';
-    }
-    function mapCapabilities(p) {
-      var caps = [];
-      if (p.capabilities && p.capabilities.tool_use) caps.push('tool_use');
-      if (p.capabilities && p.capabilities.reasoning) caps.push('reasoning');
-      if (p.input_modalities && p.input_modalities.indexOf('image') >= 0) caps.push('vision');
-      return caps;
-    }
-    function describeSize(p) {
-      var r = p.required_resources || {};
-      if (r.gpu) return 'GPU ' + (r.gpu.count || 1) + 'x · ' + (r.gpu.memory_gb || '?') + 'GB';
-      if (r.cpu) return 'CPU · ' + (r.cpu.memory_gb || '?') + 'GB';
-      return '—';
-    }
-
-    var bridged = window.PresetData.list.map(function (p) {
-      return {
-        id: p.id,
-        name: p.id,
-        provider: p.developer || '—',
-        publisher_region: mapRegion(p.developer),
-        modality: 'text',
-        source: p.model_source || '',
-        engine: [],
-        license: p.license || '—',
-        interfaces: (p.input_modalities && p.input_modalities.length) ? p.input_modalities.slice() : ['text'],
-        capabilities: mapCapabilities(p),
-        use_cases: [],
-        reasoning: !!(p.capabilities && p.capabilities.reasoning),
-        context: p.max_input_tokens,
-        size: describeSize(p),
-        size_num: 0,
-        benchmarks: typeof benchmarksFromPreset === 'function' ? benchmarksFromPreset(p) : {},
-        released: p.release_data || '',
-        _preset: p
-      };
-    });
-
-    if (Array.isArray(window.CATALOG_DATA)) {
-      window.CATALOG_DATA.length = 0;
-      Array.prototype.push.apply(window.CATALOG_DATA, bridged);
-    } else {
-      window.CATALOG_DATA = bridged;
-    }
-  })();
-
-  (function () {
-    function escHtml(s) {
-      return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
-        return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
-      });
-    }
-    function fmtCtx(ctx) {
-      if (ctx == null || !ctx) return '—';
-      if (ctx >= 1048576) return (ctx / 1048576).toFixed(1).replace(/\.0$/, '') + 'M';
-      if (ctx >= 1024) return (ctx / 1024).toFixed(0) + 'K';
-      return String(ctx);
-    }
-
-    /* IN→OUT modality group — catalog.js の getInputModalities/getOutputModalities を流用 */
-    function renderModalityGroupA(m) {
-      var ins = window.getInputModalities ? window.getInputModalities(m) : (m.interfaces || ['text']);
-      var outs = window.getOutputModalities ? window.getOutputModalities(m) : ['text'];
-      var inLabel = ins.map(window.modalityLabel).join(', ');
-      var outLabel = outs.map(window.modalityLabel).join(', ');
-      var html = '<span class="pd-mod-group" title="Input: ' + escHtml(inLabel) + ' → Output: ' + escHtml(outLabel) + '">';
-      html += '<span class="pd-mod-group__label">IN</span>';
-      for (var i = 0; i < ins.length; i++) {
-        html += '<i class="bi ' + window.modalityIcon(ins[i]) + '" title="' + window.modalityLabel(ins[i]) + '"></i>';
+      function mapRegion(dev) {
+        var lc = String(dev || '').toLowerCase();
+        if (lc.indexOf('alibaba') >= 0 || lc.indexOf('qwen') >= 0 || lc.indexOf('deepseek') >= 0 || lc.indexOf('zhipu') >= 0 || lc.indexOf('baidu') >= 0) return 'chinese';
+        if (lc.indexOf('google') >= 0 || lc.indexOf('meta') >= 0 || lc.indexOf('microsoft') >= 0 || lc.indexOf('mistral') >= 0 || lc.indexOf('anthropic') >= 0 || lc.indexOf('openai') >= 0) return 'western';
+        return 'other';
       }
-      html += '<span class="pd-mod-group__arrow"><i class="bi bi-arrow-right"></i></span>';
-      html += '<span class="pd-mod-group__label">OUT</span>';
-      for (var j = 0; j < outs.length; j++) {
-        html += '<i class="bi ' + window.modalityIcon(outs[j]) + '" title="' + window.modalityLabel(outs[j]) + '"></i>';
+      function mapCapabilities(p) {
+        var caps = [];
+        var def = p.capabilities || {};
+        var keys = window.DEPLOY_FEATURE_KEYS || [];
+        for (var i = 0; i < keys.length; i++) {
+          var key = keys[i];
+          if (def[key]) caps.push(key);
+        }
+        return caps;
       }
-      html += '</span>';
-      return html;
-    }
-
-    /* Capabilities row — m.capabilities[] を icon + label で並べる */
-    function renderCapsRow(m) {
-      if (!m.capabilities || !m.capabilities.length) return '';
-      var html = '<div class="catalog-card__caps-row">';
-      for (var i = 0; i < m.capabilities.length; i++) {
-        var cap = m.capabilities[i];
-        var icon = window.capabilityIcon ? window.capabilityIcon(cap) : 'bi-tag';
-        var label = window.capabilityLabel ? window.capabilityLabel(cap) : cap;
-        html += '<span class="catalog-tag catalog-tag--neutral"><i class="bi ' + icon + '"></i> ' + escHtml(label) + '</span>';
+      function describeSize(p) {
+        var r = p.required_resources || {};
+        if (r.gpu) return 'GPU ' + (r.gpu.count || 1) + 'x · ' + (r.gpu.memory_gb || '?') + 'GB';
+        if (r.cpu) return 'CPU · ' + (r.cpu.memory_gb || '?') + 'GB';
+        return '—';
       }
-      html += '</div>';
-      return html;
-    }
 
-    /* renderCardView を案A スタイル + 先方 macro 計算に差し替え */
-    window.renderCardView = function (models) {
-      if (!models || !models.length) {
-        return '<div class="catalog-empty"><i class="bi bi-inbox"></i><p>No models match your filters</p></div>';
-      }
-      var html = '<div class="catalog-card-grid">';
-      for (var i = 0; i < models.length; i++) {
-        var m = models[i];
-        var p = m._preset || null;
-        html += '<div class="catalog-card" data-model-id="' + escHtml(m.id) + '">';
-
-        // Header: provider icon + name + source
-        // developer → icon slug の別名マップ（preset の developer 名と
-        // static/img/providers/ のファイル名がずれる場合のブリッジ）
-        var ICON_ALIASES = {
-          'alibaba-cloud': 'qwen',
-          'alibaba': 'qwen'
+      var bridged = window.PresetData.list.map(function (p) {
+        return {
+          id: p.id,
+          name: p.id,
+          provider: p.developer || '—',
+          publisher_region: mapRegion(p.developer),
+          modality: 'text',
+          source: p.model_source || '',
+          engine: [],
+          license: p.license || '—',
+          interfaces: (p.input_modalities && p.input_modalities.length) ? p.input_modalities.slice() : ['text'],
+          capabilities: mapCapabilities(p),
+          use_cases: [],
+          reasoning: !!(p.capabilities && p.capabilities.reasoning),
+          context: p.max_input_tokens,
+          size: describeSize(p),
+          size_num: 0,
+          benchmarks: typeof benchmarksFromPreset === 'function' ? benchmarksFromPreset(p) : {},
+          released: p.release_data || '',
+          _preset: p
         };
-        var rawSlug = (window.providerSlug ? window.providerSlug(m.provider) : String(m.provider || '').toLowerCase().replace(/[^a-z0-9]+/g, '-'));
-        var slug = ICON_ALIASES[rawSlug] || rawSlug;
-        html += '<div class="catalog-card__header">';
-        html += '<img class="catalog-card__provider-icon" src="./static/img/providers/' + slug + '.svg" alt="" aria-hidden="true" onerror="this.style.visibility=\'hidden\'">';
-        html += '<div class="catalog-card__heading" style="flex:1;min-width:0;">';
-        html += '<div class="catalog-card__name">' + escHtml(m.name) + '</div>';
-        if (m.source) {
-          html += '<div class="catalog-card__source">' + escHtml(m.source) + '</div>';
-        } else {
-          html += '<div class="catalog-card__provider">' + escHtml(m.provider) + '</div>';
-        }
-        html += '</div>';
-        html += '</div>';
-
-        // Meta row: IN→OUT modality + resource + context
-        html += '<div class="catalog-card__meta">';
-        html += renderModalityGroupA(m);
-        if (m.size) {
-          html += '<span class="catalog-tag catalog-tag--neutral catalog-tag--size">' + escHtml(m.size) + '</span>';
-        }
-        html += '<span class="catalog-tag catalog-tag--neutral catalog-tag--context">' + fmtCtx(m.context) + ' ctx</span>';
-        html += '</div>';
-
-        // Score list (Int / Cod / Mat / Spd / TTFT — shared with detail view via catalog.js)
-        html += window.renderPresetScoreList ? window.renderPresetScoreList(p) : '';
-        html += renderCapsRow(m);
-
-        html += '</div>';
-      }
-      html += '</div>';
-      return html;
-    };
-
-    /* catalog.js 初期化後に強制再描画 */
-    $(function () {
-      if (typeof window.renderCatalog === 'function') {
-        window.renderCatalog();
-      }
-    });
-
-    /* Deploy mode: card click → deploy form (override modal) */
-    $(function () {
-      if (!$('#catalog-content').length) return;
-
-      $(document).off('click', '.catalog-card');
-      $(document).on('click', '.catalog-card', function (e) {
-        e.preventDefault();
-        var id = $(this).data('model-id');
-        location.href = './deploy_model_form.html?model=' + encodeURIComponent(id);
       });
 
-      /* Detail view: Deploy CTA is only on each summary row (catalogDeployButtonHtml).
-         No button inside the expanded panel — avoids flex-stretch layout issues and
-         matches the original design (row action only). */
-    });
-  })();
+      if (Array.isArray(window.CATALOG_DATA)) {
+        window.CATALOG_DATA.length = 0;
+        Array.prototype.push.apply(window.CATALOG_DATA, bridged);
+      } else {
+        window.CATALOG_DATA = bridged;
+      }
+    })();
+
+    (function () {
+      function escHtml(s) {
+        return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+          return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+        });
+      }
+      function fmtCtx(ctx) {
+        if (ctx == null || !ctx) return '—';
+        if (ctx >= 1048576) return (ctx / 1048576).toFixed(1).replace(/\.0$/, '') + 'M';
+        if (ctx >= 1024) return (ctx / 1024).toFixed(0) + 'K';
+        return String(ctx);
+      }
+
+      /* IN→OUT modality group — catalog.js の getInputModalities/getOutputModalities を流用 */
+      function renderModalityGroupA(m) {
+        var ins = window.getInputModalities ? window.getInputModalities(m) : (m.interfaces || ['text']);
+        var outs = window.getOutputModalities ? window.getOutputModalities(m) : ['text'];
+        var inLabel = ins.map(window.modalityLabel).join(', ');
+        var outLabel = outs.map(window.modalityLabel).join(', ');
+        var html = '<span class="pd-mod-group" title="Input: ' + escHtml(inLabel) + ' → Output: ' + escHtml(outLabel) + '">';
+        html += '<span class="pd-mod-group__label">IN</span>';
+        for (var i = 0; i < ins.length; i++) {
+          html += '<i class="bi ' + window.modalityIcon(ins[i]) + '" title="' + window.modalityLabel(ins[i]) + '"></i>';
+        }
+        html += '<span class="pd-mod-group__arrow"><i class="bi bi-arrow-right"></i></span>';
+        html += '<span class="pd-mod-group__label">OUT</span>';
+        for (var j = 0; j < outs.length; j++) {
+          html += '<i class="bi ' + window.modalityIcon(outs[j]) + '" title="' + window.modalityLabel(outs[j]) + '"></i>';
+        }
+        html += '</span>';
+        return html;
+      }
+
+      /* Features row — deploy form checkbox labels only (no icons / no vision) */
+      function renderCapsRow(m) {
+        var featureKeys = window.DEPLOY_FEATURE_KEYS || [];
+        var capObj = (m._preset && m._preset.capabilities) || null;
+        var keys = [];
+        if (capObj) {
+          for (var i = 0; i < featureKeys.length; i++) {
+            var key = featureKeys[i];
+            if (capObj[key]) keys.push(key);
+          }
+        } else if (m.capabilities && m.capabilities.length) {
+          for (var j = 0; j < m.capabilities.length; j++) {
+            if (featureKeys.indexOf(m.capabilities[j]) >= 0) keys.push(m.capabilities[j]);
+          }
+        }
+        if (!keys.length) return '';
+        var html = '<div class="catalog-card__caps-row">';
+        for (var k = 0; k < keys.length; k++) {
+          html += '<span class="catalog-tag catalog-tag--neutral">' + escHtml(keys[k]) + '</span>';
+        }
+        html += '</div>';
+        return html;
+      }
+
+      /* renderCardView を案A スタイル + 先方 macro 計算に差し替え */
+      window.renderCardView = function (models) {
+        if (!models || !models.length) {
+          return '<div class="catalog-empty"><i class="bi bi-inbox"></i><p>No models match your filters</p></div>';
+        }
+        var html = '<div class="catalog-card-grid">';
+        for (var i = 0; i < models.length; i++) {
+          var m = models[i];
+          var p = m._preset || null;
+          html += '<div class="catalog-card" data-model-id="' + escHtml(m.id) + '">';
+
+          // Header: provider icon + name + source
+          // developer → icon slug の別名マップ（preset の developer 名と
+          // static/img/providers/ のファイル名がずれる場合のブリッジ）
+          var ICON_ALIASES = {
+            'alibaba-cloud': 'qwen',
+            'alibaba': 'qwen'
+          };
+          var rawSlug = (window.providerSlug ? window.providerSlug(m.provider) : String(m.provider || '').toLowerCase().replace(/[^a-z0-9]+/g, '-'));
+          var slug = ICON_ALIASES[rawSlug] || rawSlug;
+          html += '<div class="catalog-card__header">';
+          html += '<img class="catalog-card__provider-icon" src="./static/img/providers/' + slug + '.svg" alt="" aria-hidden="true" onerror="this.style.visibility=\'hidden\'">';
+          html += '<div class="catalog-card__heading" style="flex:1;min-width:0;">';
+          html += '<div class="catalog-card__name">' + escHtml(m.name) + '</div>';
+          if (m.source) {
+            html += '<div class="catalog-card__source">' + escHtml(m.source) + '</div>';
+          } else {
+            html += '<div class="catalog-card__provider">' + escHtml(m.provider) + '</div>';
+          }
+          html += '</div>';
+          html += '</div>';
+
+          // Meta row: IN→OUT modality + resource + context
+          html += '<div class="catalog-card__meta">';
+          html += renderModalityGroupA(m);
+          if (m.size) {
+            html += '<span class="catalog-tag catalog-tag--neutral catalog-tag--size">' + escHtml(m.size) + '</span>';
+          }
+          html += '<span class="catalog-tag catalog-tag--neutral catalog-tag--context">' + fmtCtx(m.context) + ' ctx</span>';
+          html += '</div>';
+
+          // Score list (Int / Cod / Mat / Spd / TTFT — shared with detail view via catalog.js)
+          html += window.renderPresetScoreList ? window.renderPresetScoreList(p) : '';
+          html += renderCapsRow(m);
+
+          html += '</div>';
+        }
+        html += '</div>';
+        return html;
+      };
+
+      /* catalog.js 初期化後に強制再描画 */
+      $(function () {
+        if (typeof window.renderCatalog === 'function') {
+          window.renderCatalog();
+        }
+      });
+
+      /* Deploy mode: card click → deploy form (override modal) */
+      $(function () {
+        if (!$('#catalog-content').length) return;
+
+        $(document).off('click', '.catalog-card');
+        $(document).on('click', '.catalog-card', function (e) {
+          e.preventDefault();
+          var id = $(this).data('model-id');
+          location.href = './deploy_model_form.html?model=' + encodeURIComponent(id);
+        });
+
+        /* Detail view: Deploy CTA is only on each summary row (catalogDeployButtonHtml).
+           No button inside the expanded panel — avoids flex-stretch layout issues and
+           matches the original design (row action only). */
+      });
+    })();
   </script>
 </body>
+
 </html>

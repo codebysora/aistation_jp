@@ -70,7 +70,7 @@
             </ol>
           </nav>
         </div>
-        <div class="rd-card__body d-flex flex-column overflow-hidden">
+        <div class="rd-card__body rd-card__body--deploy-form d-flex flex-column overflow-hidden">
 
           <!-- Step indicator -->
           <div class="rd-steps mx-4 mt-3 mb-2">
@@ -264,27 +264,17 @@
                     <div class="fw-semibold">capabilities</div>
                   </div>
                   <div class="c-form-row__field">
-                    <div class="d-flex flex-wrap gap-3">
-                      <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="cap-function-calling">
-                        <label class="form-check-label" for="cap-function-calling">function_calling</label>
-                      </div>
-                      <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="cap-structured-output">
-                        <label class="form-check-label" for="cap-structured-output">structured_output</label>
-                      </div>
-                      <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="cap-tool-choice">
-                        <label class="form-check-label" for="cap-tool-choice">tool_choice</label>
-                      </div>
-                      <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="cap-reasoning">
-                        <label class="form-check-label" for="cap-reasoning">reasoning</label>
-                      </div>
-                      <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="cap-stream">
-                        <label class="form-check-label" for="cap-stream">stream</label>
-                      </div>
+                    <div class="c-cap-check-group" role="group" aria-label="capabilities">
+                      <label class="c-cap-check">
+                        <input type="checkbox" id="cap-tool-use" value="tool_use">
+                        <span class="c-cap-check__box" aria-hidden="true"></span>
+                        <span class="c-cap-check__label">tool_use</span>
+                      </label>
+                      <label class="c-cap-check">
+                        <input type="checkbox" id="cap-reasoning" value="reasoning">
+                        <span class="c-cap-check__box" aria-hidden="true"></span>
+                        <span class="c-cap-check__label">reasoning</span>
+                      </label>
                     </div>
                   </div>
                 </div>
@@ -390,10 +380,7 @@
     };
     const PRESET_MODEL_DEFINITION = {
       capabilities: {
-        function_calling: true,
-        tool_choice: true,
-        structured_output: true,
-        stream: true,
+        tool_use: true,
         reasoning: true
       },
       pricing: { input: 0.0, output: 0.0 },
@@ -465,11 +452,10 @@
     function initModelDefinitionUI(data) {
       data = data || {};
       const cap = data.capabilities || {};
-      document.getElementById('cap-function-calling').checked = !!cap.function_calling;
-      document.getElementById('cap-structured-output').checked = !!cap.structured_output;
-      document.getElementById('cap-tool-choice').checked = !!cap.tool_choice;
+      document.getElementById('cap-tool-use').checked = !!(
+        cap.tool_use || cap.function_calling || cap.tool_choice
+      );
       document.getElementById('cap-reasoning').checked = !!cap.reasoning;
-      document.getElementById('cap-stream').checked = !!cap.stream;
 
       const pricing = data.pricing || {};
       if (pricing.input != null) document.getElementById('pricing-input').value = pricing.input;
@@ -515,11 +501,8 @@
     function serializeModelDefinition() {
       const capabilities = {};
       [
-        ['cap-function-calling', 'function_calling'],
-        ['cap-structured-output', 'structured_output'],
-        ['cap-tool-choice', 'tool_choice'],
-        ['cap-reasoning', 'reasoning'],
-        ['cap-stream', 'stream']
+        ['cap-tool-use', 'tool_use'],
+        ['cap-reasoning', 'reasoning']
       ].forEach(function(pair) {
         if (document.getElementById(pair[0]).checked) capabilities[pair[1]] = true;
       });
@@ -641,7 +624,7 @@
         kwargs: params.kwargs || {},
         env: params.env || {}
       });
-      initModelDefinitionUI(PRESET_MODEL_DEFINITION);
+      initModelDefinitionUI(raw.model_definition || PRESET_MODEL_DEFINITION);
     }
 
     // ---- bootstrap from URL or defaults ----
