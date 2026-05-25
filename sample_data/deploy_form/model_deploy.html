@@ -36,7 +36,7 @@
       <div class="rd-form-model-header">
         Deploy for {{ form.inference_backend.data }} {{ form.engine_version.data }}
       </div>
-      <form  class="d-flex flex-column rd-form-min-h-0" style="min-height: 0;" action="{{ url_for('model_start') }}" method="POST" novalidate="novalidate" id="deploy-form">
+      <form class="d-flex flex-column rd-form-min-h-0" action="{{ url_for('model_start') }}" method="POST" novalidate="novalidate" id="deploy-form">
         {{ form.hidden_tag() }}
         <!-- Scrollable form area -->
         <div class="overflow-y-auto rd-form-scroll">
@@ -47,7 +47,7 @@
             </div>
             <div class="c-form-row__field">
               {% for error in form.model_source.errors %}
-              <span style="color: red;">{{ error }}</span>
+              <span class="rd-form-error-text">{{ error }}</span>
               {% endfor %}
               <input type="text" name="model_source" class="c-form-field" value="{{ form.model_source.data }}" placeholder="model_source">
               <div class="c-form-annotation">Model source URI (e.g., 'Qwen/Qwen3-0.6B').</div>
@@ -60,7 +60,7 @@
             </div>
             <div class="c-form-row__field">
               {% for error in form.model_name.errors %}
-              <span style="color: red;">{{ error }}</span>
+              <span class="rd-form-error-text">{{ error }}</span>
               {% endfor %}
               <input type="text" name="model_name" class="c-form-field" value="{{ form.model_name.data }}" placeholder="model_name">
               <div class="c-form-annotation">Display name for the model. Defaults to preset name, please makes it unique.</div>
@@ -204,15 +204,15 @@
               </div>
               <div class="c-form-row__field">
                 <div class="d-flex gap-3 align-items-center flex-wrap">
-                  <div class="input-group input-group-sm" style="width:180px">
+                  <div class="input-group input-group-sm c-input-group--w180">
                     <span class="input-group-text">input</span>
                     <input type="number" id="pricing-input" class="form-control" step="any" min="0" placeholder="0.0">
                   </div>
-                  <div class="input-group input-group-sm" style="width:180px">
+                  <div class="input-group input-group-sm c-input-group--w180">
                     <span class="input-group-text">output</span>
                     <input type="number" id="pricing-output" class="form-control" step="any" min="0" placeholder="0.0">
                   </div>
-                  <div class="input-group input-group-sm" style="width:130px">
+                  <div class="input-group input-group-sm c-input-group--w130">
                     <span class="input-group-text">currency</span>
                     <input type="text" id="pricing-currency" class="form-control" placeholder="USD">
                   </div>
@@ -228,11 +228,11 @@
               </div>
               <div class="c-form-row__field">
                 <div class="d-flex gap-3 align-items-center flex-wrap">
-                  <div class="input-group input-group-sm" style="width:220px">
+                  <div class="input-group input-group-sm c-input-group--w220">
                     <span class="input-group-text">max input tokens</span>
                     <input type="number" id="context-max-input" class="form-control" min="0" placeholder="—">
                   </div>
-                  <div class="input-group input-group-sm" style="width:230px">
+                  <div class="input-group input-group-sm c-input-group--w230">
                     <span class="input-group-text">max output tokens</span>
                     <input type="number" id="context-max-output" class="form-control" min="0" placeholder="—">
                   </div>

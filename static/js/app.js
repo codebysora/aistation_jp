@@ -410,7 +410,7 @@ function buildHistoryKvTable(obj) {
   var keys = Object.keys(obj || {});
   if (!keys.length) return '<div class="text-body-secondary small">empty</div>';
   var html = '<table class="rd-history-kv">' +
-    '<thead><tr><th style="width:30%">Path</th><th>Value</th></tr></thead>' +
+    '<thead><tr><th class="rd-model-detail-th-path">Path</th><th>Value</th></tr></thead>' +
     '<tbody>';
   for (var i = 0; i < keys.length; i++) {
     var k = keys[i];
@@ -592,7 +592,7 @@ function buildModelDetailHtml(data) {
   for (var i = 0; i < fields.length; i++) {
     var f = fields[i];
     var val = f.value || '-';
-    html += '<dt class="col-sm-4 py-2 text-body-secondary" style="font-weight:500">' + escapeHtml(f.label) + '</dt>';
+    html += '<dt class="col-sm-4 py-2 text-body-secondary rd-model-detail-dt">' + escapeHtml(f.label) + '</dt>';
     html += '<dd class="col-sm-8 py-2 mb-0">';
     if (f.pre) {
       html += '<pre class="mb-0 small bg-light rounded p-2">' + escapeHtml(val) + '</pre>';
@@ -850,7 +850,7 @@ function ensurePasswordChangeModal() {
           '<form id="password-change-form" action="/password/change" method="POST" novalidate="novalidate">' +
             '<div class="modal-body pt-3">' +
               '<p class="text-muted small mb-3">ログイン用のパスワードを変更します。</p>' +
-              '<div id="password-change-form-error" class="rd-alert rd-alert--error mb-3" style="display:none">' +
+              '<div id="password-change-form-error" class="rd-alert rd-alert--error mb-3 rd-is-hidden">' +
                 '<div class="rd-alert__body"></div>' +
               '</div>' +
               '<div class="mb-3">' +
@@ -992,7 +992,7 @@ function showToast(message, type) {
   var iconMap = { success: 'bi-check-circle-fill', error: 'bi-exclamation-triangle-fill', info: 'bi-info-circle-fill' };
   var $container = $('#toast-container');
   if (!$container.length) {
-    $('body').append('<div id="toast-container" class="position-fixed top-0 end-0 p-3" style="z-index:1080"></div>');
+    $('body').append('<div id="toast-container" class="position-fixed top-0 end-0 p-3"></div>');
     $container = $('#toast-container');
   }
   var $toast = $('<div class="rd-toast rd-toast--' + (type || 'info') + '">' +

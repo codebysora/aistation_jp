@@ -94,7 +94,7 @@
           </div>
 
           <!-- Error container -->
-          <div id="deploy-form-error" class="rd-alert rd-alert--error mx-4 mt-3" style="display:none" role="alert"><div class="rd-alert__body"></div></div>
+          <div id="deploy-form-error" class="rd-alert rd-alert--error mx-4 mt-3 rd-is-hidden" role="alert"><div class="rd-alert__body"></div></div>
 
           <form action="/model/deploy" method="POST" class="d-flex flex-column rd-form-min-h-0" id="deploy-form" novalidate>
             <input type="hidden" name="csrf_token" id="csrf_token_deploy" value="">
@@ -286,15 +286,15 @@
                   </div>
                   <div class="c-form-row__field">
                     <div class="d-flex gap-3 align-items-center flex-wrap">
-                      <div class="input-group input-group-sm" style="width:180px">
+                      <div class="input-group input-group-sm c-input-group--w180">
                         <span class="input-group-text">input</span>
                         <input type="number" id="pricing-input" class="form-control" step="any" min="0" placeholder="0.0">
                       </div>
-                      <div class="input-group input-group-sm" style="width:180px">
+                      <div class="input-group input-group-sm c-input-group--w180">
                         <span class="input-group-text">output</span>
                         <input type="number" id="pricing-output" class="form-control" step="any" min="0" placeholder="0.0">
                       </div>
-                      <div class="input-group input-group-sm" style="width:160px">
+                      <div class="input-group input-group-sm c-input-group--w160">
                         <span class="input-group-text">currency</span>
                         <input type="text" id="pricing-currency" class="form-control" placeholder="USD">
                       </div>
@@ -310,11 +310,11 @@
                   </div>
                   <div class="c-form-row__field">
                     <div class="d-flex gap-3 align-items-center flex-wrap">
-                      <div class="input-group input-group-sm" style="width:240px">
+                      <div class="input-group input-group-sm c-input-group--w240">
                         <span class="input-group-text">max input tokens</span>
                         <input type="number" id="context-max-input" class="form-control" min="0" placeholder="—">
                       </div>
-                      <div class="input-group input-group-sm" style="width:250px">
+                      <div class="input-group input-group-sm c-input-group--w250">
                         <span class="input-group-text">max output tokens</span>
                         <input type="number" id="context-max-output" class="form-control" min="0" placeholder="—">
                       </div>
@@ -359,7 +359,7 @@
 
   </div>
 
-  <div id="toast-container" class="position-fixed top-0 end-0 p-3" style="z-index:1080"></div>
+  <div id="toast-container" class="position-fixed top-0 end-0 p-3"></div>
   <script src="./static/js/jquery-3.7.1.min.js"></script>
   <script src="./static/js/bootstrap.bundle.min.js"></script>
   <script src="./static/js/bootstrap-table.min.js"></script>

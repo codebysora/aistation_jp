@@ -995,7 +995,7 @@ function renderDetailView(models) {
 
   var html = '<div class="catalog-list-wrap"><table class="catalog-list-table catalog-detail-table">';
   html += '<thead><tr>';
-  html += '<th class="catalog-list-th" style="width:28px"></th>';
+  html += '<th class="catalog-list-th catalog-list-th--chevron"></th>';
   html += '<th class="catalog-list-th">Model</th>';
   html += '<th class="catalog-list-th">Provider</th>';
   html += '<th class="catalog-list-th">Size</th>';

@@ -79,7 +79,7 @@
             </ol>
           </nav>
         </div>
-        <div class="rd-card__body" style="display:flex;flex-direction:column;overflow:hidden">
+        <div class="rd-card__body rd-card__body--catalog">
 
           <!-- Modality tabs (output modality: Text vs Embeddings) -->
           <div class="catalog-modality-header">
@@ -136,7 +136,7 @@
           </div>
 
           <!-- Filter Panel -->
-          <div class="catalog-filter-panel" id="catalog-filter-panel" style="display:none">
+          <div class="catalog-filter-panel" id="catalog-filter-panel">
 
             <!-- Group A: Filter-out requirements (drop models that don't meet) -->
             <div class="catalog-filter-group">
@@ -277,7 +277,7 @@
     </div>
   </div>
 
-  <div id="toast-container" class="position-fixed top-0 end-0 p-3" style="z-index:1080"></div>
+  <div id="toast-container" class="position-fixed top-0 end-0 p-3"></div>
 
   <script src="./static/js/jquery-3.7.1.min.js"></script>
   <script src="./static/js/bootstrap.bundle.min.js"></script>
@@ -444,7 +444,7 @@
           var slug = ICON_ALIASES[rawSlug] || rawSlug;
           html += '<div class="catalog-card__header">';
           html += '<img class="catalog-card__provider-icon" src="./static/img/providers/' + slug + '.svg" alt="" aria-hidden="true" onerror="this.style.visibility=\'hidden\'">';
-          html += '<div class="catalog-card__heading" style="flex:1;min-width:0;">';
+          html += '<div class="catalog-card__heading catalog-card__heading--grow">';
           html += '<div class="catalog-card__name">' + escHtml(m.name) + '</div>';
           if (m.source) {
             html += '<div class="catalog-card__source">' + escHtml(m.source) + '</div>';

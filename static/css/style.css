@@ -4416,3 +4416,98 @@ table.rd-table--border > tbody > tr {
     white-space: pre-wrap;
     word-break: break-word;
 }
+
+/* ============================================
+   Utilities (replaces page inline styles)
+   ============================================ */
+.rd-is-hidden {
+    display: none;
+}
+
+#toast-container {
+    z-index: 1080;
+}
+
+.rd-card__body--catalog {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+#catalog-filter-panel {
+    display: none;
+}
+
+.catalog-card__heading--grow {
+    flex: 1;
+    min-width: 0;
+}
+
+.catalog-list-th--chevron {
+    width: 28px;
+}
+
+.c-input-group--w130 {
+    width: 130px;
+}
+
+.c-input-group--w160 {
+    width: 160px;
+}
+
+.c-input-group--w180 {
+    width: 180px;
+}
+
+.c-input-group--w220 {
+    width: 220px;
+}
+
+.c-input-group--w230 {
+    width: 230px;
+}
+
+.c-input-group--w240 {
+    width: 240px;
+}
+
+.c-input-group--w250 {
+    width: 250px;
+}
+
+.rd-text-2xs {
+    font-size: 10px;
+}
+
+.rd-pagination-summary {
+    font-size: 0.875rem;
+}
+
+.rd-table-fixed-height-500 {
+    height: 500px;
+}
+
+.rd-table-loading--visible {
+    opacity: 1;
+    visibility: visible;
+}
+
+.rd-model-detail-dt {
+    font-weight: 500;
+}
+
+.rd-model-detail-th-path {
+    width: 30%;
+}
+
+.rd-form-error-text {
+    color: var(--bs-danger);
+}
+
+.rd-mock-table-bg {
+    background: #fff;
+}
+
+.rd-mock-section-desc-spaced {
+    margin-top: 0.75rem;
+}
