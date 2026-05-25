@@ -131,7 +131,7 @@
                       <tr>
                         <th data-sortable="true" data-field="email">Email</th>
                         <th data-sortable="true" data-field="team_role" data-formatter="teamRoleFormatter">Member Role</th>
-                        <th data-field="actions">Action</th>
+                        <th data-field="actions" data-formatter="memberAddFormatter">Action</th>
                       </tr>
                     </thead>
                   </table>
@@ -153,7 +153,7 @@
                     <label class="form-check-label ms-1" for="role-owner">Owner</label>
                   </li>
                 </ul>
-                <button type="button" class="btn btn-success border-0 d-inline-flex align-items-center gap-1">
+                <button type="button" class="btn btn-success border-0 d-inline-flex align-items-center gap-1 js-bulk-add-members">
                   <i class="bi bi-plus-circle"></i> Add Members
                 </button>
               </div>
@@ -179,30 +179,5 @@
   <script src="./static/js/bootstrap.bundle.min.js"></script>
   <script src="./static/js/bootstrap-table.min.js"></script>
   <script src="./static/js/app.js"></script>
-  <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      var selectedMembersArea = document.querySelector('.p-selected-members');
-      var dropdownMenu = document.querySelector('.dropdown-menu');
-      if (selectedMembersArea && dropdownMenu) {
-        selectedMembersArea.addEventListener('click', function(event) {
-          var removeBtn = event.target.closest('.c-member-tag button[aria-label="Remove"]');
-          if (removeBtn) {
-            var tag = removeBtn.closest('.c-member-tag');
-            if (tag) tag.remove();
-            return;
-          }
-          dropdownMenu.classList.toggle('show');
-          var isExpanded = dropdownMenu.classList.contains('show');
-          selectedMembersArea.setAttribute('aria-expanded', isExpanded);
-        });
-        document.addEventListener('click', function(event) {
-          if (!event.target.closest('.dropdown')) {
-            dropdownMenu.classList.remove('show');
-            selectedMembersArea.setAttribute('aria-expanded', 'false');
-          }
-        });
-      }
-    });
-  </script>
 </body>
 </html>

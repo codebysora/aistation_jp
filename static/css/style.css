@@ -4511,3 +4511,131 @@ table.rd-table--border > tbody > tr {
 .rd-mock-section-desc-spaced {
     margin-top: 0.75rem;
 }
+
+/* New API key success banner (keys list) */
+.rd-newkey-alert {
+    cursor: pointer;
+    padding-right: 2.5rem;
+}
+
+.rd-newkey-alert:focus-visible {
+    outline: 2px solid var(--bs-success);
+    outline-offset: 2px;
+}
+
+.rd-newkey-alert__title {
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.rd-newkey-alert__row {
+    font-size: 0.875rem;
+    margin-bottom: 0.25rem;
+    word-break: break-all;
+}
+
+.rd-newkey-alert__label {
+    display: inline-block;
+    min-width: 4.5rem;
+    font-weight: 600;
+    color: var(--bs-secondary-color);
+}
+
+.rd-newkey-alert__id-wrap {
+    display: inline-flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.125rem;
+    vertical-align: middle;
+    max-width: calc(100% - 5rem);
+}
+
+.rd-newkey-alert__id {
+    font-size: 0.8125rem;
+    background: rgba(255, 255, 255, 0.65);
+    padding: 0.1rem 0.35rem;
+    border-radius: 0.2rem;
+}
+
+.rd-newkey-alert__id-wrap button.cpybtn {
+    flex-shrink: 0;
+}
+
+.rd-newkey-alert__secret {
+    font-family: var(--bs-font-monospace, monospace);
+    font-weight: 600;
+}
+
+.rd-newkey-alert__hint {
+    margin-top: 0.5rem;
+    font-size: 0.8125rem;
+    color: var(--bs-success);
+    font-weight: 600;
+}
+
+.rd-key-id {
+    font-size: 0.75rem;
+}
+
+.rd-keys-row--highlight > td {
+    background-color: rgba(25, 135, 84, 0.14) !important;
+    transition: background-color 0.3s ease;
+}
+
+.rd-toast--clickable {
+    cursor: pointer;
+}
+
+.rd-toast--clickable:hover {
+    box-shadow: 0 10px 28px rgba(0, 0, 0, 0.18);
+}
+
+.rd-toast__title {
+    font-weight: 600;
+    margin-bottom: 0.35rem;
+}
+
+.rd-toast__key-id-row {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    margin-bottom: 0.35rem;
+    cursor: default;
+}
+
+.rd-toast__key-id-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--bs-secondary-color);
+}
+
+.rd-toast__key-id-wrap {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.125rem;
+    max-width: 100%;
+}
+
+.rd-toast__key-id {
+    font-size: 0.75rem;
+    background: var(--bs-light);
+    padding: 0.1rem 0.35rem;
+    border-radius: 0.2rem;
+    word-break: break-all;
+}
+
+.rd-toast__key-id-wrap button.cpybtn {
+    width: 28px;
+    height: 28px;
+    font-size: 0.8125rem;
+    margin: 0;
+}
+
+.rd-toast__action-hint {
+    display: block;
+    font-size: 0.75rem;
+    color: var(--bs-success);
+    font-weight: 600;
+    margin-top: 0.125rem;
+}

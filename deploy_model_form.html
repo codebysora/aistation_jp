@@ -548,36 +548,6 @@
       });
     }
 
-    // ---- event handlers ----
-    document.querySelector('.js-add-arg').addEventListener('click', function() {
-      const input = document.getElementById('new-arg-input');
-      const val = input.value.trim();
-      if (!val) return;
-      document.getElementById('args-container').appendChild(makeArgTag(val));
-      input.value = '';
-    });
-    document.getElementById('new-arg-input').addEventListener('keydown', function(e) {
-      if (e.key === 'Enter') { e.preventDefault(); document.querySelector('.js-add-arg').click(); }
-    });
-
-    document.querySelector('.js-add-kwarg').addEventListener('click', function() {
-      document.getElementById('kwargs-container').appendChild(makeKvRow('', ''));
-    });
-    document.querySelector('.js-add-env').addEventListener('click', function() {
-      document.getElementById('env-container').appendChild(makeKvRow('', ''));
-    });
-
-    document.getElementById('args-container').addEventListener('click', function(e) {
-      const btn = e.target.closest('.js-remove-arg');
-      if (btn) btn.closest('.c-tag-item').remove();
-    });
-    ['kwargs-container', 'env-container'].forEach(function(id) {
-      document.getElementById(id).addEventListener('click', function(e) {
-        const btn = e.target.closest('.js-remove-kv');
-        if (btn) btn.closest('.c-kv-row').remove();
-      });
-    });
-
     document.getElementById('deploy-form').addEventListener('submit', function() {
       serializeParameters();
       serializeModelDefinition();

@@ -21,25 +21,56 @@ function escapeHtml(str) {
 /* ============================================
    Clipboard copy
    ============================================ */
+function showCopyFeedback($parent) {
+  $parent.find('span.balloon_top').remove();
+  $parent.prepend('<span class="balloon_top">Copied!</span>');
+  setTimeout(function () { $parent.find('span.balloon_top').remove(); }, 1200);
+}
+
+function copyTextToClipboard(text, $feedbackParent) {
+  if (!text) return;
+  navigator.clipboard.writeText(text).then(function () {
+    if ($feedbackParent && $feedbackParent.length) showCopyFeedback($feedbackParent);
+  }).catch(function () {
+    // clipboard write failed — silently ignore
+  });
+}
+
+function textFromCopyParent($parent) {
+  return $parent.clone().children('button, span.balloon_top').remove().end().text().trim();
+}
+
+function appendCopyButton($parent, title) {
+  if (!$parent.length || $parent.find('.cpybtn').length) return;
+  $parent.append(
+    '<button type="button" class="cpybtn" title="' + escapeHtml(title || 'Copy') + '">' +
+    '<i class="bi bi-copy"></i></button>'
+  );
+}
+
 function initCopyButtons() {
-  var cpytxt = $('.cpytext');
-  cpytxt.append('<button class="cpybtn" title="Copy"><i class="bi bi-copy"></i></button>');
-  $(document).on('click', '.cpybtn', function () {
+  $('.cpytext').each(function () {
+    appendCopyButton($(this));
+  });
+  $(document).on('click', '.cpybtn', function (e) {
     var $btn = $(this);
-    var text = $btn.parent().clone().children('button, span.balloon_top').remove().end().text().trim();
     var $parent = $btn.parent();
-    navigator.clipboard.writeText(text).then(function () {
-      $parent.prepend('<span class="balloon_top">Copied!</span>');
-      setTimeout(function () { $parent.find('span.balloon_top').remove(); }, 1200);
-    }).catch(function () {
-      // clipboard write failed — silently ignore
-    });
+    var text = $btn.data('copy-text') || textFromCopyParent($parent);
+    e.stopPropagation();
+    copyTextToClipboard(text, $parent);
   });
 }
 
 /* ============================================
    Table formatters - Keys page
    ============================================ */
+function keyIdFormatter(value) {
+  if (!value) return '<span class="text-muted">—</span>';
+  var id = String(value);
+  var short = id.length > 16 ? id.slice(0, 10) + '…' + id.slice(-6) : id;
+  return '<code class="rd-key-id" title="' + escapeHtml(id) + '">' + escapeHtml(short) + '</code>';
+}
+
 function keysActionFormatter(value, row, index) {
   return '<button type="button" class="btn btn-link rd-link-danger p-1 js-delete-key"' +
     ' data-key-id="' + escapeHtml(row.key_id) + '"' +
@@ -142,7 +173,8 @@ function userActionFormatter(value, row) {
    ============================================ */
 function memberRemoveFormatter(value, row) {
   return '<button type="button" class="btn btn-link rd-link-danger p-1 js-remove-member"' +
-    ' data-user-id="' + escapeHtml(row.user_id) + '">' +
+    ' data-user-id="' + escapeHtml(row.user_id) + '"' +
+    ' data-email="' + escapeHtml(row.email) + '">' +
     '<i class="bi bi-x-circle me-1"></i>Remove</button>';
 }
 
@@ -615,50 +647,277 @@ function showModelDetail(data) {
 }
 
 /* ============================================
-   Event delegation (replaces inline onclick)
+   Add / Remove actions (teams, members, keys, deploy form)
    ============================================ */
-function initEventDelegation() {
-  // Keys page - delete key (open modal)
+function initAddRemoveActions() {
   var deleteKeyId = null;
+
   $(document).on('click', '.js-delete-key', function () {
     var $el = $(this);
     deleteKeyId = $el.data('key-id');
     setDeleteTarget(deleteKeyId, $el.data('key-masked'));
-    var modal = new bootstrap.Modal(document.getElementById('key-delete-modal'));
-    modal.show();
+    var modalEl = document.getElementById('key-delete-modal');
+    if (!modalEl) return;
+    bootstrap.Modal.getOrCreateInstance(modalEl).show();
   });
 
-  // Keys page - delete key (submit → loading → fade out → remove row → toast)
   $(document).on('submit', '#key-delete-form', function (e) {
     e.preventDefault();
     var $form = $(this);
     var $btn = $form.find('[type="submit"]');
+    var $keysTable = $('#keys-table');
+    var keyId = deleteKeyId || $('#key-delete-key-id').val();
     setButtonLoading($btn, true);
 
     setTimeout(function () {
-      var modal = bootstrap.Modal.getInstance(document.getElementById('key-delete-modal'));
-      modal.hide();
+      var modalEl = document.getElementById('key-delete-modal');
+      if (modalEl) {
+        var modal = bootstrap.Modal.getInstance(modalEl);
+        if (modal) modal.hide();
+      }
       setButtonLoading($btn, false);
+      deleteKeyId = null;
 
-      if (deleteKeyId) {
-        var id = deleteKeyId;
-        deleteKeyId = null;
-        var $row = $('#keys-table tbody tr').filter(function () {
-          return $(this).find('[data-key-id="' + id + '"]').length > 0 ||
-                 $(this).attr('data-uniqueid') === id;
-        });
-        $row.css({
-          'transition': 'opacity 0.5s, transform 0.5s',
-          'opacity': '0',
-          'transform': 'translateX(30px)'
-        });
-        setTimeout(function () {
-          $('#keys-table').bootstrapTable('removeByUniqueId', id);
-          showToast('API key deleted successfully', 'success');
-        }, 500);
+      if (keyId && $keysTable.length) {
+        removeBootstrapTableRowAnimated($keysTable, keyId, 'API key deleted successfully');
+      } else if (keyId) {
+        showToast('API key deleted successfully', 'success');
       }
     }, 600);
   });
+
+  $(document).on('submit', '#team-new-form', function (e) {
+    e.preventDefault();
+    var $form = $(this);
+    var $name = $('#team_name');
+    var name = ($name.val() || '').trim();
+    if (!name) {
+      showFieldError($name, 'Team name is required');
+      return;
+    }
+    clearFieldError($name);
+
+    var $table = $('#teams-table');
+    if (!$table.length) return;
+
+    var $btn = $form.find('[type="submit"]');
+    setButtonLoading($btn, true);
+    setTimeout(function () {
+      var now = new Date().toISOString();
+      $table.bootstrapTable('prepend', {
+        team_id: generateMockTeamId(),
+        team_name: name,
+        member_count: 0,
+        tpm_limit: null,
+        rpm_limit: null,
+        created_at: now,
+        updated_at: now
+      });
+      var modalEl = document.getElementById('team-new-modal');
+      if (modalEl) {
+        var modal = bootstrap.Modal.getInstance(modalEl);
+        if (modal) modal.hide();
+      }
+      $form[0].reset();
+      setButtonLoading($btn, false);
+      showToast('Team added successfully', 'success');
+    }, 600);
+  });
+
+  $(document).on('click', '.js-set-team-role', function (e) {
+    e.preventDefault();
+    var $el = $(this);
+    var teamId = $el.data('team-id');
+    var role = $el.data('team-role');
+    var $table = $('#teams-table');
+    if (!teamId || !$table.length) return;
+
+    setTeamRoleTarget(teamId, role);
+
+    if (role === '-') {
+      removeBootstrapTableRowAnimated($table, teamId, 'Removed from team');
+      return;
+    }
+
+    var row = $table.bootstrapTable('getRowByUniqueId', teamId);
+    if (!row) return;
+    $table.bootstrapTable('updateByUniqueId', {
+      id: teamId,
+      row: $.extend({}, row, { team_role: role })
+    });
+    showToast('Team role updated', 'success');
+  });
+
+  $(document).on('click', '.js-add-member', function (e) {
+    e.preventDefault();
+    e.stopPropagation();
+    var email = $(this).data('email');
+    if (!appendMemberTag(email)) {
+      showToast('Member already selected', 'error');
+      return;
+    }
+    showToast('Member added to selection', 'success');
+  });
+
+  $(document).on('click', '.js-remove-member', function (e) {
+    e.preventDefault();
+    e.stopPropagation();
+    var userId = $(this).data('user-id');
+    var email = $(this).data('email');
+    var $table = $('#members-table');
+    if (userId && $table.length) {
+      removeBootstrapTableRowAnimated($table, userId, 'Member removed from team');
+    }
+    removeMemberTagByEmail(email);
+  });
+
+  $(document).on('click', '.js-bulk-add-members', function (e) {
+    e.preventDefault();
+    var $container = getMemberTagsContainer();
+    var $input = $('#emailInput');
+    if ($input.length && $input.val().trim()) {
+      appendMemberTag($input.val().trim());
+      $input.val('');
+    }
+    if (!$container.length) return;
+
+    var emails = [];
+    $container.find('.c-member-tag').each(function () {
+      var text = $(this).clone().children().remove().end().text().trim();
+      if (text) emails.push(text);
+    });
+    if (!emails.length) {
+      showToast('Select or enter at least one member email', 'error');
+      return;
+    }
+
+    var role = getMemberPickerRole();
+    var added = 0;
+    var skipped = 0;
+    emails.forEach(function (email) {
+      if (commitMemberToTable(email, role)) {
+        added++;
+        removeMemberTagByEmail(email);
+      } else {
+        skipped++;
+      }
+    });
+
+    if (added) {
+      showToast(added + ' member(s) added to team', 'success');
+    }
+    if (skipped && !added) {
+      showToast('All selected members are already on the team', 'error');
+    } else if (skipped) {
+      showToast(skipped + ' member(s) already on the team', 'error');
+    }
+  });
+
+  $(document).on('keydown', '#emailInput', function (e) {
+    if (e.key !== 'Enter') return;
+    e.preventDefault();
+    var email = $(this).val().trim();
+    if (!email) return;
+    if (!appendMemberTag(email)) {
+      showToast('Member already selected', 'error');
+      return;
+    }
+    $(this).val('');
+  });
+
+  $(document).on('click', '.p-selected-members', function (e) {
+    var $removeBtn = $(e.target).closest('.c-member-tag button[aria-label="Remove"]');
+    if ($removeBtn.length) {
+      e.preventDefault();
+      e.stopPropagation();
+      $removeBtn.closest('.c-member-tag').remove();
+      return;
+    }
+    var $dropdown = $(this).closest('.c-member-dropdown, .dropdown');
+    var $menu = $dropdown.find('.c-member-dropdown__menu, > .dropdown-menu').first();
+    if (!$menu.length) return;
+    $menu.toggleClass('show');
+    $(this).attr('aria-expanded', $menu.hasClass('show'));
+  });
+
+  $(document).on('click', function (e) {
+    if ($(e.target).closest('.c-member-dropdown, .dropdown').length) return;
+    $('.c-member-dropdown__menu.show, .dropdown > .dropdown-menu.show').removeClass('show');
+    $('.p-selected-members[aria-expanded="true"]').attr('aria-expanded', 'false');
+  });
+}
+
+function initDeployFormAddRemove() {
+  if (!$('#args-container').length) return;
+
+  function makeArgTag(value) {
+    var $wrap = $('<div class="c-tag-item"></div>').attr('data-value', value);
+    $wrap.append($('<span class="c-tag-item__text"></span>').text(value));
+    $wrap.append(
+      '<button type="button" class="c-tag-item__remove js-remove-arg" aria-label="Remove">' +
+      '<i class="bi bi-x"></i></button>'
+    );
+    return $wrap;
+  }
+
+  function makeKvRow(key, value) {
+    var valStr = (typeof value === 'object' && value !== null)
+      ? JSON.stringify(value)
+      : String(value != null ? value : '');
+    var $wrap = $('<div class="c-kv-row"></div>');
+    $wrap.append(
+      $('<input type="text" class="form-control form-control-sm c-kv-row__key">')
+        .attr('placeholder', 'key').val(key)
+    );
+    $wrap.append(
+      $('<input type="text" class="form-control form-control-sm c-kv-row__value">')
+        .attr('placeholder', 'value').val(valStr)
+    );
+    $wrap.append(
+      '<button type="button" class="btn btn-sm btn-outline-danger c-kv-row__remove js-remove-kv" aria-label="Remove">' +
+      '<i class="bi bi-x"></i></button>'
+    );
+    return $wrap;
+  }
+
+  $(document).on('click.deployFormAddRemove', '.js-add-arg', function () {
+    var $input = $('#new-arg-input');
+    var val = ($input.val() || '').trim();
+    if (!val) return;
+    $('#args-container').append(makeArgTag(val));
+    $input.val('');
+  });
+
+  $(document).on('keydown.deployFormAddRemove', '#new-arg-input', function (e) {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      $('.js-add-arg').first().trigger('click');
+    }
+  });
+
+  $(document).on('click.deployFormAddRemove', '.js-add-kwarg', function () {
+    $('#kwargs-container').append(makeKvRow('', ''));
+  });
+
+  $(document).on('click.deployFormAddRemove', '.js-add-env', function () {
+    $('#env-container').append(makeKvRow('', ''));
+  });
+
+  $(document).on('click.deployFormAddRemove', '#args-container', function (e) {
+    var $btn = $(e.target).closest('.js-remove-arg');
+    if ($btn.length) $btn.closest('.c-tag-item').remove();
+  });
+
+  $(document).on('click.deployFormAddRemove', '#kwargs-container, #env-container', function (e) {
+    var $btn = $(e.target).closest('.js-remove-kv');
+    if ($btn.length) $btn.closest('.c-kv-row').remove();
+  });
+}
+
+/* ============================================
+   Event delegation (replaces inline onclick)
+   ============================================ */
+function initEventDelegation() {
 
   // Teams page - edit team (admin)
   $(document).on('click', '.js-edit-team', function () {
@@ -676,13 +935,6 @@ function initEventDelegation() {
     setKeyNewTarget($el.data('team-id'), $el.data('team-name'));
     var modal = new bootstrap.Modal(document.getElementById('key-new-modal'));
     modal.show();
-  });
-
-  // User edit - set team role and submit
-  $(document).on('click', '.js-set-team-role', function () {
-    var $el = $(this);
-    setTeamRoleTarget($el.data('team-id'), $el.data('team-role'));
-    $el.closest('form').submit();
   });
 
   // Back navigation buttons
@@ -737,22 +989,382 @@ function initAdvancedToggle() {
 }
 
 /* ============================================
-   New-key alert fade-in
+   New API key — create feedback & scroll-to-row
    ============================================ */
+function isUserRoleContext() {
+  return /userRole/i.test(window.location.pathname || '');
+}
+
+function getKeysListUrl() {
+  return isUserRoleContext() ? './userRole_keys.html' : './keys.html';
+}
+
+function generateMockKeyId() {
+  var hex = '0123456789abcdef';
+  var out = '';
+  for (var i = 0; i < 64; i++) {
+    out += hex[Math.floor(Math.random() * 16)];
+  }
+  return out;
+}
+
+function generateMockKeySecret() {
+  var chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  var out = 'sk-';
+  for (var i = 0; i < 24; i++) {
+    out += chars[Math.floor(Math.random() * chars.length)];
+  }
+  return out;
+}
+
+function generateMockTeamId() {
+  var hex = '0123456789abcdef';
+  var out = '';
+  for (var i = 0; i < 32; i++) {
+    out += hex[Math.floor(Math.random() * 16)];
+  }
+  return out;
+}
+
+function generateMockUserId() {
+  var hex = '0123456789abcdef';
+  var out = '';
+  for (var i = 0; i < 32; i++) {
+    out += hex[Math.floor(Math.random() * 16)];
+  }
+  return out;
+}
+
+function removeBootstrapTableRowAnimated($table, uniqueId, toastMessage) {
+  if (!$table.length || !uniqueId) return;
+  var $tr = $table.find('tbody tr').filter(function () {
+    var uid = $(this).attr('data-uniqueid') || $(this).data('uniqueid');
+    return String(uid) === String(uniqueId);
+  });
+  var finish = function () {
+    $table.bootstrapTable('removeByUniqueId', uniqueId);
+    if (toastMessage) showToast(toastMessage, 'success');
+  };
+  if ($tr.length) {
+    $tr.css({
+      transition: 'opacity 0.4s, transform 0.4s',
+      opacity: '0',
+      transform: 'translateX(20px)'
+    });
+    setTimeout(finish, 400);
+  } else {
+    finish();
+  }
+}
+
+function getMemberPickerRole() {
+  var $checked = $('input[name="role"]:checked');
+  return ($checked.length ? $checked.val() : null) || 'member';
+}
+
+function getMemberTagsContainer() {
+  return $('.p-selected-members').first();
+}
+
+function memberTagExists($container, email) {
+  var normalized = String(email || '').trim().toLowerCase();
+  if (!normalized) return false;
+  var found = false;
+  $container.find('.c-member-tag').each(function () {
+    var text = $(this).clone().children().remove().end().text().trim().toLowerCase();
+    if (text === normalized) found = true;
+  });
+  return found;
+}
+
+function appendMemberTag(email) {
+  var $container = getMemberTagsContainer();
+  if (!$container.length) return false;
+  email = String(email || '').trim();
+  if (!email) return false;
+  if (memberTagExists($container, email)) return false;
+  var $tag = $('<span class="d-inline-flex align-items-center rounded-pill text-dark c-member-tag"></span>');
+  $tag.append(document.createTextNode(email));
+  $tag.append(
+    '<button type="button" class="btn p-0 d-inline-flex align-items-center justify-content-center" aria-label="Remove">' +
+    '<i class="bi bi-x-circle text-dark"></i></button>'
+  );
+  $container.append($tag);
+  return true;
+}
+
+function removeMemberTagByEmail(email) {
+  var normalized = String(email || '').trim().toLowerCase();
+  if (!normalized) return;
+  getMemberTagsContainer().find('.c-member-tag').each(function () {
+    var $tag = $(this);
+    var text = $tag.clone().children().remove().end().text().trim().toLowerCase();
+    if (text === normalized) $tag.remove();
+  });
+}
+
+function findMemberInSelectTable(email) {
+  var $select = $('#members-select');
+  if (!$select.length) return null;
+  var data = $select.bootstrapTable('getData') || [];
+  for (var i = 0; i < data.length; i++) {
+    if (data[i].email === email) return data[i];
+  }
+  return null;
+}
+
+function commitMemberToTable(email, role) {
+  var $membersTable = $('#members-table');
+  if (!$membersTable.length) return false;
+  email = String(email || '').trim();
+  if (!email) return false;
+  var data = $membersTable.bootstrapTable('getData') || [];
+  for (var i = 0; i < data.length; i++) {
+    if (data[i].email === email) return false;
+  }
+  var existing = findMemberInSelectTable(email);
+  var userId = existing ? existing.user_id : generateMockUserId();
+  $membersTable.bootstrapTable('append', {
+    user_id: userId,
+    email: email,
+    team_role: role || getMemberPickerRole()
+  });
+  return true;
+}
+
+function maskKeySecret(secret) {
+  if (!secret || secret.length < 8) return 'sk-…';
+  return 'sk-…' + secret.slice(-4);
+}
+
+function buildNewKeyRow(payload) {
+  var now = new Date().toISOString();
+  return {
+    key_id: payload.key_id,
+    key_name: payload.key_name || 'new-key',
+    key_masked: maskKeySecret(payload.key_secret),
+    user_id: payload.user_id || null,
+    team_id: payload.team_id || '',
+    team_name: payload.team_name || '',
+    tpm_limit: null,
+    rpm_limit: null,
+    expires: payload.expires || null,
+    created_at: now,
+    updated_at: now
+  };
+}
+
+function prependKeyTableRow(row) {
+  var $table = $('#keys-table');
+  if (!$table.length) return false;
+  try {
+    $table.bootstrapTable('prepend', row);
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
+function scrollToAndHighlightKey(keyId) {
+  if (!keyId) return;
+  var $table = $('#keys-table');
+  if (!$table.length) return;
+
+  var data = $table.bootstrapTable('getData') || [];
+  var index = -1;
+  for (var i = 0; i < data.length; i++) {
+    if (String(data[i].key_id) === String(keyId)) {
+      index = i;
+      break;
+    }
+  }
+  if (index < 0) return;
+
+  var opts = $table.bootstrapTable('getOptions') || {};
+  var pageSize = opts.pageSize || data.length || 10;
+  if (opts.pagination) {
+    var page = Math.floor(index / pageSize) + 1;
+    $table.bootstrapTable('selectPage', page);
+  }
+
+  window.setTimeout(function () {
+    var $row = $table.find('tbody tr[data-uniqueid="' + keyId + '"]');
+    if (!$row.length) {
+      $row = $table.find('tbody tr').filter(function () {
+        return String($(this).data('uniqueid')) === String(keyId);
+      });
+    }
+    if (!$row.length) return;
+
+    $table.find('tbody tr').removeClass('rd-keys-row--highlight');
+    $row.addClass('rd-keys-row--highlight');
+    var el = $row[0];
+    if (el && el.scrollIntoView) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+    window.setTimeout(function () {
+      $row.removeClass('rd-keys-row--highlight');
+    }, 4500);
+  }, 150);
+}
+
+function bindNewKeyAlertClick($wrapper) {
+  var $alert = $wrapper.find('.rd-newkey-alert');
+  $alert.off('click.rdNewKey keydown.rdNewKey');
+  $alert.on('click.rdNewKey', function (e) {
+    if ($(e.target).closest('.btn-close, .cpytext, .cpybtn').length) return;
+    scrollToAndHighlightKey($wrapper.data('highlight-key-id'));
+  });
+  $alert.on('keydown.rdNewKey', function (e) {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      scrollToAndHighlightKey($wrapper.data('highlight-key-id'));
+    }
+  });
+}
+
+function showNewKeyAlert(payload) {
+  var $wrapper = $('#newkey-alert');
+  if (!$wrapper.length) return false;
+
+  $('#newkey-alert-name').text(payload.key_name || '—');
+  $('#newkey-alert-id').text(payload.key_id || '').attr('title', payload.key_id || '');
+  $('#newkey-alert-secret').text(payload.key_secret || '');
+
+  $wrapper.data('highlight-key-id', payload.key_id);
+  $wrapper.removeClass('rd-is-hidden').show();
+
+  var $alert = $wrapper.find('.rd-newkey-alert');
+  requestAnimationFrame(function () {
+    $alert.addClass('show');
+  });
+
+  bindNewKeyAlertClick($wrapper);
+
+  $wrapper.find('.btn-close').off('click.rdNewKeyDismiss').on('click.rdNewKeyDismiss', function () {
+    $wrapper.addClass('rd-is-hidden').hide();
+  });
+
+  return true;
+}
+
+function showKeyCreatedToast(payload, onNavigate) {
+  var keyId = payload.key_id || '';
+  var keyIdShort = keyId.length > 12
+    ? keyId.slice(0, 8) + '…' + keyId.slice(-4)
+    : keyId;
+  var $container = $('#toast-container');
+  if (!$container.length) {
+    $('body').append('<div id="toast-container" class="position-fixed top-0 end-0 p-3"></div>');
+    $container = $('#toast-container');
+  }
+
+  var $toast = $('<div class="rd-toast rd-toast--success rd-toast--clickable" role="button" tabindex="0"></div>');
+  $toast.append('<i class="bi bi-check-circle-fill rd-toast__icon" aria-hidden="true"></i>');
+
+  var $body = $('<div class="rd-toast__body"></div>');
+  $body.append('<div class="rd-toast__title">API key created</div>');
+
+  var $idRow = $('<div class="rd-toast__key-id-row"></div>');
+  $idRow.append('<span class="rd-toast__key-id-label">Key ID</span>');
+  var $idWrap = $('<span class="cpytext rd-toast__key-id-wrap"></span>');
+  $idWrap.append(
+    $('<code class="rd-toast__key-id"></code>').text(keyIdShort).attr('title', keyId)
+  );
+  appendCopyButton($idWrap, 'Copy Key ID');
+  $idWrap.find('.cpybtn').attr('data-copy-text', keyId);
+  $idRow.append($idWrap);
+  $body.append($idRow);
+  $body.append('<span class="rd-toast__action-hint">Click to open keys list</span>');
+  $toast.append($body);
+  $toast.append('<button type="button" class="rd-toast__dismiss" aria-label="Dismiss">&times;</button>');
+
+  $container.append($toast);
+  requestAnimationFrame(function () { $toast.addClass('rd-toast--visible'); });
+
+  function go() {
+    if (typeof onNavigate === 'function') onNavigate();
+  }
+  $toast.on('click', function (e) {
+    if ($(e.target).closest('.rd-toast__dismiss, .rd-toast__key-id-row, .cpybtn').length) return;
+    go();
+  });
+  $toast.on('keydown', function (e) {
+    if ($(e.target).closest('.rd-toast__key-id-row').length) return;
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      go();
+    }
+  });
+  $toast.find('.rd-toast__dismiss').on('click', function (e) {
+    e.stopPropagation();
+    dismissToast($toast);
+  });
+
+  var timer = setTimeout(function () { dismissToast($toast); }, 8000);
+  $toast.on('click keydown', function () { clearTimeout(timer); });
+}
+
+function redirectToKeysWithNewKey(payload) {
+  var qs = new URLSearchParams({
+    created: '1',
+    key_id: payload.key_id,
+    key_name: payload.key_name || '',
+    key_secret: payload.key_secret || '',
+    team_id: payload.team_id || '',
+    team_name: payload.team_name || ''
+  });
+  location.href = getKeysListUrl() + '?' + qs.toString();
+}
+
+function handleKeyCreated(payload) {
+  var row = buildNewKeyRow(payload);
+  var onKeysPage = $('#keys-table').length > 0;
+
+  if (onKeysPage) {
+    prependKeyTableRow(row);
+    if (!showNewKeyAlert(payload)) {
+      showKeyCreatedToast(payload, function () {
+        scrollToAndHighlightKey(payload.key_id);
+      });
+    } else {
+      window.setTimeout(function () {
+        scrollToAndHighlightKey(payload.key_id);
+      }, 400);
+    }
+    return;
+  }
+
+  showKeyCreatedToast(payload, function () {
+    redirectToKeysWithNewKey(payload);
+  });
+}
+
 function initNewKeyAlert() {
   var params = new URLSearchParams(window.location.search);
-  if (!params.has('key_name')) return;
-  var $wrapper = $('#newkey-alert');
-  if (!$wrapper.length) return;
-  $wrapper.show();
-  // Trigger Bootstrap fade-in on next frame
-  requestAnimationFrame(function () {
-    $wrapper.find('.alert').addClass('show');
-  });
-  // Remove wrapper when alert is dismissed
-  $wrapper.find('.btn-close').on('click', function () {
-    $wrapper.remove();
-  });
+  if (params.get('created') !== '1' || !params.get('key_id')) return;
+
+  var payload = {
+    key_id: params.get('key_id'),
+    key_name: params.get('key_name') || '',
+    key_secret: params.get('key_secret') || '',
+    team_id: params.get('team_id') || '',
+    team_name: params.get('team_name') || ''
+  };
+
+  if ($('#keys-table').length) {
+    prependKeyTableRow(buildNewKeyRow(payload));
+  }
+
+  showNewKeyAlert(payload);
+  window.setTimeout(function () {
+    scrollToAndHighlightKey(payload.key_id);
+  }, 500);
+
+  if (window.history && window.history.replaceState) {
+    var clean = getKeysListUrl();
+    window.history.replaceState({}, '', clean);
+  }
 }
 
 /* ============================================
@@ -1251,11 +1863,25 @@ function initFormSubmit() {
     }, 800);
   });
 
-  // --- Add Key Modal (teams page) ---
+  // --- Add Key Modal (teams / team management / userRole teams) ---
   $(document).on('submit', '#key-new-form', function (e) {
     e.preventDefault();
     var $form = $(this);
     var $btn = $form.find('[type="submit"]');
+    var keyName = ($('#key-name').val() || '').trim();
+    if (!keyName) {
+      showFieldError($('#key-name'), 'Key name is required');
+      return;
+    }
+    clearFieldError($('#key-name'));
+
+    var payload = {
+      key_id: generateMockKeyId(),
+      key_secret: generateMockKeySecret(),
+      key_name: keyName,
+      team_id: $('#key-new-team-id').val() || '',
+      team_name: ($('#key-new-team-name').text() || '').trim()
+    };
 
     setButtonLoading($btn, true);
     setTimeout(function () {
@@ -1264,8 +1890,9 @@ function initFormSubmit() {
         var modal = bootstrap.Modal.getInstance(modalEl);
         if (modal) modal.hide();
       }
+      $form[0].reset();
       setButtonLoading($btn, false);
-      showToast('API key created successfully', 'success');
+      handleKeyCreated(payload);
     }, 800);
   });
 
@@ -1299,6 +1926,8 @@ $(function () {
   initCopyButtons();
   initAdvancedToggle();
   initEventDelegation();
+  initAddRemoveActions();
+  initDeployFormAddRemove();
   initNewKeyAlert();
   initModelManagement();
   initDestructiveModals();
