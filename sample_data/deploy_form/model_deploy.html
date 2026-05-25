@@ -206,14 +206,22 @@
                 <div class="d-flex gap-3 align-items-center flex-wrap">
                   <div class="input-group input-group-sm c-input-group--w180">
                     <span class="input-group-text">input</span>
-                    <input type="number" id="pricing-input" class="form-control" step="any" min="0" placeholder="0.0">
+                    <input type="number" id="pricing-input" class="form-control" step="any" min="0" placeholder="0">
                   </div>
                   <div class="input-group input-group-sm c-input-group--w180">
                     <span class="input-group-text">output</span>
-                    <input type="number" id="pricing-output" class="form-control" step="any" min="0" placeholder="0.0">
+                    <input type="number" id="pricing-output" class="form-control" step="any" min="0" placeholder="0">
+                  </div>
+                  <div class="input-group input-group-sm c-input-group--w180">
+                    <span class="input-group-text">cache_read</span>
+                    <input type="number" id="pricing-cache-read" class="form-control" step="any" min="0" placeholder="0">
+                  </div>
+                  <div class="input-group input-group-sm c-input-group--w180">
+                    <span class="input-group-text">cache_write</span>
+                    <input type="number" id="pricing-cache-write" class="form-control" step="any" min="0" placeholder="0">
                   </div>
                 </div>
-                <div class="c-form-annotation">Price per 1M tokens.</div>
+                <div class="c-form-annotation">Price per 1M tokens(USD).</div>
               </div>
             </div>
 
@@ -349,6 +357,8 @@
     const pricing = data.pricing || {};
     if (pricing.input != null) document.getElementById('pricing-input').value = pricing.input;
     if (pricing.output != null) document.getElementById('pricing-output').value = pricing.output;
+    if (pricing.cache_read != null) document.getElementById('pricing-cache-read').value = pricing.cache_read;
+    if (pricing.cache_write != null) document.getElementById('pricing-cache-write').value = pricing.cache_write;
 
     const context = data.context || {};
     if (context.max_input_tokens != null) document.getElementById('context-max-input').value = context.max_input_tokens;
@@ -404,8 +414,12 @@
     const pricing = {};
     const pIn = document.getElementById('pricing-input').value;
     const pOut = document.getElementById('pricing-output').value;
+    const pCacheRead = document.getElementById('pricing-cache-read').value;
+    const pCacheWrite = document.getElementById('pricing-cache-write').value;
     if (pIn !== '') pricing.input = parseFloat(pIn);
     if (pOut !== '') pricing.output = parseFloat(pOut);
+    if (pCacheRead !== '') pricing.cache_read = parseFloat(pCacheRead);
+    if (pCacheWrite !== '') pricing.cache_write = parseFloat(pCacheWrite);
 
     const context = {};
     const cIn = document.getElementById('context-max-input').value;
