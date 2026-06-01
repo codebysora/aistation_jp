@@ -64,6 +64,9 @@
         <div class="rd-card__body--padded rd-card__body--form rd-team-edit-body">
           <form action="/team/edit" method="POST" novalidate="novalidate" class="rd-team-edit-form">
             <input id="csrf_token" name="csrf_token" type="hidden" value="">
+            <input type="hidden" id="team-edit-team-id" name="team_id" value="">
+            <!-- Removed members: parallel user_id / team_role arrays (filled on Remove) -->
+            <div id="team-edit-removed-fields" class="visually-hidden" aria-hidden="true"></div>
 
             <!-- Team Name -->
             <div class="mb-2">

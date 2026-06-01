@@ -191,7 +191,8 @@ function userActionFormatter(value, row) {
 function memberRemoveFormatter(value, row) {
   return '<button type="button" class="btn btn-link rd-link-danger p-1 js-remove-member"' +
     ' data-user-id="' + escapeHtml(row.user_id) + '"' +
-    ' data-email="' + escapeHtml(row.email) + '">' +
+    ' data-email="' + escapeHtml(row.email) + '"' +
+    ' data-team-role="' + escapeHtml(row.team_role || '') + '">' +
     '<i class="bi bi-x-circle me-1"></i>Remove</button>';
 }
 
@@ -834,10 +835,17 @@ function initAddRemoveActions() {
   $(document).on('click', '.js-remove-member', function (e) {
     e.preventDefault();
     e.stopPropagation();
-    var userId = $(this).data('user-id');
-    var email = $(this).data('email');
+    var $btn = $(this);
+    var userId = $btn.data('user-id');
+    var email = $btn.data('email');
+    var teamRole = $btn.data('team-role');
     var $table = $('#members-table');
     if (userId && $table.length) {
+      if (!teamRole) {
+        var row = $table.bootstrapTable('getRowByUniqueId', userId);
+        if (row && row.team_role) teamRole = row.team_role;
+      }
+      appendTeamEditRemovedMember(userId, teamRole);
       removeBootstrapTableRowAnimated($table, userId);
     }
     removeMemberTagByEmail(email);
@@ -1132,6 +1140,47 @@ function removeBootstrapTableRowAnimated($table, uniqueId, toastMessage) {
 function getMemberPickerRole() {
   var $checked = $('input[name="role"]:checked');
   return ($checked.length ? $checked.val() : null) || 'member';
+}
+
+function getTeamEditForm() {
+  return $('form[action="/team/edit"]').first();
+}
+
+function getTeamEditRemovedFieldsContainer() {
+  var $form = getTeamEditForm();
+  if (!$form.length) return $();
+  var $box = $form.find('#team-edit-removed-fields');
+  if (!$box.length) {
+    $box = $('<div id="team-edit-removed-fields" class="visually-hidden" aria-hidden="true"></div>');
+    var $csrf = $form.find('input[name="csrf_token"]').first();
+    if ($csrf.length) {
+      $csrf.after($box);
+    } else {
+      $form.prepend($box);
+    }
+  }
+  return $box;
+}
+
+/** Append hidden user_id + team_role pair for POST /team/edit (removed member). */
+function appendTeamEditRemovedMember(userId, teamRole) {
+  if (!userId) return;
+  var $box = getTeamEditRemovedFieldsContainer();
+  if (!$box.length) return;
+  $box.append(
+    '<input type="hidden" name="user_id" value="' + escapeHtml(userId) + '">' +
+    '<input type="hidden" name="team_role" value="' + escapeHtml(teamRole || 'member') + '">'
+  );
+}
+
+function initTeamEditForm() {
+  var $form = getTeamEditForm();
+  if (!$form.length) return;
+  var params = new URLSearchParams(window.location.search);
+  var teamId = params.get('team_id');
+  if (teamId) {
+    $form.find('#team-edit-team-id, input[name="team_id"]').first().val(teamId);
+  }
 }
 
 function getMemberTagsContainer() {
@@ -2003,4 +2052,5 @@ $(function () {
   initAdminHistoriesSearch();
   initMyHistoriesTable();
   initNavUserMenu();
+  initTeamEditForm();
 });

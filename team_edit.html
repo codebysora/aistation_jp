@@ -49,6 +49,7 @@
         <li class="nav-item"><a class="nav-link active" href="./team_management.html"><i class="bi bi-diagram-3" aria-hidden="true"></i> Team management</a></li>
         <li class="nav-item"><a class="nav-link" href="./user_management.html"><i class="bi bi-person" aria-hidden="true"></i> User management</a></li>
         <li class="nav-item"><a class="nav-link" href="./mail_settings.html"><i class="bi bi-envelope" aria-hidden="true"></i> Mail settings</a></li>
+        <li class="nav-item"><a class="nav-link" href="./admin_histories.html"><i class="bi bi-clock-history" aria-hidden="true"></i> Histories</a></li>
       </ul>
     </nav>
 
@@ -68,6 +69,9 @@
         <div class="rd-card__body--padded rd-card__body--form rd-team-edit-body">
           <form action="/team/edit" method="POST" novalidate="novalidate" class="rd-team-edit-form">
             <input id="csrf_token" name="csrf_token" type="hidden" value="">
+            <input type="hidden" id="team-edit-team-id" name="team_id" value="">
+            <!-- Removed members: parallel user_id / team_role arrays (filled on Remove) -->
+            <div id="team-edit-removed-fields" class="visually-hidden" aria-hidden="true"></div>
 
             <!-- Team Name -->
             <div class="mb-2">

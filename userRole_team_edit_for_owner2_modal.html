@@ -63,6 +63,8 @@
         <div class="rd-card__body">
           <form action="/team/edit" method="POST" novalidate="novalidate">
             <input name="csrf_token" type="hidden" value="">
+            <input type="hidden" id="team-edit-team-id" name="team_id" value="">
+            <div id="team-edit-removed-fields" class="visually-hidden" aria-hidden="true"></div>
 
             <!-- Team Name -->
             <div class="mb-4">
