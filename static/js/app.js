@@ -129,14 +129,31 @@ function teamActionFormatter(value, row) {
     '<i class="bi bi-pencil-square me-1" aria-hidden="true"></i>Edit</button>';
 }
 
+/** Team Management (admin): edit team only — no Add Key. */
+function teamManagementActionFormatter(value, row) {
+  if (row.team_name === 'default') {
+    return '<span class="text-muted">—</span>';
+  }
+  return '<button type="button" class="btn btn-link rd-link-action text-dark p-1 js-edit-team"' +
+    ' data-team-id="' + escapeHtml(row.team_id) + '">' +
+    '<i class="bi bi-pencil-square me-1" aria-hidden="true"></i>Edit</button>';
+}
+
 /* ============================================
    Table formatters - Models
    ============================================ */
+/** Green: Active, Ready. Red: Failed. Gray: Processing, Terminating, and others. */
+function getModelStatusCssClass(status) {
+  var s = String(status || '').trim();
+  if (s === 'Active' || s === 'Ready') return 'c-model-status--active';
+  if (s === 'Failed') return 'c-model-status--failed';
+  return 'c-model-status--neutral';
+}
+
 function modelStatusFormatter(value) {
-  if (value === 'Active') {
-    return '<span class="c-model-status--active">Active</span>';
-  }
-  return '<span class="c-model-status--failed">' + escapeHtml(value) + '</span>';
+  var s = String(value || '').trim();
+  if (!s) return '<span class="text-muted">—</span>';
+  return '<span class="' + getModelStatusCssClass(s) + '">' + escapeHtml(s) + '</span>';
 }
 
 function modelRemoveFormatter(value, row) {
@@ -661,7 +678,7 @@ function showMyHistoryDetail(row) {
    Model detail modal
    ============================================ */
 function buildModelDetailHtml(data) {
-  var statusClass = data.status === 'Active' ? 'c-model-status--active' : 'c-model-status--failed';
+  var statusClass = getModelStatusCssClass(data.status);
   var params = '';
   try { params = JSON.stringify(JSON.parse(data.parameters || '{}'), null, 2); } catch (e) { params = data.parameters || '-'; }
 
@@ -1505,26 +1522,26 @@ function ensurePasswordChangeModal() {
       '<div class="modal-dialog modal-dialog-centered rd-modal">' +
         '<div class="modal-content">' +
           '<div class="modal-header">' +
-            '<h5 class="modal-title" id="password-change-modal-label">パスワード変更</h5>' +
+            '<h5 class="modal-title" id="password-change-modal-label">Change Password</h5>' +
             '<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>' +
           '</div>' +
           '<form id="password-change-form" action="/password/change" method="POST" novalidate="novalidate">' +
             '<div class="modal-body pt-3">' +
-              '<p class="text-muted small mb-3">ログイン用のパスワードを変更します。</p>' +
+              '<p class="text-muted small mb-3">Change your login password.</p>' +
               '<div id="password-change-form-error" class="rd-alert rd-alert--error mb-3 rd-is-hidden">' +
                 '<div class="rd-alert__body"></div>' +
               '</div>' +
               '<div class="mb-3">' +
-                '<label for="password-current" class="form-label">現在のパスワード</label>' +
+                '<label for="password-current" class="form-label">Current password</label>' +
                 '<input type="password" class="form-control" id="password-current" name="current_password" autocomplete="current-password" required>' +
               '</div>' +
               '<div class="mb-3">' +
-                '<label for="password-new" class="form-label">新しいパスワード</label>' +
+                '<label for="password-new" class="form-label">New password</label>' +
                 '<input type="password" class="form-control" id="password-new" name="new_password" autocomplete="new-password" required>' +
-                '<div class="form-text">8文字以上で設定してください。</div>' +
+                '<div class="form-text">Use at least 8 characters.</div>' +
               '</div>' +
               '<div class="mb-4">' +
-                '<label for="password-confirm" class="form-label">新しいパスワード（確認）</label>' +
+                '<label for="password-confirm" class="form-label">Confirm new password</label>' +
                 '<input type="password" class="form-control" id="password-confirm" name="confirm_password" autocomplete="new-password" required>' +
               '</div>' +
               '<div class="d-flex justify-content-end gap-3">' +
@@ -1532,7 +1549,7 @@ function ensurePasswordChangeModal() {
                   '<i class="bi bi-x" aria-hidden="true"></i> Cancel' +
                 '</button>' +
                 '<button type="submit" class="btn btn-success rd-btn-action border-0">' +
-                  '<i class="bi bi-check" aria-hidden="true"></i> 変更する' +
+                  '<i class="bi bi-check" aria-hidden="true"></i> Change password' +
                 '</button>' +
               '</div>' +
             '</div>' +
@@ -1583,7 +1600,7 @@ function initNavUserMenu() {
       '<ul class="dropdown-menu dropdown-menu-end rd-nav-user-menu" aria-labelledby="' + toggleId + '">' +
         '<li>' +
           '<button type="button" class="dropdown-item js-open-password-change">' +
-            '<i class="bi bi-key" aria-hidden="true"></i>パスワード変更' +
+            '<i class="bi bi-key" aria-hidden="true"></i> Change Password' +
           '</button>' +
         '</li>' +
       '</ul>'
@@ -1605,9 +1622,9 @@ function initNavUserMenu() {
 
     var valid = true;
     var fields = [
-      { id: 'password-current', msg: '現在のパスワードを入力してください' },
-      { id: 'password-new', msg: '新しいパスワードを入力してください' },
-      { id: 'password-confirm', msg: '確認用パスワードを入力してください' }
+      { id: 'password-current', msg: 'Please enter your current password.' },
+      { id: 'password-new', msg: 'Please enter a new password.' },
+      { id: 'password-confirm', msg: 'Please confirm your new password.' }
     ];
 
     for (var i = 0; i < fields.length; i++) {
@@ -1617,16 +1634,16 @@ function initNavUserMenu() {
     var newPw = $('#password-new').val();
     var confirmPw = $('#password-confirm').val();
     if (valid && newPw.length < 8) {
-      showFieldError($('#password-new'), 'パスワードは8文字以上で設定してください');
+      showFieldError($('#password-new'), 'Password must be at least 8 characters.');
       valid = false;
     }
     if (valid && newPw !== confirmPw) {
-      showFieldError($('#password-confirm'), '新しいパスワードが一致しません');
+      showFieldError($('#password-confirm'), 'New passwords do not match.');
       valid = false;
     }
 
     if (!valid) {
-      showFormError('#password-change-form-error', '入力内容を確認してください。');
+      showFormError('#password-change-form-error', 'Please check your input.');
       return;
     }
 
@@ -1639,7 +1656,7 @@ function initNavUserMenu() {
         if (modal) modal.hide();
       }
       resetPasswordChangeForm();
-      showToast('パスワードを変更しました', 'success');
+      showToast('Password changed successfully.', 'success');
     }, 800);
   });
 

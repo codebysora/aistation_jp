@@ -768,6 +768,11 @@ button.cpybtn:hover {
     font-weight: 700;
 }
 
+.c-model-status--neutral {
+    color: var(--bs-secondary-color, #6c757d);
+    font-weight: 600;
+}
+
 .rd-card .table .c-model-row--deploying td,
 .rd-card .table .c-model-row--deploying th {
     background-color: rgba(47, 197, 251, 0.12);

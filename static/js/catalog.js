@@ -725,7 +725,7 @@ function renderPresetBarRow(label, value, maxVal, opts) {
     return '<div class="catalog-bench-row">' +
       '<span class="catalog-bench-row__label">' + escapeHtml(label) + '</span>' +
       '<span class="catalog-bench-row__bar"></span>' +
-      '<span class="catalog-bench-row__score catalog-bench-row__score--unmeasured">未計測</span>' +
+      '<span class="catalog-bench-row__score catalog-bench-row__score--unmeasured catalog-unmeasured-label">未計測</span>' +
       '</div>';
   }
   var pct = Math.max(0, Math.min(100, (value / maxVal) * 100));
@@ -742,7 +742,7 @@ function renderPresetTtftRow(value) {
   var html = '<div class="catalog-bench-row catalog-bench-row--ttft">';
   html += '<span class="catalog-bench-row__label">TTFT</span>';
   if (value === 0) {
-    html += '<span class="catalog-ttft-chip catalog-ttft-chip--unmeasured" title="TTFT (Time to First Token) — 未計測">' +
+    html += '<span class="catalog-ttft-chip catalog-ttft-chip--unmeasured catalog-unmeasured-label" title="TTFT (Time to First Token) — 未計測">' +
       '<i class="bi bi-stopwatch"></i> 未計測</span>';
   } else {
     var cls, icon;
@@ -772,12 +772,12 @@ function formatPresetBenchTableCell(p, key) {
   if (!p) return '<span class="text-muted">—</span>';
   if (key === 'ttft') {
     var ttft = p.ttft;
-    if (ttft == null || ttft === 0) return '<span class="text-muted">未計測</span>';
+    if (ttft == null || ttft === 0) return '<span class="catalog-unmeasured-label">未計測</span>';
     return '<span>' + ttft.toFixed(2) + 's</span>';
   }
   if (key === 'spd') {
     var spd = p.median_output_tokens_per_second;
-    if (spd == null || spd === 0) return '<span class="text-muted">未計測</span>';
+    if (spd == null || spd === 0) return '<span class="catalog-unmeasured-label">未計測</span>';
     return '<span class="' + benchmarkColorClass(Math.min((spd / 400) * 100, 100)) + '">' + fmtPresetScore(spd) + '</span>';
   }
   var v = presetMetricValue(p, key);
@@ -843,13 +843,6 @@ function renderCardView(models) {
     // 跡地は `.catalog-card__metrics` (空コンテナ) としてサンプル受領後の差し替えに備える。
     html += renderMetricsRow(m);
 
-    // Meta — Proposal D modality group + neutral size / context tags
-    html += '<div class="catalog-card__meta">';
-    html += renderModalityGroup(m);
-    html += '<span class="catalog-tag catalog-tag--neutral catalog-tag--size">' + escapeHtml(m.size) + '</span>';
-    html += '<span class="catalog-tag catalog-tag--neutral catalog-tag--context">' + formatContext(m.context) + ' ctx</span>';
-    html += '</div>';
-
     // Benchmark bars — preset.json on deploy select; sample CATALOG_DATA elsewhere
     var preset = getModelPreset(m);
     if (preset) {
@@ -883,7 +876,13 @@ function renderCardView(models) {
       html += '</div>';
     }
 
-    // Capability icons
+    html += '<div class="catalog-card__footer">';
+    html += '<div class="catalog-card__meta">';
+    html += renderModalityGroup(m);
+    html += '<span class="catalog-tag catalog-tag--neutral catalog-tag--size">' + escapeHtml(m.size) + '</span>';
+    html += '<span class="catalog-tag catalog-tag--neutral catalog-tag--context">' + formatContext(m.context) + ' ctx</span>';
+    html += '</div>';
+
     if (m.capabilities.length > 0) {
       html += '<div class="catalog-card__caps">';
       for (var ci = 0; ci < m.capabilities.length; ci++) {
@@ -893,8 +892,7 @@ function renderCardView(models) {
       }
       html += '</div>';
     }
-
-    // Deploy hint removed — button now lives only in list (detail) view.
+    html += '</div>';
 
     html += '</div>';
   }

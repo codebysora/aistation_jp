@@ -239,15 +239,6 @@
           <!-- Active filter chips (always visible when any filter is on) -->
           <div class="catalog-active-filters" id="catalog-active-filters"></div>
 
-          <!-- Attribution: source line (② primary) -->
-          <div class="catalog-attr-source-line">
-            <i class="bi bi-info-circle"></i>
-            <span>ベンチマーク値（Int / Cod / Math / Spd / TTFT）の出典:</span>
-            <a href="https://artificialanalysis.ai/" target="_blank" rel="noopener">
-              Artificial Analysis <i class="bi bi-box-arrow-up-right"></i>
-            </a>
-          </div>
-
           <!-- Content -->
           <div class="catalog-content" id="catalog-content"></div>
 
@@ -454,7 +445,11 @@
           html += '</div>';
           html += '</div>';
 
-          // Meta row: IN→OUT modality + resource + context
+          // Score list (Int / Cod / Mat / Spd / TTFT — shared with detail view via catalog.js)
+          html += window.renderPresetScoreList ? window.renderPresetScoreList(p) : '';
+
+          // Tags pinned to card bottom (wraps safely on two lines)
+          html += '<div class="catalog-card__footer">';
           html += '<div class="catalog-card__meta">';
           html += renderModalityGroupA(m);
           if (m.size) {
@@ -462,10 +457,8 @@
           }
           html += '<span class="catalog-tag catalog-tag--neutral catalog-tag--context">' + fmtCtx(m.context) + ' ctx</span>';
           html += '</div>';
-
-          // Score list (Int / Cod / Mat / Spd / TTFT — shared with detail view via catalog.js)
-          html += window.renderPresetScoreList ? window.renderPresetScoreList(p) : '';
           html += renderCapsRow(m);
+          html += '</div>';
 
           html += '</div>';
         }

@@ -80,7 +80,7 @@
                 <th data-sortable="true" data-field="team_id">Team ID</th>
                 <th data-sortable="true" data-field="member_count">Members</th>
                 <th data-sortable="true" data-field="created_at">Created</th>
-                <th data-field="actions" data-formatter="teamActionFormatter">Action</th>
+                <th data-field="actions" data-formatter="teamManagementActionFormatter">Action</th>
               </tr>
             </thead>
           </table>
@@ -88,46 +88,6 @@
       </div>
     </main>
 
-  </div>
-
-  <!-- Add Key Modal -->
-  <div class="modal fade" id="key-new-modal" tabindex="-1" aria-labelledby="key-new-modal-label" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered rd-modal rd-modal--big">
-      <div class="modal-content">
-        <div class="modal-header flex-column align-items-start">
-          <h5 class="modal-title" id="key-new-modal-label">Add API Key</h5>
-          <button type="button" class="btn-close ms-auto" data-bs-dismiss="modal" aria-label="Close"></button>
-          <div class="rd-modal__info mt-2 w-100">
-            Team: <span id="key-new-team-name"></span>
-          </div>
-        </div>
-        <form id="key-new-form" action="/key/new" method="POST">
-          <input id="csrf_token_key" name="csrf_token" type="hidden" value="">
-          <input type="hidden" name="team_id" value="" id="key-new-team-id">
-          <div class="modal-body pt-3">
-            <div class="mb-3">
-              <label for="key-name" class="form-label">key_name</label>
-              <input type="text" name="key_name" class="form-control" id="key-name" required>
-            </div>
-            <div class="mb-4">
-              <label for="duration" class="form-label">
-                duration
-                <small class="d-block text-muted mt-1">The duration the key is valid for (e.g., '30d', '1h').</small>
-              </label>
-              <input type="text" name="duration" class="form-control" id="duration">
-            </div>
-            <div class="d-flex justify-content-end gap-3">
-              <button type="button" class="btn btn-light rd-btn-action border-0" data-bs-dismiss="modal">
-                <i class="bi bi-x"></i> Cancel
-              </button>
-              <button type="submit" class="btn btn-success rd-btn-action border-0">
-                <i class="bi bi-check"></i> Submit
-              </button>
-            </div>
-          </div>
-        </form>
-      </div>
-    </div>
   </div>
 
   <!-- Add Team Modal -->
