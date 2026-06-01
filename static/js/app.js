@@ -330,6 +330,53 @@ function filterAdminHistoriesRows(rows, filters) {
 }
 
 /** Apply search filters client-side (static JSON / mock endpoints ignore query params). */
+function getMyHistoriesUserEmail() {
+  var $body = $('body');
+  return String($body.attr('data-rd-user-email') || $body.data('rdUserEmail') || '').trim().toLowerCase();
+}
+
+/** User histories: only rows for the signed-in user (mock UI). */
+function myHistoriesResponseHandler(res) {
+  var rows = normalizeHistoryRows(res);
+  var email = getMyHistoriesUserEmail();
+  if (email) {
+    rows = rows.filter(function (row) {
+      return historyRowUsername(row).toLowerCase() === email;
+    });
+  }
+  // Must match data-data-field="data" on #myhistories-table (bootstrap-table reads res.data).
+  return { data: rows };
+}
+
+function loadMyHistoriesTableRows($table, source) {
+  if (!$table || !$table.length || !source) return;
+  var rows = myHistoriesResponseHandler(source).data || [];
+  $table.bootstrapTable('load', rows);
+}
+
+function initMyHistoriesTable() {
+  var $table = $('#myhistories-table');
+  if (!$table.length) return;
+  var historiesUrl = './static/test.json';
+
+  function loadFromSharedJson() {
+    $.getJSON(historiesUrl)
+      .done(function (res) { loadMyHistoriesTableRows($table, res); });
+  }
+
+  $table.on('load-error.bs.table', loadFromSharedJson);
+
+  $table.on('load-success.bs.table', function (e, data) {
+    if (data && data.length) return;
+    loadFromSharedJson();
+  });
+
+  window.setTimeout(function () {
+    if ($table.bootstrapTable('getData').length) return;
+    loadFromSharedJson();
+  }, 200);
+}
+
 function adminHistoriesResponseHandler(res) {
   var rows = Array.isArray(res) ? res : (res && Array.isArray(res.data) ? res.data : null);
   if (!rows) return res;
@@ -415,18 +462,26 @@ function formatLatency(e2el) {
   return s.toFixed(2) + 's';
 }
 
-function buildHistorySummary(row) {
+function buildHistorySummary(row, options) {
+  options = options || {};
+  var limited = options.limited === true;
   var statusBadge = row.status === 'success'
     ? '<span class="c-model-status--active">success</span>'
     : '<span class="c-model-status--failed">' + escapeHtml(row.status || '-') + '</span>';
   var time = String(row.start_time || '').replace(/\.\d+$/, '');
-  var prompt = Number(row.prompt_tokens || 0).toLocaleString();
-  var completion = Number(row.completion_tokens || 0).toLocaleString();
-  return statusBadge +
+  var html = statusBadge +
     '<span class="badge bg-light text-dark border fw-normal">' + escapeHtml(time || '-') + '</span>' +
-    '<span class="badge bg-light text-dark border fw-normal">Latency: ' + escapeHtml(formatLatency(row.e2el)) + '</span>' +
-    '<span class="badge bg-light text-dark border fw-normal">Model: ' + escapeHtml(row.model || '-') + '</span>' +
-    '<span class="badge bg-light text-dark border fw-normal">' + prompt + ' prompt &rarr; ' + completion + ' completion</span>';
+    '<span class="badge bg-light text-dark border fw-normal">Model: ' + escapeHtml(row.model || '-') + '</span>';
+  if (limited) {
+    html += '<span class="badge bg-light text-dark border fw-normal">' +
+      Number(row.total_tokens || 0).toLocaleString() + ' tokens</span>';
+  } else {
+    var prompt = Number(row.prompt_tokens || 0).toLocaleString();
+    var completion = Number(row.completion_tokens || 0).toLocaleString();
+    html += '<span class="badge bg-light text-dark border fw-normal">Latency: ' + escapeHtml(formatLatency(row.e2el)) + '</span>' +
+      '<span class="badge bg-light text-dark border fw-normal">' + prompt + ' prompt &rarr; ' + completion + ' completion</span>';
+  }
+  return html;
 }
 
 function buildHistorySection(title, bodyHtml, opts) {
@@ -501,11 +556,12 @@ function buildHistoryPreview(row, options) {
   options = options || {};
   var showMetadata = options.showMetadata !== false;
   var showTraceback = options.showTraceback !== false;
+  var showTags = options.showTags !== false;
   var html = '';
 
   // Tags
   var tags = row.request_tags || [];
-  if (tags.length) {
+  if (showTags && tags.length) {
     var tagsHtml = '<div class="d-flex flex-wrap gap-2">';
     for (var i = 0; i < tags.length; i++) {
       tagsHtml += '<span class="badge bg-light text-dark border fw-normal">' + escapeHtml(tags[i]) + '</span>';
@@ -586,11 +642,12 @@ function showAdminHistoryDetail(row) {
 }
 
 function showMyHistoryDetail(row) {
-  $('#myhistory-detail-modal-label').text(row.request_id || 'Request Detail');
-  $('#myhistory-detail-summary').html(buildHistorySummary(row));
+  $('#myhistory-detail-modal-label').text('Request Detail');
+  $('#myhistory-detail-summary').html(buildHistorySummary(row, { limited: true }));
   $('#myhistory-detail-preview').html(buildHistoryPreview(row, {
     showMetadata: false,
-    showTraceback: false
+    showTraceback: false,
+    showTags: false
   }));
 
   var modalEl = document.getElementById('myhistory-detail-modal');
@@ -679,9 +736,7 @@ function initAddRemoveActions() {
       deleteKeyId = null;
 
       if (keyId && $keysTable.length) {
-        removeBootstrapTableRowAnimated($keysTable, keyId, 'API key deleted successfully');
-      } else if (keyId) {
-        showToast('API key deleted successfully', 'success');
+        removeBootstrapTableRowAnimated($keysTable, keyId);
       }
     }, 600);
   });
@@ -766,7 +821,7 @@ function initAddRemoveActions() {
     var email = $(this).data('email');
     var $table = $('#members-table');
     if (userId && $table.length) {
-      removeBootstrapTableRowAnimated($table, userId, 'Member removed from team');
+      removeBootstrapTableRowAnimated($table, userId);
     }
     removeMemberTagByEmail(email);
   });
@@ -1228,7 +1283,6 @@ function showNewKeyAlert(payload) {
   if (!$wrapper.length) return false;
 
   $('#newkey-alert-name').text(payload.key_name || '—');
-  $('#newkey-alert-id').text(payload.key_id || '').attr('title', payload.key_id || '');
   $('#newkey-alert-secret').text(payload.key_secret || '');
 
   $wrapper.data('highlight-key-id', payload.key_id);
@@ -1248,33 +1302,31 @@ function showNewKeyAlert(payload) {
   return true;
 }
 
+function appendToastKeyRow($body, label, value, copyTitle) {
+  var $row = $('<div class="rd-toast__key-row"></div>');
+  $row.append($('<span class="rd-toast__key-label"></span>').text(label));
+  var $valueRow = $('<div class="cpytext rd-toast__key-value-row"></div>');
+  $valueRow.append($('<code class="rd-toast__key-value"></code>').text(value));
+  appendCopyButton($valueRow, copyTitle);
+  $valueRow.find('.cpybtn').attr('data-copy-text', value);
+  $row.append($valueRow);
+  $body.append($row);
+}
+
 function showKeyCreatedToast(payload, onNavigate) {
-  var keyId = payload.key_id || '';
-  var keyIdShort = keyId.length > 12
-    ? keyId.slice(0, 8) + '…' + keyId.slice(-4)
-    : keyId;
+  var keySecret = payload.key_secret || '';
   var $container = $('#toast-container');
   if (!$container.length) {
-    $('body').append('<div id="toast-container" class="position-fixed top-0 end-0 p-3"></div>');
+    $('body').append('<div id="toast-container"></div>');
     $container = $('#toast-container');
   }
 
-  var $toast = $('<div class="rd-toast rd-toast--success rd-toast--clickable rd-toast--persistent" role="button" tabindex="0"></div>');
+  var $toast = $('<div class="rd-toast rd-toast--success rd-toast--clickable rd-toast--persistent rd-toast--key-created" role="button" tabindex="0"></div>');
   $toast.append('<i class="bi bi-check-circle-fill rd-toast__icon" aria-hidden="true"></i>');
 
   var $body = $('<div class="rd-toast__body"></div>');
   $body.append('<div class="rd-toast__title">API key created</div>');
-
-  var $idRow = $('<div class="rd-toast__key-id-row"></div>');
-  $idRow.append('<span class="rd-toast__key-id-label">Key ID</span>');
-  var $idWrap = $('<span class="cpytext rd-toast__key-id-wrap"></span>');
-  $idWrap.append(
-    $('<code class="rd-toast__key-id"></code>').text(keyIdShort).attr('title', keyId)
-  );
-  appendCopyButton($idWrap, 'Copy Key ID');
-  $idWrap.find('.cpybtn').attr('data-copy-text', keyId);
-  $idRow.append($idWrap);
-  $body.append($idRow);
+  if (keySecret) appendToastKeyRow($body, 'Secret Key', keySecret, 'Copy Secret Key');
   $body.append('<span class="rd-toast__action-hint">Click to open keys list</span>');
   $toast.append($body);
   $toast.append('<button type="button" class="rd-toast__dismiss" aria-label="Dismiss">&times;</button>');
@@ -1286,11 +1338,11 @@ function showKeyCreatedToast(payload, onNavigate) {
     if (typeof onNavigate === 'function') onNavigate();
   }
   $toast.on('click', function (e) {
-    if ($(e.target).closest('.rd-toast__dismiss, .rd-toast__key-id-row, .cpybtn').length) return;
+    if ($(e.target).closest('.rd-toast__dismiss, .rd-toast__key-row, .cpybtn').length) return;
     go();
   });
   $toast.on('keydown', function (e) {
-    if ($(e.target).closest('.rd-toast__key-id-row').length) return;
+    if ($(e.target).closest('.rd-toast__key-row').length) return;
     if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault();
       go();
@@ -1601,7 +1653,7 @@ function showToast(message, type) {
   var iconMap = { success: 'bi-check-circle-fill', error: 'bi-exclamation-triangle-fill', info: 'bi-info-circle-fill' };
   var $container = $('#toast-container');
   if (!$container.length) {
-    $('body').append('<div id="toast-container" class="position-fixed top-0 end-0 p-3"></div>');
+    $('body').append('<div id="toast-container"></div>');
     $container = $('#toast-container');
   }
   var $toast = $('<div class="rd-toast rd-toast--' + (type || 'info') + '">' +
@@ -1932,5 +1984,6 @@ $(function () {
   initFormSubmit();
   initFadeIn();
   initAdminHistoriesSearch();
+  initMyHistoriesTable();
   initNavUserMenu();
 });

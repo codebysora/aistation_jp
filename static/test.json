@@ -4,7 +4,7 @@
             "request_id": "chatcmpl-9fd14284e21d5caf",
             "call_type": "acompletion",
             "api_key": "d663b9832e6715b414a16dc6db73633cd3709200ad8cc970820fb2e7bae924f2",
-            "spend": 0.0,
+            "spend": 0,
             "total_tokens": 182,
             "prompt_tokens": 26,
             "completion_tokens": 156,
@@ -55,13 +55,13 @@
                         "supports_reasoning": null,
                         "supports_web_search": null,
                         "input_cost_per_query": null,
-                        "input_cost_per_token": 0.0,
+                        "input_cost_per_token": 0,
                         "supports_audio_input": null,
                         "supports_tool_choice": null,
                         "supports_url_context": null,
                         "input_cost_per_second": null,
                         "output_cost_per_image": null,
-                        "output_cost_per_token": 0.0,
+                        "output_cost_per_token": 0,
                         "supports_audio_output": null,
                         "supports_computer_use": null,
                         "output_cost_per_second": null,
@@ -193,7 +193,7 @@
             "request_id": "chatcmpl-8893628a6c666873",
             "call_type": "acompletion",
             "api_key": "d663b9832e6715b414a16dc6db73633cd3709200ad8cc970820fb2e7bae924f2",
-            "spend": 0.0,
+            "spend": 0,
             "total_tokens": 229,
             "prompt_tokens": 31,
             "completion_tokens": 198,
@@ -244,13 +244,13 @@
                         "supports_reasoning": null,
                         "supports_web_search": null,
                         "input_cost_per_query": null,
-                        "input_cost_per_token": 0.0,
+                        "input_cost_per_token": 0,
                         "supports_audio_input": null,
                         "supports_tool_choice": null,
                         "supports_url_context": null,
                         "input_cost_per_second": null,
                         "output_cost_per_image": null,
-                        "output_cost_per_token": 0.0,
+                        "output_cost_per_token": 0,
                         "supports_audio_output": null,
                         "supports_computer_use": null,
                         "output_cost_per_second": null,
@@ -382,7 +382,7 @@
             "request_id": "32d77402-84ba-4f4c-89f6-5885c4a2924b",
             "call_type": "",
             "api_key": "",
-            "spend": 0.0,
+            "spend": 0,
             "total_tokens": 0,
             "prompt_tokens": 0,
             "completion_tokens": 0,
@@ -454,7 +454,7 @@
             "request_id": "3cdd151e-92c2-4e43-a751-a70ac65ccc4b",
             "call_type": "",
             "api_key": "",
-            "spend": 0.0,
+            "spend": 0,
             "total_tokens": 0,
             "prompt_tokens": 0,
             "completion_tokens": 0,
@@ -521,12 +521,194 @@
             "ttft": null,
             "tpot": null,
             "tps": null
+        },
+        {
+            "request_id": "chatcmpl-user-dev-key-001",
+            "status": "success",
+            "start_time": "2026-05-28 14:22:10.120000",
+            "end_time": "2026-05-28 14:22:18.640000",
+            "model": "test-qwen3-0.6b-cpu",
+            "prompt_tokens": 42,
+            "completion_tokens": 118,
+            "total_tokens": 160,
+            "e2el": "0:00:08.520000",
+            "username": "takeshi.miyabe@fixstars.com",
+            "user_id": "c752937e-a181-47c6-9486-36fbc75c02a1",
+            "team_id": "bd3c0513-6d7d-40ee-a2c9-25c3b0ab42df",
+            "request_tags": [
+                "key:dev-key"
+            ],
+            "proxy_server_request": {
+                "model": "test-qwen3-0.6b-cpu",
+                "messages": [
+                    {
+                        "role": "system",
+                        "content": "You are a helpful assistant."
+                    },
+                    {
+                        "role": "user",
+                        "content": "Summarize the benefits of using API keys per environment."
+                    }
+                ]
+            },
+            "response": {
+                "choices": [
+                    {
+                        "message": {
+                            "role": "assistant",
+                            "content": "Using separate API keys per environment improves security isolation, simplifies rotation, and makes usage tracking easier for dev, staging, and production."
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "request_id": "chatcmpl-user-batch-002",
+            "status": "success",
+            "start_time": "2026-05-27 09:15:33.880000",
+            "end_time": "2026-05-27 09:15:51.204000",
+            "model": "production-v2",
+            "prompt_tokens": 890,
+            "completion_tokens": 412,
+            "total_tokens": 1302,
+            "e2el": "0:00:17.324000",
+            "username": "takeshi.miyabe@fixstars.com",
+            "user_id": "c752937e-a181-47c6-9486-36fbc75c02a1",
+            "team_id": "adceede4-0923-4b2d-97af-48071c6124ed",
+            "request_tags": [
+                "key:batch-inference"
+            ],
+            "proxy_server_request": {
+                "model": "production-v2",
+                "messages": [
+                    {
+                        "role": "user",
+                        "content": "Classify these support tickets into billing, technical, or account."
+                    }
+                ]
+            },
+            "response": {
+                "choices": [
+                    {
+                        "message": {
+                            "role": "assistant",
+                            "content": "Ticket #1042: technical\nTicket #1043: billing\nTicket #1044: account"
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "request_id": "chatcmpl-user-staging-003",
+            "status": "success",
+            "start_time": "2026-05-26 18:40:02.500000",
+            "end_time": "2026-05-26 18:40:09.100000",
+            "model": "staging-key",
+            "prompt_tokens": 18,
+            "completion_tokens": 64,
+            "total_tokens": 82,
+            "e2el": "0:00:06.600000",
+            "username": "takeshi.miyabe@fixstars.com",
+            "user_id": "c752937e-a181-47c6-9486-36fbc75c02a1",
+            "team_id": "bd3c0513-6d7d-40ee-a2c9-25c3b0ab42df",
+            "request_tags": [],
+            "proxy_server_request": {
+                "model": "staging-key",
+                "messages": [
+                    {
+                        "role": "user",
+                        "content": "Write a one-line changelog entry for the keys UI update."
+                    }
+                ]
+            },
+            "response": {
+                "choices": [
+                    {
+                        "message": {
+                            "role": "assistant",
+                            "content": "Added clearer secret display on key creation and simplified the histories view for standard users."
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "request_id": "chatcmpl-user-fail-004",
+            "status": "failure",
+            "start_time": "2026-05-25 11:08:19.330000",
+            "end_time": "2026-05-25 11:08:19.950000",
+            "model": "rate-limited",
+            "prompt_tokens": 0,
+            "completion_tokens": 0,
+            "total_tokens": 0,
+            "e2el": "0:00:00.620000",
+            "username": "takeshi.miyabe@fixstars.com",
+            "user_id": "c752937e-a181-47c6-9486-36fbc75c02a1",
+            "team_id": "bd3c0513-6d7d-40ee-a2c9-25c3b0ab42df",
+            "request_tags": [],
+            "proxy_server_request": {
+                "model": "rate-limited",
+                "messages": [
+                    {
+                        "role": "user",
+                        "content": "Run a large batch job with maximum concurrency."
+                    }
+                ]
+            },
+            "response": {},
+            "metadata_": {
+                "error_information": {
+                    "error_code": "429",
+                    "error_class": "RateLimitError",
+                    "error_message": "Rate limit exceeded for this API key (rpm_limit: 60)."
+                }
+            }
+        },
+        {
+            "request_id": "chatcmpl-user-monitor-005",
+            "status": "success",
+            "start_time": "2026-05-24 07:55:44.010000",
+            "end_time": "2026-05-24 07:55:49.780000",
+            "model": "monitoring",
+            "prompt_tokens": 156,
+            "completion_tokens": 89,
+            "total_tokens": 245,
+            "e2el": "0:00:05.770000",
+            "username": "takeshi.miyabe@fixstars.com",
+            "user_id": "c752937e-a181-47c6-9486-36fbc75c02a1",
+            "team_id": "e17e408f-396d-401b-ab9a-ff369015f36b",
+            "request_tags": [
+                "key:monitoring"
+            ],
+            "proxy_server_request": {
+                "model": "monitoring",
+                "messages": [
+                    {
+                        "role": "system",
+                        "content": "You analyze metrics briefly."
+                    },
+                    {
+                        "role": "user",
+                        "content": "Any anomalies in last hour token usage?"
+                    }
+                ]
+            },
+            "response": {
+                "choices": [
+                    {
+                        "message": {
+                            "role": "assistant",
+                            "content": "No significant anomalies. Total usage stayed within 12% of the hourly average."
+                        }
+                    }
+                ]
+            }
         }
     ],
     "meta": {
         "page": 1,
         "per_page": 20,
-        "total": 4,
+        "total": 9,
         "total_pages": 1
     }
 }

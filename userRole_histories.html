@@ -8,9 +8,9 @@
   <link rel="stylesheet" href="./static/css/bootstrap-table.min.css">
   <link rel="stylesheet" href="./static/font/bootstrap-icons.css">
   <link rel="stylesheet" href="./static/css/style.css">
-  <title>AIStation Dashboard - Histories</title>
+  <title>AIStation Dashboard - My Histories</title>
 </head>
-<body class="h-100">
+<body class="h-100" data-rd-user-email="takeshi.miyabe@fixstars.com">
 
   <!-- Header -->
   <header>
@@ -54,7 +54,7 @@
         <div class="rd-card__header">
           <nav aria-label="breadcrumb">
             <ol class="breadcrumb mb-0">
-              <li class="breadcrumb-item active" aria-current="page">Histories</li>
+              <li class="breadcrumb-item active" aria-current="page">My Histories</li>
             </ol>
           </nav>
         </div>
@@ -62,6 +62,7 @@
           <table class="table table-borderless table-hover table-striped table-sm" id="myhistories-table"
             data-unique-id="request_id" data-toggle="table"
             data-pagination="true" data-search="true"
+            data-response-handler="myHistoriesResponseHandler"
             data-url="./static/test.json"
             data-data-field="data">
             <thead>
@@ -69,11 +70,7 @@
                 <th data-sortable="true" data-field="status" data-formatter="historyStatusFormatter">Status</th>
                 <th data-sortable="true" data-field="start_time" data-formatter="historyTimeFormatter">Time</th>
                 <th data-sortable="true" data-field="model">Model</th>
-                <th data-sortable="true" data-field="prompt_tokens" data-formatter="historyNumberFormatter">Prompt</th>
-                <th data-sortable="true" data-field="completion_tokens" data-formatter="historyNumberFormatter">Completion</th>
-                <th data-sortable="true" data-field="total_tokens" data-formatter="historyNumberFormatter">Total</th>
-                <th data-sortable="true" data-field="e2el">Latency</th>
-                <th data-sortable="true" data-field="request_id" data-formatter="historyRequestIdFormatter">Request ID</th>
+                <th data-sortable="true" data-field="total_tokens" data-formatter="historyNumberFormatter">Total Tokens</th>
               </tr>
             </thead>
           </table>
