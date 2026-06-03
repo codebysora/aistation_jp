@@ -445,11 +445,7 @@
           html += '</div>';
           html += '</div>';
 
-          // Score list (Int / Cod / Mat / Spd / TTFT — shared with detail view via catalog.js)
-          html += window.renderPresetScoreList ? window.renderPresetScoreList(p) : '';
-
-          // Tags pinned to card bottom (wraps safely on two lines)
-          html += '<div class="catalog-card__footer">';
+          // Meta — fixed above score graph (modality / resource size / context)
           html += '<div class="catalog-card__meta">';
           html += renderModalityGroupA(m);
           if (m.size) {
@@ -457,8 +453,15 @@
           }
           html += '<span class="catalog-tag catalog-tag--neutral catalog-tag--context">' + fmtCtx(m.context) + ' ctx</span>';
           html += '</div>';
-          html += renderCapsRow(m);
-          html += '</div>';
+
+          // Score list (Int / Cod / Mat / Spd / TTFT — shared with detail view via catalog.js)
+          html += window.renderPresetScoreList ? window.renderPresetScoreList(p) : '';
+
+          // Capability tags pinned to card bottom (optional — may be absent)
+          var capsRow = renderCapsRow(m);
+          if (capsRow) {
+            html += '<div class="catalog-card__footer">' + capsRow + '</div>';
+          }
 
           html += '</div>';
         }

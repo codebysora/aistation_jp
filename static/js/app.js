@@ -2025,6 +2025,85 @@ function hideFormError(selector) {
 }
 
 /* ============================================
+   Sidebar drawer (narrow viewports)
+   ============================================ */
+function initSidebarToggle() {
+  var $sidebar = $('.rd-sidebar').first();
+  if (!$sidebar.length) return;
+
+  if (!$sidebar.attr('id')) {
+    $sidebar.attr('id', 'rd-sidebar');
+  }
+
+  var $navbar = $('.rd-navbar').first();
+  if (!$navbar.length) return;
+
+  var drawerMq = window.matchMedia('(max-width: 991.98px)');
+
+  function isDrawerMode() {
+    return drawerMq.matches;
+  }
+
+  function setSidebarOpen(open) {
+    $('body').toggleClass('rd-sidebar-open', open);
+    $toggle.attr('aria-expanded', open ? 'true' : 'false');
+    $toggle.attr('aria-label', open ? 'Close menu' : 'Open menu');
+    $toggle.find('i').toggleClass('bi-list', !open).toggleClass('bi-x-lg', open);
+  }
+
+  function closeSidebar() {
+    setSidebarOpen(false);
+  }
+
+  function toggleSidebar() {
+    if (!isDrawerMode()) return;
+    setSidebarOpen(!$('body').hasClass('rd-sidebar-open'));
+  }
+
+  var $toggle = $navbar.find('.rd-sidebar-toggle');
+  if (!$toggle.length) {
+    $toggle = $(
+      '<button type="button" class="rd-sidebar-toggle border-0"' +
+      ' aria-label="Open menu" aria-expanded="false" aria-controls="rd-sidebar">' +
+      '<i class="bi bi-list" aria-hidden="true"></i></button>'
+    );
+    $navbar.prepend($toggle);
+  }
+
+  if (!$('.rd-sidebar-backdrop').length) {
+    $('body').append('<div class="rd-sidebar-backdrop" aria-hidden="true"></div>');
+  }
+
+  $toggle.off('click.rdSidebar').on('click.rdSidebar', function (e) {
+    e.preventDefault();
+    e.stopPropagation();
+    toggleSidebar();
+  });
+
+  $(document).off('click.rdSidebarBackdrop').on('click.rdSidebarBackdrop', '.rd-sidebar-backdrop', closeSidebar);
+
+  $sidebar.off('click.rdSidebarNav').on('click.rdSidebarNav', '.nav-link', function () {
+    if (isDrawerMode()) closeSidebar();
+  });
+
+  $(document).off('keydown.rdSidebar').on('keydown.rdSidebar', function (e) {
+    if (e.key === 'Escape' && $('body').hasClass('rd-sidebar-open')) {
+      closeSidebar();
+    }
+  });
+
+  if (drawerMq.addEventListener) {
+    drawerMq.addEventListener('change', function () {
+      if (!isDrawerMode()) closeSidebar();
+    });
+  } else if (drawerMq.addListener) {
+    drawerMq.addListener(function () {
+      if (!isDrawerMode()) closeSidebar();
+    });
+  }
+}
+
+/* ============================================
    Fade-in Animation Init
    ============================================ */
 function initFadeIn() {
@@ -2053,4 +2132,5 @@ $(function () {
   initMyHistoriesTable();
   initNavUserMenu();
   initTeamEditForm();
+  initSidebarToggle();
 });

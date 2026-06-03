@@ -843,6 +843,13 @@ function renderCardView(models) {
     // 跡地は `.catalog-card__metrics` (空コンテナ) としてサンプル受領後の差し替えに備える。
     html += renderMetricsRow(m);
 
+    // Meta — fixed above benchmarks (modality / size / context)
+    html += '<div class="catalog-card__meta">';
+    html += renderModalityGroup(m);
+    html += '<span class="catalog-tag catalog-tag--neutral catalog-tag--size">' + escapeHtml(m.size) + '</span>';
+    html += '<span class="catalog-tag catalog-tag--neutral catalog-tag--context">' + formatContext(m.context) + ' ctx</span>';
+    html += '</div>';
+
     // Benchmark bars — preset.json on deploy select; sample CATALOG_DATA elsewhere
     var preset = getModelPreset(m);
     if (preset) {
@@ -876,14 +883,8 @@ function renderCardView(models) {
       html += '</div>';
     }
 
-    html += '<div class="catalog-card__footer">';
-    html += '<div class="catalog-card__meta">';
-    html += renderModalityGroup(m);
-    html += '<span class="catalog-tag catalog-tag--neutral catalog-tag--size">' + escapeHtml(m.size) + '</span>';
-    html += '<span class="catalog-tag catalog-tag--neutral catalog-tag--context">' + formatContext(m.context) + ' ctx</span>';
-    html += '</div>';
-
     if (m.capabilities.length > 0) {
+      html += '<div class="catalog-card__footer">';
       html += '<div class="catalog-card__caps">';
       for (var ci = 0; ci < m.capabilities.length; ci++) {
         html += '<span class="catalog-cap-badge" title="' + capabilityLabel(m.capabilities[ci]) + '">';
@@ -891,8 +892,8 @@ function renderCardView(models) {
         html += '</span>';
       }
       html += '</div>';
+      html += '</div>';
     }
-    html += '</div>';
 
     html += '</div>';
   }
