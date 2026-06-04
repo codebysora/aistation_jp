@@ -1706,7 +1706,7 @@ function initNavUserMenu() {
     resetPasswordChangeForm();
     var el = document.getElementById('password-change-modal');
     if (el) bootstrap.Modal.getOrCreateInstance(el).show();
-    $('body').removeClass('rd-sidebar-open');
+    closeRdSidebarDrawer();
   });
 
   $(document).on('submit', '#password-change-form', function (e) {
@@ -2161,6 +2161,29 @@ function collapseSidebarAccount($sidebar) {
   $acc.find('.rd-sidebar__account-actions').attr('hidden', 'hidden');
 }
 
+/** Close mobile drawer and reset menu toggle icon (☰, not ✕). */
+function closeRdSidebarDrawer() {
+  var $sidebar = $('.rd-sidebar').first();
+  var $toggle = $('.rd-sidebar-toggle').first();
+  $('body').removeClass('rd-sidebar-open');
+  if ($toggle.length) {
+    $toggle.attr('aria-expanded', 'false');
+    $toggle.attr('aria-label', 'Open menu');
+    $toggle.find('i').removeClass('bi-x-lg').addClass('bi-list');
+  }
+  collapseSidebarAccount($sidebar);
+}
+
+function openRdSidebarDrawer() {
+  var $toggle = $('.rd-sidebar-toggle').first();
+  $('body').addClass('rd-sidebar-open');
+  if ($toggle.length) {
+    $toggle.attr('aria-expanded', 'true');
+    $toggle.attr('aria-label', 'Close menu');
+    $toggle.find('i').removeClass('bi-list').addClass('bi-x-lg');
+  }
+}
+
 function initSidebarToggle() {
   var $sidebar = $('.rd-sidebar').first();
   if (!$sidebar.length) return;
@@ -2182,15 +2205,15 @@ function initSidebarToggle() {
   }
 
   function setSidebarOpen(open) {
-    $('body').toggleClass('rd-sidebar-open', open);
-    $toggle.attr('aria-expanded', open ? 'true' : 'false');
-    $toggle.attr('aria-label', open ? 'Close menu' : 'Open menu');
-    $toggle.find('i').toggleClass('bi-list', !open).toggleClass('bi-x-lg', open);
-    if (!open) collapseSidebarAccount($sidebar);
+    if (open) {
+      openRdSidebarDrawer();
+    } else {
+      closeRdSidebarDrawer();
+    }
   }
 
   function closeSidebar() {
-    setSidebarOpen(false);
+    closeRdSidebarDrawer();
   }
 
   function toggleSidebar() {
