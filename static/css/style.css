@@ -171,7 +171,7 @@ body {
     justify-content: center;
     width: 2.375rem;
     height: 2.375rem;
-    margin: 0 0.75rem 0 0;
+    margin: 0 0.5rem 0 0.875rem;
     padding: 0;
     border-radius: var(--rd-radius-sm);
     background: rgba(255, 255, 255, 0.14);
@@ -3891,9 +3891,9 @@ table.rd-table--border > tbody > tr {
 @media (max-width: 991.98px) {
     .rd-sidebar-toggle {
         display: inline-flex;
-        order: 2;
-        margin-left: auto;
-        margin-right: 0.75rem;
+        order: 0;
+        margin-left: 0.875rem;
+        margin-right: 0.5rem;
     }
 
     .rd-navbar .navbar-brand {
@@ -3926,16 +3926,16 @@ table.rd-table--border > tbody > tr {
     .rd-sidebar {
         position: fixed;
         top: var(--rd-header-height);
-        right: 0;
-        left: auto;
+        left: 0;
+        right: auto;
         z-index: 1040;
         height: calc(100vh - var(--rd-header-height));
         display: flex;
         flex-direction: column;
         overflow: hidden;
-        transform: translateX(100%);
+        transform: translateX(-100%);
         transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1);
-        box-shadow: -8px 0 32px rgba(0, 0, 0, 0.18);
+        box-shadow: 8px 0 32px rgba(0, 0, 0, 0.18);
         will-change: transform;
     }
 

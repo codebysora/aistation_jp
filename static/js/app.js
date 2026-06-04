@@ -2205,9 +2205,9 @@ function initSidebarToggle() {
       ' aria-label="Open menu" aria-expanded="false" aria-controls="rd-sidebar">' +
       '<i class="bi bi-list" aria-hidden="true"></i></button>'
     );
-    $navbar.append($toggle);
+    $navbar.prepend($toggle);
   } else {
-    $navbar.append($toggle);
+    $navbar.prepend($toggle);
   }
 
   if (!$('.rd-sidebar-backdrop').length) {
