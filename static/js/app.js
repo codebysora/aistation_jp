@@ -286,10 +286,13 @@ function historyRequestIdFormatter(value) {
 
 /** Read admin histories search form values (trimmed). */
 function getAdminHistoriesSearchFilters() {
+  var status = ($('input[name="status"]:checked').val() || '').trim().toLowerCase();
   return {
     username: ($('#histories-search-username').val() || '').trim().toLowerCase(),
-    date_from: $('#histories-search-date-from').val() || '',
-    date_to: $('#histories-search-date-to').val() || ''
+    model: ($('#histories-search-model').val() || '').trim().toLowerCase(),
+    status: status,
+    datetime_from: $('#histories-search-datetime-from').val() || '',
+    datetime_to: $('#histories-search-datetime-to').val() || ''
   };
 }
 
@@ -302,9 +305,28 @@ function historyRowUsername(row) {
   return String(row.user_id || '');
 }
 
-function historyRowStartDate(row) {
-  if (!row.start_time) return '';
-  return String(row.start_time).slice(0, 10);
+/** Parse history start_time to milliseconds (supports "YYYY-MM-DD HH:mm:ss.ffffff"). */
+function historyRowStartMs(row) {
+  if (!row || !row.start_time) return null;
+  var s = String(row.start_time).trim().replace(' ', 'T').replace(/\.\d+$/, '');
+  var ms = Date.parse(s);
+  return isNaN(ms) ? null : ms;
+}
+
+function datetimeLocalToMs(value) {
+  if (!value) return null;
+  var ms = Date.parse(String(value).trim());
+  return isNaN(ms) ? null : ms;
+}
+
+function adminHistoriesFiltersActive(filters) {
+  return !!(
+    filters.username ||
+    filters.model ||
+    filters.status ||
+    filters.datetime_from ||
+    filters.datetime_to
+  );
 }
 
 function matchesAdminHistoriesFilters(row, filters) {
@@ -313,9 +335,26 @@ function matchesAdminHistoriesFilters(row, filters) {
       return false;
     }
   }
-  var day = historyRowStartDate(row);
-  if (filters.date_from && (!day || day < filters.date_from)) return false;
-  if (filters.date_to && (!day || day > filters.date_to)) return false;
+  if (filters.model) {
+    if (String(row.model || '').toLowerCase().indexOf(filters.model) === -1) {
+      return false;
+    }
+  }
+  if (filters.status === 'success' && row.status !== 'success') {
+    return false;
+  }
+  if (filters.status === 'failure' && row.status !== 'failure') {
+    return false;
+  }
+  var rowMs = historyRowStartMs(row);
+  var fromMs = datetimeLocalToMs(filters.datetime_from);
+  var toMs = datetimeLocalToMs(filters.datetime_to);
+  if (fromMs != null) {
+    if (rowMs == null || rowMs < fromMs) return false;
+  }
+  if (toMs != null) {
+    if (rowMs == null || rowMs > toMs) return false;
+  }
   return true;
 }
 
@@ -329,8 +368,10 @@ function adminHistoriesQueryParams(params) {
     offset: params.offset,
     limit: params.limit,
     username: filters.username,
-    date_from: filters.date_from,
-    date_to: filters.date_to
+    model: filters.model,
+    status: filters.status,
+    datetime_from: filters.datetime_from,
+    datetime_to: filters.datetime_to
   };
 }
 
@@ -341,7 +382,7 @@ function normalizeHistoryRows(data) {
 }
 
 function filterAdminHistoriesRows(rows, filters) {
-  if (!filters.username && !filters.date_from && !filters.date_to) return rows;
+  if (!adminHistoriesFiltersActive(filters)) return rows;
   return rows.filter(function (row) {
     return matchesAdminHistoriesFilters(row, filters);
   });
@@ -468,6 +509,10 @@ function initAdminHistoriesSearch() {
 
   $form.on('submit', function (e) {
     e.preventDefault();
+    applyAdminHistoriesSearch($table);
+  });
+
+  $form.on('change', 'input[name="status"]', function () {
     applyAdminHistoriesSearch($table);
   });
 }
@@ -1661,6 +1706,7 @@ function initNavUserMenu() {
     resetPasswordChangeForm();
     var el = document.getElementById('password-change-modal');
     if (el) bootstrap.Modal.getOrCreateInstance(el).show();
+    $('body').removeClass('rd-sidebar-open');
   });
 
   $(document).on('submit', '#password-change-form', function (e) {
@@ -2025,8 +2071,96 @@ function hideFormError(selector) {
 }
 
 /* ============================================
-   Sidebar drawer (narrow viewports)
+   Sidebar drawer (narrow viewports) — merged account + nav
    ============================================ */
+function getNavUserDisplayName($user) {
+  var $clone = $user.clone();
+  $clone.find('.rd-nav-user__badge, i').remove();
+  return $clone.text().trim();
+}
+
+function ensureDrawerSectionLabel($sidebar) {
+  if ($sidebar.find('.rd-sidebar__section-label--drawer-top').length) return;
+
+  var $ul = $sidebar.children('ul').first();
+  if (!$ul.length) return;
+
+  var $firstLabel = $ul.children('.rd-sidebar__section-label').first();
+  if (!$firstLabel.length) return;
+
+  var $top = $('<div class="rd-sidebar__section-label rd-sidebar__section-label--drawer-top" role="presentation"></div>');
+  $top.text($firstLabel.text().trim());
+  $sidebar.prepend($top);
+}
+
+function buildSidebarAccountBlock($sidebar) {
+  if ($sidebar.find('.rd-sidebar__account').length) return;
+
+  var $user = $('.rd-navbar .rd-nav-user').first();
+  if (!$user.length) return;
+
+  var $logout = $('.rd-navbar .rd-nav-logout').first();
+  var $badge = $user.find('.rd-nav-user__badge').first();
+  var displayName = getNavUserDisplayName($user);
+  var hasPassword = $user.attr('data-bs-toggle') === 'dropdown';
+
+  var $block = $('<div class="rd-sidebar__account" role="region" aria-label="Account"></div>');
+
+  var $header = $(
+    '<button type="button" class="rd-sidebar__account-header" aria-expanded="false" aria-controls="rd-sidebar-account-actions">' +
+    '<span class="rd-sidebar__account-chevron" aria-hidden="true"><i class="bi bi-chevron-down"></i></span>' +
+    '</button>'
+  );
+  var $profile = $('<div class="rd-sidebar__account-profile"></div>');
+
+  if ($badge.length) {
+    $profile.append($badge.clone());
+  }
+  $profile.append('<i class="bi bi-person-circle" aria-hidden="true"></i>');
+  if (displayName) {
+    $profile.append($('<span class="rd-sidebar__account-name"></span>').text(displayName));
+  }
+
+  $header.prepend($profile);
+  $block.append($header);
+
+  if (hasPassword || $logout.length) {
+    var $actions = $('<div class="rd-sidebar__account-actions" id="rd-sidebar-account-actions" hidden></div>');
+
+    if (hasPassword) {
+      $actions.append(
+        '<button type="button" class="rd-sidebar__nav-action js-open-password-change">' +
+        '<i class="bi bi-key" aria-hidden="true"></i> Change Password</button>'
+      );
+    }
+
+    if ($logout.length) {
+      var $logoutBtn = $('<a href="#" class="rd-sidebar__nav-action rd-sidebar__nav-action--logout"></a>');
+      $logoutBtn.html($logout.html());
+      $actions.append($logoutBtn);
+    }
+
+    $block.append($actions);
+  } else {
+    $header.find('.rd-sidebar__account-chevron').remove();
+    $header.prop('disabled', true).removeAttr('aria-controls');
+  }
+
+  var $anchor = $sidebar.find('.rd-sidebar__section-label--drawer-top').first();
+  if ($anchor.length) {
+    $anchor.after($block);
+  } else {
+    $sidebar.prepend($block);
+  }
+}
+
+function collapseSidebarAccount($sidebar) {
+  var $acc = $sidebar.find('.rd-sidebar__account');
+  $acc.removeClass('is-open');
+  $acc.find('.rd-sidebar__account-header').attr('aria-expanded', 'false');
+  $acc.find('.rd-sidebar__account-actions').attr('hidden', 'hidden');
+}
+
 function initSidebarToggle() {
   var $sidebar = $('.rd-sidebar').first();
   if (!$sidebar.length) return;
@@ -2034,6 +2168,9 @@ function initSidebarToggle() {
   if (!$sidebar.attr('id')) {
     $sidebar.attr('id', 'rd-sidebar');
   }
+
+  ensureDrawerSectionLabel($sidebar);
+  buildSidebarAccountBlock($sidebar);
 
   var $navbar = $('.rd-navbar').first();
   if (!$navbar.length) return;
@@ -2049,6 +2186,7 @@ function initSidebarToggle() {
     $toggle.attr('aria-expanded', open ? 'true' : 'false');
     $toggle.attr('aria-label', open ? 'Close menu' : 'Open menu');
     $toggle.find('i').toggleClass('bi-list', !open).toggleClass('bi-x-lg', open);
+    if (!open) collapseSidebarAccount($sidebar);
   }
 
   function closeSidebar() {
@@ -2067,7 +2205,9 @@ function initSidebarToggle() {
       ' aria-label="Open menu" aria-expanded="false" aria-controls="rd-sidebar">' +
       '<i class="bi bi-list" aria-hidden="true"></i></button>'
     );
-    $navbar.prepend($toggle);
+    $navbar.append($toggle);
+  } else {
+    $navbar.append($toggle);
   }
 
   if (!$('.rd-sidebar-backdrop').length) {
@@ -2082,7 +2222,23 @@ function initSidebarToggle() {
 
   $(document).off('click.rdSidebarBackdrop').on('click.rdSidebarBackdrop', '.rd-sidebar-backdrop', closeSidebar);
 
-  $sidebar.off('click.rdSidebarNav').on('click.rdSidebarNav', '.nav-link', function () {
+  $sidebar.off('click.rdSidebarAccount').on('click.rdSidebarAccount', '.rd-sidebar__account-header', function (e) {
+    if (!$(this).find('.rd-sidebar__account-chevron').length) return;
+    e.preventDefault();
+    e.stopPropagation();
+    var $acc = $(this).closest('.rd-sidebar__account');
+    var open = !$acc.hasClass('is-open');
+    $acc.toggleClass('is-open', open);
+    $(this).attr('aria-expanded', open ? 'true' : 'false');
+    var $actions = $acc.find('.rd-sidebar__account-actions');
+    if (open) {
+      $actions.removeAttr('hidden');
+    } else {
+      $actions.attr('hidden', 'hidden');
+    }
+  });
+
+  $sidebar.off('click.rdSidebarNav').on('click.rdSidebarNav', '.nav-link, .rd-sidebar__nav-action--logout', function () {
     if (isDrawerMode()) closeSidebar();
   });
 

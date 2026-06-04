@@ -171,7 +171,7 @@ body {
     justify-content: center;
     width: 2.375rem;
     height: 2.375rem;
-    margin: 0 0.5rem 0 0.875rem;
+    margin: 0 0.75rem 0 0;
     padding: 0;
     border-radius: var(--rd-radius-sm);
     background: rgba(255, 255, 255, 0.14);
@@ -190,6 +190,153 @@ body {
 .rd-sidebar-toggle:focus-visible {
     outline: 2px solid rgba(255, 255, 255, 0.85);
     outline-offset: 2px;
+}
+
+/* Merged drawer: account block (mobile) — matches sidebar nav styling */
+.rd-sidebar__section-label--drawer-top {
+    display: none;
+    flex-shrink: 0;
+    background-color: var(--bs-secondary);
+    color: var(--bs-white);
+    font-weight: 700;
+    text-align: center;
+    padding: 0.625rem 1rem;
+    font-size: 0.8125rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.rd-sidebar__account {
+    display: none;
+    flex-shrink: 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.rd-sidebar__account-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    text-align: left;
+    color: inherit;
+    transition: background var(--rd-transition);
+}
+
+.rd-sidebar__account-header:hover,
+.rd-sidebar__account-header:focus-visible {
+    background-color: rgba(255, 255, 255, 0.06);
+    outline: none;
+}
+
+.rd-sidebar__account-profile {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem 0.625rem;
+    flex: 1;
+    min-width: 0;
+    padding: 0.75rem 0 0.75rem 1.25rem;
+    color: var(--bs-white);
+}
+
+.rd-sidebar__account-chevron {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 2.5rem;
+    height: 2.5rem;
+    margin-right: 0.375rem;
+    color: rgba(255, 255, 255, 0.65);
+    font-size: 1rem;
+    transition: transform 0.22s ease, color var(--rd-transition);
+}
+
+.rd-sidebar__account.is-open .rd-sidebar__account-chevron {
+    transform: rotate(180deg);
+    color: rgba(255, 255, 255, 0.95);
+}
+
+.rd-sidebar__account-actions {
+    display: none;
+    padding-bottom: 0.25rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.rd-sidebar__account.is-open .rd-sidebar__account-actions {
+    display: block;
+}
+
+.rd-sidebar__account-profile .rd-nav-user__badge {
+    background: var(--bs-white);
+    color: var(--bs-primary);
+    font-weight: 700;
+    font-size: 0.6875rem;
+    padding: 0.125rem 0.375rem;
+    border-radius: var(--rd-radius-sm);
+    line-height: 1;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+}
+
+.rd-sidebar__account-profile i.bi-person-circle {
+    font-size: 1.35rem;
+    line-height: 1;
+    opacity: 0.95;
+}
+
+.rd-sidebar__account-name {
+    flex: 1 1 auto;
+    min-width: 0;
+    font-size: 0.8125rem;
+    color: rgba(255, 255, 255, 0.88);
+    line-height: 1.35;
+    word-break: break-word;
+}
+
+.rd-sidebar__nav-action {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    width: 100%;
+    padding: 0.75rem 1.25rem;
+    margin: 0;
+    border: none;
+    border-left: 3px solid transparent;
+    background: transparent;
+    color: rgba(255, 255, 255, 0.75);
+    font-size: 0.875rem;
+    text-align: left;
+    text-decoration: none;
+    transition: all var(--rd-transition);
+    cursor: pointer;
+}
+
+.rd-sidebar__nav-action i {
+    font-size: 1rem;
+    width: 1.25rem;
+    text-align: center;
+}
+
+.rd-sidebar__nav-action:hover,
+.rd-sidebar__nav-action:focus-visible {
+    color: var(--bs-white);
+    background-color: rgba(255, 255, 255, 0.06);
+    outline: none;
+}
+
+.rd-sidebar__nav-action--logout {
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.rd-sidebar__nav-action--logout:hover {
+    background-color: rgba(220, 53, 69, 0.18);
+    color: #fff;
 }
 
 .rd-sidebar-backdrop {
@@ -3744,18 +3891,58 @@ table.rd-table--border > tbody > tr {
 @media (max-width: 991.98px) {
     .rd-sidebar-toggle {
         display: inline-flex;
+        order: 2;
+        margin-left: auto;
+        margin-right: 0.75rem;
+    }
+
+    .rd-navbar .navbar-brand {
+        order: 1;
+        flex: 1 1 auto;
+        min-width: 0;
+    }
+
+    /* Single merged menu — hide separate account collapse in header */
+    .rd-navbar .navbar-toggler {
+        display: none !important;
+    }
+
+    .rd-navbar .navbar-collapse {
+        display: none !important;
+    }
+
+    .rd-sidebar__account {
+        display: block;
+    }
+
+    .rd-sidebar__section-label--drawer-top {
+        display: block;
+    }
+
+    .rd-sidebar > ul > li.rd-sidebar__section-label:first-child {
+        display: none;
     }
 
     .rd-sidebar {
         position: fixed;
         top: var(--rd-header-height);
-        left: 0;
+        right: 0;
+        left: auto;
         z-index: 1040;
         height: calc(100vh - var(--rd-header-height));
-        transform: translateX(-100%);
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        transform: translateX(100%);
         transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1);
-        box-shadow: 8px 0 32px rgba(0, 0, 0, 0.18);
+        box-shadow: -8px 0 32px rgba(0, 0, 0, 0.18);
         will-change: transform;
+    }
+
+    .rd-sidebar > ul.nav {
+        flex: 1 1 auto;
+        min-height: 0;
+        overflow-y: auto;
     }
 
     body.rd-sidebar-open .rd-sidebar {
@@ -3770,11 +3957,13 @@ table.rd-table--border > tbody > tr {
         width: 100%;
         padding: 1.5rem 1rem;
     }
+
     .rd-navbar .navbar-brand {
         width: auto;
         border-right: none;
-        padding-left: 0;
+        padding-left: 0.875rem;
     }
+
     .c-form-row {
         flex-direction: column;
     }
@@ -4371,6 +4560,9 @@ table.rd-table--border > tbody > tr {
    ============================================ */
 /* Admin histories - search bar (padding aligned with bootstrap-table toolbar / table cells) */
 .rd-histories-search {
+    display: flex;
+    flex-direction: column;
+    gap: 0.875rem;
     padding: 1rem 1.5rem 1.25rem;
     border-bottom: 1px solid var(--rd-border-subtle);
     background: var(--rd-bg-subtle);
@@ -4378,12 +4570,104 @@ table.rd-table--border > tbody > tr {
 }
 
 .rd-histories-search .form-label {
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.375rem;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--bs-secondary-color);
 }
 
 .rd-histories-search .form-control,
 .rd-histories-search .btn {
     min-height: 2.375rem;
+}
+
+/* Row 1: Status */
+.rd-histories-search__status-row {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.75rem 1.25rem;
+    margin: 0;
+    padding: 0.625rem 1rem;
+    border: 1px solid var(--rd-border-subtle);
+    border-radius: var(--rd-radius-md);
+    background: var(--bs-white);
+}
+
+.rd-histories-search__status-label {
+    float: none;
+    width: auto;
+    margin: 0;
+    padding: 0;
+    font-size: 0.8125rem;
+    font-weight: 700;
+    color: var(--bs-body-color);
+    line-height: 1.2;
+}
+
+.rd-histories-search__status-options {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem 1.5rem;
+}
+
+.rd-histories-search__status-options .form-check-label {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--bs-body-color);
+}
+
+/* Row 2: Username, model, period, search — single line on wide screens */
+.rd-histories-search__fields-row {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: flex-end;
+    gap: 0.75rem;
+}
+
+.rd-histories-search__field {
+    flex: 1 1 0;
+    min-width: 0;
+}
+
+.rd-histories-search__field--datetime {
+    flex: 1.15 1 0;
+}
+
+.rd-histories-search__field--submit {
+    flex: 0 0 7.25rem;
+}
+
+.rd-histories-search__field--submit .btn {
+    white-space: nowrap;
+}
+
+@media (max-width: 1199.98px) {
+    .rd-histories-search__fields-row {
+        flex-wrap: wrap;
+    }
+
+    .rd-histories-search__field {
+        flex: 1 1 calc(50% - 0.375rem);
+        min-width: 10rem;
+    }
+
+    .rd-histories-search__field--datetime {
+        flex: 1 1 calc(50% - 0.375rem);
+    }
+
+    .rd-histories-search__field--submit {
+        flex: 1 1 100%;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .rd-histories-search__field,
+    .rd-histories-search__field--datetime,
+    .rd-histories-search__field--submit {
+        flex: 1 1 100%;
+    }
 }
 
 .rd-history-section {

@@ -66,20 +66,42 @@
         </div>
         <div class="rd-card__body">
           <form id="histories-search-form" class="rd-histories-search" novalidate>
-            <div class="row g-3 align-items-end">
-              <div class="col-sm-6 col-lg-4">
+            <fieldset class="rd-histories-search__status-row">
+              <legend class="rd-histories-search__status-label">Status</legend>
+              <div class="rd-histories-search__status-options" role="radiogroup" aria-label="Status">
+                <div class="form-check form-check-inline m-0">
+                  <input class="form-check-input c-radio-black" type="radio" name="status" id="histories-search-status-all" value="" checked>
+                  <label class="form-check-label" for="histories-search-status-all">All</label>
+                </div>
+                <div class="form-check form-check-inline m-0">
+                  <input class="form-check-input c-radio-black" type="radio" name="status" id="histories-search-status-success" value="success">
+                  <label class="form-check-label" for="histories-search-status-success">Success</label>
+                </div>
+                <div class="form-check form-check-inline m-0">
+                  <input class="form-check-input c-radio-black" type="radio" name="status" id="histories-search-status-failure" value="failure">
+                  <label class="form-check-label" for="histories-search-status-failure">Failure</label>
+                </div>
+              </div>
+            </fieldset>
+
+            <div class="rd-histories-search__fields-row">
+              <div class="rd-histories-search__field">
                 <label for="histories-search-username" class="form-label">Username</label>
                 <input type="text" class="form-control" id="histories-search-username" name="username" autocomplete="off" placeholder="user@example.com">
               </div>
-              <div class="col-sm-6 col-lg-3">
-                <label for="histories-search-date-from" class="form-label">From</label>
-                <input type="date" class="form-control" id="histories-search-date-from" name="date_from">
+              <div class="rd-histories-search__field">
+                <label for="histories-search-model" class="form-label">Model</label>
+                <input type="text" class="form-control" id="histories-search-model" name="model" autocomplete="off" placeholder="model name">
               </div>
-              <div class="col-sm-6 col-lg-3">
-                <label for="histories-search-date-to" class="form-label">To</label>
-                <input type="date" class="form-control" id="histories-search-date-to" name="date_to">
+              <div class="rd-histories-search__field rd-histories-search__field--datetime">
+                <label for="histories-search-datetime-from" class="form-label">From</label>
+                <input type="datetime-local" class="form-control" id="histories-search-datetime-from" name="datetime_from" step="1">
               </div>
-              <div class="col-sm-6 col-lg-2">
+              <div class="rd-histories-search__field rd-histories-search__field--datetime">
+                <label for="histories-search-datetime-to" class="form-label">To</label>
+                <input type="datetime-local" class="form-control" id="histories-search-datetime-to" name="datetime_to" step="1">
+              </div>
+              <div class="rd-histories-search__field rd-histories-search__field--submit">
                 <button type="submit" class="btn btn-dark w-100">
                   <i class="bi bi-search" aria-hidden="true"></i> Search
                 </button>
