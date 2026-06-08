@@ -996,6 +996,16 @@ table.rd-table--border tbody tr:last-child {
     opacity: 0.7;
 }
 
+/* Auth pages (login / signup / password reset) */
+.p-card__login {
+    width: 100%;
+    max-width: 446px;
+}
+
+.bg-dark .link-fade {
+    color: var(--bs-white);
+}
+
 /* ============================================
    Model table - clickable rows
    ============================================ */

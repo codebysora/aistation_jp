@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html class="h-100" lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="./static/css/bootstrap.min.css">
+  <link rel="stylesheet" href="./static/font/bootstrap-icons.css">
+  <link rel="stylesheet" href="./static/css/style.css">
+  <title>Signup - AIStation Dashboard</title>
+</head>
+<body class="h-100">
+  <main class="w-100">
+    <div class="min-vh-100 d-flex flex-column justify-content-center align-items-center bg-dark">
+      <div class="card rounded-0 border-0 p-card__login">
+        <h1 class="text-white text-center fw-bold card-header rounded-0 bg-primary py-4 fs-2">AIStation Dashboard<br>Signup</h1>
+        <div class="card-body p-5">
+          <form action="/signup" method="POST" novalidate="novalidate">
+            <div class="mb-5">
+              <label for="email" class="form-label">Email</label>
+              <input class="form-control form-control-lg" id="email" name="email" type="text" value="" required autocomplete="username">
+            </div>
+            <div class="mb-5">
+              <label for="password" class="form-label">Password</label>
+              <input class="form-control form-control-lg" id="password" name="password" type="password" value="" required autocomplete="new-password">
+            </div>
+            <button type="submit" class="btn btn-success w-100 fw-bold border-0 shadow-sm">Sign Up</button>
+          </form>
+        </div>
+      </div>
+      <a href="./login.html" class="d-block text-center mt-3 fs-5 text-white text-decoration-underline link-fade">Login</a>
+    </div>
+  </main>
+</body>
+</html>
