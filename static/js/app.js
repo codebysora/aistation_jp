@@ -2309,15 +2309,20 @@ function initAuthPages() {
     var $form = $(this);
     var $btn = $form.find('[type="submit"]');
     var $email = $('#email');
-    hideFormError('#forgot-password-form-error');
+    var $emailConfirm = $('#email-confirm');
 
-    if (!validateRequired('email')) return;
-    if (!validateEmail('email')) return;
+    if (!validateRequired('email') || !validateRequired('email-confirm')) return;
+    if (!validateEmail('email') || !validateEmail('email-confirm')) return;
+    if ($email.val().trim() !== $emailConfirm.val().trim()) {
+      showFieldError($emailConfirm, 'Email addresses do not match.');
+      return;
+    }
 
     setButtonLoading($btn, true);
     setTimeout(function () {
       setButtonLoading($btn, false);
       $form.addClass('rd-is-hidden');
+      $('.rd-auth-card__lead').addClass('rd-is-hidden');
       $('#forgot-password-success').removeClass('rd-is-hidden');
     }, 700);
   });
@@ -2347,17 +2352,14 @@ function initAuthPages() {
       hideFormError('#password-reset-form-error');
 
       if (!validateRequired('password-new') || !validateRequired('password-confirm')) {
-        showFormError('#password-reset-form-error', 'Please fill in all fields.');
         return;
       }
       if (($new.val() || '').length < 8) {
         showFieldError($new, 'Password must be at least 8 characters.');
-        showFormError('#password-reset-form-error', 'Please check your input.');
         return;
       }
       if ($new.val() !== $confirm.val()) {
         showFieldError($confirm, 'Passwords do not match.');
-        showFormError('#password-reset-form-error', 'Please check your input.');
         return;
       }
       clearFieldError($new);
@@ -2375,6 +2377,38 @@ function initAuthPages() {
   }
 
   initPasswordResetPage();
+
+  $(document).on('click', '.js-auth-google', function (e) {
+    e.preventDefault();
+    var $btn = $(this);
+    if ($btn.hasClass('rd-btn--loading')) return;
+    setButtonLoading($btn, true);
+    setTimeout(function () {
+      window.location.href = $btn.attr('href') || '/auth/google/login';
+    }, 400);
+  });
+
+  $(document).on('blur', '#email-confirm', function () {
+    var $confirm = $(this);
+    var emailVal = ($('#email').val() || '').trim();
+    var confirmVal = ($confirm.val() || '').trim();
+    if (!confirmVal) return;
+    if (emailVal && confirmVal !== emailVal) {
+      showFieldError($confirm, 'Email addresses do not match.');
+      return;
+    }
+    if (validateEmail('email-confirm')) {
+      clearFieldError($confirm);
+    }
+  });
+
+  $(document).on('input', '#email', function () {
+    var $confirm = $('#email-confirm');
+    if (!$confirm.val().trim()) return;
+    if (($confirm.val() || '').trim() === ($(this).val() || '').trim()) {
+      clearFieldError($confirm);
+    }
+  });
 
   $(document).on('submit', '#login-form, #signup-form', function (e) {
     e.preventDefault();
@@ -2396,7 +2430,13 @@ function initAuthPages() {
     });
 
     if ($form.is('#signup-form')) {
+      var $email = $('#email');
+      var $emailConfirm = $('#email-confirm');
       var $password = $('#password');
+      if ($email.val().trim() && $emailConfirm.val().trim() && $email.val().trim() !== $emailConfirm.val().trim()) {
+        showFieldError($emailConfirm, 'Email addresses do not match.');
+        valid = false;
+      }
       if ($password.val().trim() && ($password.val() || '').length < 8) {
         showFieldError($password, 'Password must be at least 8 characters.');
         valid = false;
