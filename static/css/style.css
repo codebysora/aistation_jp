@@ -4599,9 +4599,6 @@ table.rd-table--border > tbody > tr {
     width: auto;
     margin: 0;
     padding: 0;
-    font-size: 0.8125rem;
-    font-weight: 700;
-    color: var(--bs-body-color);
     line-height: 1.2;
 }
 
@@ -4615,7 +4612,7 @@ table.rd-table--border > tbody > tr {
 .rd-histories-search__status-options .form-check-label {
     font-size: 0.875rem;
     font-weight: 500;
-    color: var(--bs-body-color);
+    color: var(--bs-secondary-color);
 }
 
 /* Row 2: Username, model, period, search — single line on wide screens */
