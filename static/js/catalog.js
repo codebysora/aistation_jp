@@ -1396,47 +1396,8 @@ function findModel(id) {
   return null;
 }
 
-function showCatalogModal(m) {
-  var html = '<div class="catalog-modal-content">';
-
-  // Header area
-  html += '<div class="catalog-modal-header">';
-  html += '<div class="catalog-modal-name">' + escapeHtml(m.name) + '</div>';
-  html += '<div class="catalog-modal-provider">' + escapeHtml(m.provider) + ' &middot; ' + escapeHtml(m.source) + '</div>';
-  html += '</div>';
-
-  // Use-case tags (prominent)
-  if (m.use_cases && m.use_cases.length > 0) {
-    html += '<div class="catalog-modal-usecases">';
-    for (var u = 0; u < m.use_cases.length; u++) {
-      var uc = m.use_cases[u];
-      html += '<span class="catalog-tag catalog-tag--usecase catalog-tag--usecase-' + uc + '">';
-      html += '<i class="bi ' + useCaseIcon(uc) + '"></i> ' + useCaseLabel(uc);
-      html += '</span>';
-    }
-    html += '</div>';
-  }
-
-  // Tags
-  html += '<div class="catalog-modal-tags">';
-  html += '<span class="catalog-tag catalog-tag--neutral catalog-tag--size">' + escapeHtml(m.size) + '</span>';
-  html += '<span class="catalog-tag catalog-tag--neutral catalog-tag--context">' + formatContext(m.context) + ' ctx</span>';
-  html += '<span class="catalog-tag catalog-tag--license">' + escapeHtml(m.license) + '</span>';
-  html += '</div>';
-
-  // Capabilities
-  if (m.capabilities.length > 0) {
-    html += '<div class="catalog-modal-caps">';
-    for (var ci = 0; ci < m.capabilities.length; ci++) {
-      html += '<span class="catalog-cap-badge catalog-cap-badge--labeled">';
-      html += '<i class="bi ' + capabilityIcon(m.capabilities[ci]) + '"></i> ' + capabilityLabel(m.capabilities[ci]);
-      html += '</span>';
-    }
-    html += '</div>';
-  }
-
-  // Benchmarks
-  html += '<div class="catalog-modal-benchmarks">';
+function buildCatalogBenchmarkListHtml(m) {
+  var html = '<div class="rd-model-detail-benchmarks">';
   var benchmarks;
   if ((m.modality || 'text') === 'embeddings') {
     benchmarks = [
@@ -1468,14 +1429,77 @@ function showCatalogModal(m) {
     html += '</div>';
   }
   html += '</div>';
-
-  html += '</div>';
-
-  $('#model-detail-modal-label').text(m.name);
-  $('#model-detail-body').html(html);
-  var modal = new bootstrap.Modal(document.getElementById('model-detail-modal'));
-  modal.show();
+  return html;
 }
+
+function buildCatalogModelDetailPageHtml(m) {
+  var ui = window.rdModelDetailUi;
+  if (!ui) return '';
+
+  var html = '';
+
+  html += ui.section('Model Information',
+    ui.subsection('Overview', ui.fields([
+      { label: 'Model Name', value: m.name, mono: true },
+      { label: 'Provider', value: m.provider },
+      { label: 'Source', value: m.source, mono: true },
+      { label: 'License', value: m.license },
+      { label: 'Size', value: m.size },
+      { label: 'Context', value: formatContext(m.context) },
+      { label: 'Modality', value: m.modality || 'text' }
+    ]))
+  );
+
+  var tagsHtml = '';
+  if (m.use_cases && m.use_cases.length > 0) {
+    tagsHtml += '<div class="rd-model-detail-tags">';
+    for (var u = 0; u < m.use_cases.length; u++) {
+      var uc = m.use_cases[u];
+      tagsHtml += '<span class="catalog-tag catalog-tag--usecase catalog-tag--usecase-' + uc + '">';
+      tagsHtml += '<i class="bi ' + useCaseIcon(uc) + '"></i> ' + useCaseLabel(uc);
+      tagsHtml += '</span>';
+    }
+    tagsHtml += '</div>';
+  }
+  if (m.capabilities && m.capabilities.length > 0) {
+    tagsHtml += '<div class="rd-model-detail-tags">';
+    for (var ci = 0; ci < m.capabilities.length; ci++) {
+      tagsHtml += '<span class="catalog-cap-badge catalog-cap-badge--labeled">';
+      tagsHtml += '<i class="bi ' + capabilityIcon(m.capabilities[ci]) + '"></i> ' + capabilityLabel(m.capabilities[ci]);
+      tagsHtml += '</span>';
+    }
+    tagsHtml += '</div>';
+  }
+  if (tagsHtml) {
+    html += ui.section('Capabilities & Use Cases',
+      ui.subsection('Tags', tagsHtml)
+    );
+  }
+
+  html += ui.section('Benchmarks',
+    ui.subsection('Scores', buildCatalogBenchmarkListHtml(m))
+  );
+
+  html += ui.section('Metadata',
+    ui.subsection('Catalog Record', ui.pre(m))
+  );
+
+  return html;
+}
+
+function showCatalogModal(m) {
+  var backUrl = './deploy_model_select.html';
+  var backLabel = 'Model Select';
+  if (window.location.pathname.indexOf('model_catalog') >= 0) {
+    backUrl = './model_catalog.html';
+    backLabel = 'Model Catalog';
+  }
+  if (typeof window.openModelDetailPage === 'function') {
+    window.openModelDetailPage(m, { type: 'catalog', backUrl: backUrl, backLabel: backLabel });
+  }
+}
+
+window.buildCatalogModelDetailPageHtml = buildCatalogModelDetailPageHtml;
 
 /* ============================================
    DOM Ready

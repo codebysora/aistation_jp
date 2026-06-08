@@ -721,50 +721,234 @@ function showMyHistoryDetail(row) {
 
 
 /* ============================================
-   Model detail modal
+   Model detail page
    ============================================ */
-function buildModelDetailHtml(data) {
-  var statusClass = getModelStatusCssClass(data.status);
-  var params = '';
-  try { params = JSON.stringify(JSON.parse(data.parameters || '{}'), null, 2); } catch (e) { params = data.parameters || '-'; }
+var RD_MODEL_DETAIL_STORAGE_KEY = 'rd_model_detail_payload';
 
-  var fields = [
-    { label: 'Status',      value: '<span class="' + statusClass + '">' + escapeHtml(data.status) + '</span>', raw: true },
-    { label: 'Model Name',  value: data.model_name },
-    { label: 'Model Source', value: data.model_source },
-    { label: 'Engine',      value: data.engine },
-    { label: 'Version',     value: data.version },
-    { label: 'API Base',    value: data.api_base },
-    { label: 'CPU Count',   value: data.cpu_count },
-    { label: 'CPU Memory (GB)', value: data.cpu_memory },
-    { label: 'Parameters',  value: params, pre: true }
-  ];
-
-  var html = '<dl class="row mb-0 mt-3">';
-  for (var i = 0; i < fields.length; i++) {
-    var f = fields[i];
-    var val = f.value || '-';
-    html += '<dt class="col-sm-4 py-2 text-body-secondary rd-model-detail-dt">' + escapeHtml(f.label) + '</dt>';
-    html += '<dd class="col-sm-8 py-2 mb-0">';
-    if (f.pre) {
-      html += '<pre class="mb-0 small bg-light rounded p-2">' + escapeHtml(val) + '</pre>';
-    } else if (f.raw) {
-      html += val;
-    } else {
-      html += escapeHtml(val);
-    }
-    html += '</dd>';
+function buildModelDetailField(label, value, options) {
+  options = options || {};
+  var html = '<div class="rd-model-detail-field">';
+  html += '<div class="rd-model-detail-field__label">' + escapeHtml(label) + '</div>';
+  html += '<div class="rd-model-detail-field__value' + (options.mono ? ' rd-model-detail-field__value--mono' : '') + '">';
+  if (options.raw) {
+    html += value || '-';
+  } else {
+    html += escapeHtml(value == null || value === '' ? '-' : String(value));
   }
-  html += '</dl>';
+  html += '</div></div>';
   return html;
 }
 
-function showModelDetail(data) {
-  $('#model-detail-modal-label').text(data.model_name || 'Model Detail');
-  $('#model-detail-body').html(buildModelDetailHtml(data));
-  var modal = new bootstrap.Modal(document.getElementById('model-detail-modal'));
-  modal.show();
+function buildModelDetailFields(items) {
+  var html = '<div class="rd-model-detail-fields">';
+  for (var i = 0; i < items.length; i++) {
+    html += buildModelDetailField(items[i].label, items[i].value, items[i]);
+  }
+  html += '</div>';
+  return html;
 }
+
+function buildModelDetailSubsection(title, bodyHtml) {
+  return '<div class="rd-model-detail-subsection">' +
+    '<h3 class="rd-model-detail-subsection__title">' + escapeHtml(title) + '</h3>' +
+    bodyHtml +
+    '</div>';
+}
+
+function buildModelDetailSection(title, bodyHtml) {
+  return '<section class="rd-model-detail-section">' +
+    '<h2 class="rd-model-detail-section__title">' + escapeHtml(title) + '</h2>' +
+    '<div class="rd-model-detail-section__body">' + bodyHtml + '</div>' +
+    '</section>';
+}
+
+function formatModelDetailJson(val) {
+  if (val == null || val === '') return '';
+  try {
+    if (typeof val === 'string') return JSON.stringify(JSON.parse(val), null, 2);
+    return JSON.stringify(val, null, 2);
+  } catch (e) {
+    return String(val);
+  }
+}
+
+function buildModelDetailPre(content, options) {
+  options = options || {};
+  var text = formatModelDetailJson(content);
+  if (!text) text = '-';
+  var cls = 'rd-model-detail-pre' + (options.danger ? ' rd-model-detail-pre--danger' : '');
+  return '<pre class="' + cls + '">' + escapeHtml(text) + '</pre>';
+}
+
+function buildDeployedModelMetadata(data) {
+  return {
+    model_name: data.model_name || null,
+    model_source: data.model_source || null,
+    team_name: data.team_name || null,
+    status: data.status || null,
+    engine: data.engine || null,
+    version: data.version || null,
+    api_base: data.api_base || null,
+    deployed_at: data.deployed_at || '2026-05-28T10:15:00Z',
+    updated_at: data.updated_at || '2026-05-29T08:42:00Z'
+  };
+}
+
+function buildDeployedModelErrorMock(data) {
+  if (data.status !== 'Failed') return null;
+  return data.error_information || {
+    message: 'Deployment failed: insufficient GPU memory for model weights.',
+    code: 'DEPLOY_GPU_OOM',
+    details: { requested_gb: 12, available_gb: 8 },
+    traceback: 'Traceback (most recent call last):\n  File "/app/deploy/worker.py", line 184, in run\n    allocator.reserve(weights_bytes)\nGPUOutOfMemoryError: Cannot allocate 12.4 GiB on device 0'
+  };
+}
+
+function buildDeployedModelDetailPageHtml(data) {
+  var statusClass = getModelStatusCssClass(data.status);
+  var html = '';
+
+  html += buildModelDetailSection('Model Information',
+    buildModelDetailSubsection('Basic', buildModelDetailFields([
+      { label: 'Model Name', value: data.model_name, mono: true },
+      { label: 'Model Source', value: data.model_source, mono: true },
+      { label: 'Label', value: data.label },
+      { label: 'Description', value: data.description }
+    ])) +
+    buildModelDetailSubsection('Status', buildModelDetailFields([
+      { label: 'Status', value: '<span class="' + statusClass + '">' + escapeHtml(data.status) + '</span>', raw: true }
+    ]))
+  );
+
+  html += buildModelDetailSection('Deploy Information',
+    buildModelDetailSubsection('Runtime', buildModelDetailFields([
+      { label: 'Engine', value: data.engine },
+      { label: 'Version', value: data.version },
+      { label: 'API Base', value: data.api_base, mono: true }
+    ])) +
+    buildModelDetailSubsection('Resources', buildModelDetailFields([
+      { label: 'CPU Count', value: data.cpu_count },
+      { label: 'CPU Memory (GB)', value: data.cpu_memory }
+    ])) +
+    (data.team_name
+      ? buildModelDetailSubsection('Assignment', buildModelDetailFields([
+        { label: 'Team', value: data.team_name }
+      ]))
+      : '')
+  );
+
+  html += buildModelDetailSection('Metadata',
+    buildModelDetailSubsection('Record', buildModelDetailPre(buildDeployedModelMetadata(data)))
+  );
+
+  html += buildModelDetailSection('Settings',
+    buildModelDetailSubsection('Engine Parameters', buildModelDetailPre(data.parameters || '{}'))
+  );
+
+  var err = buildDeployedModelErrorMock(data);
+  if (err) {
+    html += buildModelDetailSection('Logs & Error Information',
+      buildModelDetailSubsection('Error Detail', buildModelDetailPre(err, { danger: true }))
+    );
+  }
+
+  return html;
+}
+
+function openModelDetailPage(data, options) {
+  options = options || {};
+  try {
+    sessionStorage.setItem(RD_MODEL_DETAIL_STORAGE_KEY, JSON.stringify({
+      type: options.type || 'deployed',
+      backUrl: options.backUrl || './model_management.html',
+      backLabel: options.backLabel || 'Model Management',
+      data: data
+    }));
+  } catch (e) { /* sessionStorage unavailable */ }
+  location.href = './model_detail.html';
+}
+
+function showModelDetail(data) {
+  var backUrl = './model_management.html';
+  var backLabel = 'Model Management';
+  if ($('#models-table').length) {
+    backUrl = './userRole_models.html';
+    backLabel = 'Models';
+  }
+  openModelDetailPage(data, { type: 'deployed', backUrl: backUrl, backLabel: backLabel });
+}
+
+function initModelDetailPage() {
+  var $page = $('#model-detail-page');
+  if (!$page.length) return;
+
+  var payload = null;
+  try {
+    var raw = sessionStorage.getItem(RD_MODEL_DETAIL_STORAGE_KEY);
+    if (raw) payload = JSON.parse(raw);
+  } catch (e) {
+    payload = null;
+  }
+
+  if (!payload || !payload.data) {
+    payload = {
+      type: 'deployed',
+      backUrl: './model_management.html',
+      backLabel: 'Model Management',
+      data: {
+        status: 'Active',
+        label: 'Qwen3 0.6B (VLLM, GPU)',
+        description: 'Sample config',
+        model_name: 'sample-Qwen3-0.6b-gpu',
+        engine: 'vllm',
+        version: 'latest',
+        model_source: 'Qwen/Qwen3-0.6B',
+        api_base: 'http://aistation.local:8001/v1',
+        cpu_count: '2',
+        cpu_memory: '8',
+        parameters: '{"args":{"gpu_memory_utilization":0.9}}'
+      }
+    };
+  }
+
+  var data = payload.data;
+  var title = payload.type === 'catalog'
+    ? (data.name || data.id || 'Model Detail')
+    : (data.model_name || data.label || 'Model Detail');
+
+  $('#model-detail-breadcrumb-parent')
+    .text(payload.backLabel || 'Model Management')
+    .attr('href', payload.backUrl || './model_management.html');
+
+  $('#model-detail-page-title').text(title);
+
+  var $status = $('#model-detail-page-status');
+  $status.empty();
+  if (payload.type === 'deployed' && data.status) {
+    $status.html(
+      '<span class="' + getModelStatusCssClass(data.status) + ' rd-model-detail-header__status">' +
+      escapeHtml(data.status) + '</span>'
+    );
+  }
+
+  var bodyHtml = payload.type === 'catalog'
+    ? (typeof window.buildCatalogModelDetailPageHtml === 'function'
+      ? window.buildCatalogModelDetailPageHtml(data)
+      : '<p class="text-body-secondary mb-0">Catalog detail is unavailable.</p>')
+    : buildDeployedModelDetailPageHtml(data);
+
+  $('#model-detail-page-body').html(bodyHtml);
+  document.title = title + ' - AIStation Dashboard';
+}
+
+window.rdModelDetailUi = {
+  section: buildModelDetailSection,
+  subsection: buildModelDetailSubsection,
+  fields: buildModelDetailFields,
+  field: buildModelDetailField,
+  pre: buildModelDetailPre
+};
+window.openModelDetailPage = openModelDetailPage;
 
 /* ============================================
    Add / Remove actions (teams, members, keys, deploy form)
@@ -2483,4 +2667,5 @@ $(function () {
   initTeamEditForm();
   initSidebarToggle();
   initAuthPages();
+  initModelDetailPage();
 });
