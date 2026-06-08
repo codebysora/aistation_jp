@@ -9,30 +9,41 @@
   <link rel="stylesheet" href="./static/css/style.css">
   <title>Login - AIStation Dashboard</title>
 </head>
-<body class="h-100">
-  <main class="w-100">
-    <div class="min-vh-100 d-flex flex-column justify-content-center align-items-center bg-dark">
-      <div class="card rounded-0 border-0 p-card__login">
-        <h1 class="text-white text-center fw-bold card-header rounded-0 bg-primary py-4 fs-2">AIStation Dashboard</h1>
-        <div class="card-body p-5">
-          <form action="/login" method="POST" novalidate="novalidate">
-            <div class="mb-4">
-              <label for="email" class="form-label">Email</label>
-              <input class="form-control form-control-lg" id="email" name="email" type="text" value="" required autocomplete="username">
-            </div>
-            <div class="mb-4">
-              <label for="password" class="form-label">Password</label>
-              <input class="form-control form-control-lg" id="password" name="password" type="password" value="" required autocomplete="current-password">
-            </div>
-            <div class="mb-4 text-end">
-              <a href="./password_reset.html" class="text-decoration-underline link-fade small">Forgot password?</a>
-            </div>
-            <button type="submit" class="btn btn-success w-100 fw-bold border-0 shadow-sm">Login</button>
-          </form>
-        </div>
+<body class="h-100 rd-auth-page">
+  <main class="rd-auth-shell">
+    <div class="rd-auth-panel">
+    <div class="card rounded-0 border-0 p-card__login rd-auth-card">
+      <div class="rd-auth-card__header text-white text-center fw-bold bg-primary py-4">
+        <h1 class="rd-auth-card__title fs-2 mb-0">AIStation Dashboard</h1>
       </div>
-      <a href="./signup.html" class="d-block text-center mt-3 fs-5 text-white text-decoration-underline link-fade">Sign Up</a>
+      <div class="card-body p-5">
+        <form id="login-form" action="/login" method="POST" novalidate="novalidate">
+          <div class="mb-4">
+            <label for="email" class="form-label">Email</label>
+            <input class="form-control form-control-lg js-validate-email" id="email" name="email" type="email" value="" required autocomplete="username" placeholder="you@example.com">
+          </div>
+          <div class="mb-3">
+            <label for="password" class="form-label">Password</label>
+            <div class="c-form-field-password rd-auth-password">
+              <input class="form-control form-control-lg" id="password" name="password" type="password" value="" required autocomplete="current-password">
+              <button type="button" class="c-form-field-password__toggle js-auth-password-toggle" aria-label="Show password" data-target="#password">
+                <i class="bi bi-eye" aria-hidden="true"></i>
+              </button>
+            </div>
+          </div>
+          <div class="mb-4 text-end">
+            <a href="./forgot_password.html" class="rd-auth-inline-link link-fade small">Forgot password?</a>
+          </div>
+          <button type="submit" class="btn btn-success w-100 fw-bold border-0 shadow-sm">Login</button>
+        </form>
+      </div>
+    </div>
+    <a href="./signup.html" class="rd-auth-footer-link link-fade">Sign Up</a>
     </div>
   </main>
+
+  <script src="./static/js/jquery-3.7.1.min.js"></script>
+  <script src="./static/js/bootstrap.bundle.min.js"></script>
+  <script src="./static/js/app.js"></script>
 </body>
 </html>

@@ -44,6 +44,8 @@
     --rd-member-tag-bg: #F5F4D7;
     --rd-sidebar-width: 260px;
     --rd-header-height: 56px;
+    /* Auth pages — fixed width; adjust for message copy length */
+    --rd-auth-width: 480px;
     --rd-shadow-card: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.06);
     --rd-shadow-card-hover: 0 4px 12px rgba(0,0,0,0.10);
     --rd-shadow-modal: 0 20px 60px rgba(0,0,0,0.15);
@@ -996,14 +998,85 @@ table.rd-table--border tbody tr:last-child {
     opacity: 0.7;
 }
 
-/* Auth pages (login / signup / password reset) */
-.p-card__login {
-    width: 100%;
-    max-width: 446px;
+/* Auth pages (login / signup / forgot & reset password) */
+.rd-auth-page {
+    background-color: var(--bs-tertiary);
 }
 
-.bg-dark .link-fade {
+.rd-auth-shell {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 2rem 1rem;
+}
+
+/* Fixed-width column: card + footer link share --rd-auth-width */
+.rd-auth-panel {
+    width: var(--rd-auth-width);
+    max-width: 100%;
+    flex-shrink: 0;
+}
+
+.p-card__login,
+.rd-auth-card {
+    width: 100%;
+    box-shadow: var(--rd-shadow-card);
+}
+
+.rd-auth-card .card-body {
+    overflow-wrap: anywhere;
+}
+
+.rd-auth-card__header {
+    border-radius: 0;
+}
+
+.rd-auth-card__title {
+    line-height: 1.2;
+}
+
+.rd-auth-card__subtitle {
+    font-size: 1rem;
+    font-weight: 600;
+    opacity: 0.92;
+}
+
+.rd-auth-card__lead {
+    line-height: 1.5;
+}
+
+.rd-auth-footer-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.35rem;
+    width: 100%;
+    margin-top: 1.25rem;
+    font-size: 1.0625rem;
     color: var(--bs-white);
+    text-decoration: underline;
+}
+
+.rd-auth-inline-link {
+    color: var(--bs-primary);
+    text-decoration: underline;
+}
+
+.rd-auth-password.c-form-field-password .form-control-lg {
+    flex: 1;
+    min-width: 0;
+}
+
+.rd-auth-card .rd-alert,
+.rd-auth-success .rd-alert {
+    align-items: flex-start;
+}
+
+.rd-auth-card .rd-alert__body {
+    line-height: 1.45;
+    overflow-wrap: anywhere;
 }
 
 /* ============================================
@@ -3033,6 +3106,8 @@ button.cpybtn:hover {
     display: flex;
     align-items: center;
     gap: var(--rd-space-1);
+    width: 100%;
+    flex-basis: 100%;
 }
 
 .rd-error-message::before {
@@ -4079,6 +4154,7 @@ table.rd-table--border > tbody > tr {
 
 .c-form-field-password {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     gap: 0.5rem;
     width: 100%;

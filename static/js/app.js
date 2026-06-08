@@ -1826,15 +1826,21 @@ function validateJson(fieldId) {
   return true;
 }
 
+function getFieldErrorAnchor($field) {
+  var $passwordWrap = $field.closest('.c-form-field-password');
+  return $passwordWrap.length ? $passwordWrap : $field;
+}
+
 function showFieldError($field, message) {
   clearFieldError($field);
   $field.addClass('rd-field-error');
   var $msg = $('<div class="rd-error-message">' + escapeHtml(message) + '</div>');
-  $field.after($msg);
+  getFieldErrorAnchor($field).after($msg);
 }
 
 function clearFieldError($field) {
   $field.removeClass('rd-field-error').removeClass('rd-field-success');
+  getFieldErrorAnchor($field).siblings('.rd-error-message').remove();
   $field.siblings('.rd-error-message').remove();
 }
 
@@ -2283,6 +2289,130 @@ function initSidebarToggle() {
 }
 
 /* ============================================
+   Auth pages (login / signup / forgot / reset password)
+   ============================================ */
+function initAuthPages() {
+  if (!$('.rd-auth-page').length) return;
+
+  $(document).on('click', '.js-auth-password-toggle', function () {
+    var $btn = $(this);
+    var $input = $($btn.data('target'));
+    if (!$input.length) return;
+    var show = $input.attr('type') === 'password';
+    $input.attr('type', show ? 'text' : 'password');
+    $btn.attr('aria-label', show ? 'Hide password' : 'Show password');
+    $btn.find('i').toggleClass('bi-eye', !show).toggleClass('bi-eye-slash', show);
+  });
+
+  $(document).on('submit', '#forgot-password-form', function (e) {
+    e.preventDefault();
+    var $form = $(this);
+    var $btn = $form.find('[type="submit"]');
+    var $email = $('#email');
+    hideFormError('#forgot-password-form-error');
+
+    if (!validateRequired('email')) return;
+    if (!validateEmail('email')) return;
+
+    setButtonLoading($btn, true);
+    setTimeout(function () {
+      setButtonLoading($btn, false);
+      $form.addClass('rd-is-hidden');
+      $('#forgot-password-success').removeClass('rd-is-hidden');
+    }, 700);
+  });
+
+  function initPasswordResetPage() {
+    var $form = $('#password-reset-form');
+    if (!$form.length) return;
+
+    var params = new URLSearchParams(window.location.search);
+    var token = (params.get('token') || '').trim();
+    var $tokenInput = $('#reset-token');
+
+    if (!token) {
+      $('#password-reset-invalid').removeClass('rd-is-hidden');
+      $form.addClass('rd-is-hidden');
+      $('.rd-auth-card__lead').addClass('rd-is-hidden');
+      return;
+    }
+
+    $tokenInput.val(token);
+
+    $form.on('submit', function (e) {
+      e.preventDefault();
+      var $btn = $form.find('[type="submit"]');
+      var $new = $('#password-new');
+      var $confirm = $('#password-confirm');
+      hideFormError('#password-reset-form-error');
+
+      if (!validateRequired('password-new') || !validateRequired('password-confirm')) {
+        showFormError('#password-reset-form-error', 'Please fill in all fields.');
+        return;
+      }
+      if (($new.val() || '').length < 8) {
+        showFieldError($new, 'Password must be at least 8 characters.');
+        showFormError('#password-reset-form-error', 'Please check your input.');
+        return;
+      }
+      if ($new.val() !== $confirm.val()) {
+        showFieldError($confirm, 'Passwords do not match.');
+        showFormError('#password-reset-form-error', 'Please check your input.');
+        return;
+      }
+      clearFieldError($new);
+      clearFieldError($confirm);
+
+      setButtonLoading($btn, true);
+      setTimeout(function () {
+        setButtonLoading($btn, false);
+        $form.addClass('rd-is-hidden');
+        $('.rd-auth-card__lead').addClass('rd-is-hidden');
+        $('#password-reset-success').removeClass('rd-is-hidden');
+        $('.rd-auth-footer-link').addClass('rd-is-hidden');
+      }, 700);
+    });
+  }
+
+  initPasswordResetPage();
+
+  $(document).on('submit', '#login-form, #signup-form', function (e) {
+    e.preventDefault();
+    var $form = $(this);
+    var valid = true;
+
+    $form.find('[required]').each(function () {
+      var $field = $(this);
+      if (!$field.val().trim()) {
+        showFieldError($field, 'This field is required');
+        valid = false;
+      } else {
+        clearFieldError($field);
+      }
+    });
+
+    $form.find('.js-validate-email').each(function () {
+      if (!validateEmail(this.id)) valid = false;
+    });
+
+    if ($form.is('#signup-form')) {
+      var $password = $('#password');
+      if ($password.val().trim() && ($password.val() || '').length < 8) {
+        showFieldError($password, 'Password must be at least 8 characters.');
+        valid = false;
+      }
+    }
+
+    if (!valid) return;
+
+    setButtonLoading($form.find('[type="submit"]'), true);
+    setTimeout(function () {
+      setButtonLoading($form.find('[type="submit"]'), false);
+    }, 700);
+  });
+}
+
+/* ============================================
    Fade-in Animation Init
    ============================================ */
 function initFadeIn() {
@@ -2312,4 +2442,5 @@ $(function () {
   initNavUserMenu();
   initTeamEditForm();
   initSidebarToggle();
+  initAuthPages();
 });
