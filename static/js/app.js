@@ -2585,15 +2585,9 @@ function initAuthPages() {
     e.preventDefault();
     var $form = $(this);
     var $btn = $form.find('[type="submit"]');
-    var $email = $('#email');
-    var $emailConfirm = $('#email-confirm');
 
-    if (!validateRequired('email') || !validateRequired('email-confirm')) return;
-    if (!validateEmail('email') || !validateEmail('email-confirm')) return;
-    if ($email.val().trim() !== $emailConfirm.val().trim()) {
-      showFieldError($emailConfirm, 'Email addresses do not match.');
-      return;
-    }
+    if (!validateRequired('email')) return;
+    if (!validateEmail('email')) return;
 
     setButtonLoading($btn, true);
     setTimeout(function () {
@@ -2648,7 +2642,7 @@ function initAuthPages() {
         $form.addClass('rd-is-hidden');
         $('.rd-auth-card__lead').addClass('rd-is-hidden');
         $('#password-reset-success').removeClass('rd-is-hidden');
-        $('.js-auth-footer-back').addClass('rd-is-hidden');
+        $('.rd-auth-footer-link').addClass('rd-is-hidden');
       }, 700);
     });
   }
@@ -2663,29 +2657,6 @@ function initAuthPages() {
     setTimeout(function () {
       window.location.href = $btn.attr('href') || '/auth/google/login';
     }, 400);
-  });
-
-  $(document).on('blur', '#email-confirm', function () {
-    if (!$('#forgot-password-form').length) return;
-    var $confirm = $(this);
-    var emailVal = ($('#email').val() || '').trim();
-    var confirmVal = ($confirm.val() || '').trim();
-    if (!confirmVal) return;
-    if (emailVal && confirmVal !== emailVal) {
-      showFieldError($confirm, 'Email addresses do not match.');
-      return;
-    }
-    if (validateEmail('email-confirm')) {
-      clearFieldError($confirm);
-    }
-  });
-
-  $(document).on('input', '#forgot-password-form #email', function () {
-    var $confirm = $('#email-confirm');
-    if (!$confirm.length || !$confirm.val().trim()) return;
-    if (($confirm.val() || '').trim() === ($(this).val() || '').trim()) {
-      clearFieldError($confirm);
-    }
   });
 
   $(document).on('blur', '#signup-form #password-confirm', function () {

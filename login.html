@@ -12,11 +12,12 @@
 <body class="h-100 rd-auth-page">
   <main class="rd-auth-shell">
     <div class="rd-auth-panel">
-      <div class="rd-auth-card">
-        <div class="rd-auth-card__header">
-          <h1 class="rd-auth-card__title mb-0">AIStation Dashboard</h1>
+      <div class="card rounded-0 border-0 p-card__login rd-auth-card">
+        <div class="rd-auth-card__header text-white text-center fw-bold bg-primary py-4">
+          <h1 class="rd-auth-card__title fs-2 mb-1">AIStation Dashboard</h1>
+          <p class="rd-auth-card__subtitle mb-0">Login</p>
         </div>
-        <div class="rd-auth-card__body">
+        <div class="card-body p-5">
           <a href="/auth/google/login" class="rd-auth-oauth-btn js-auth-google">
             <span class="rd-auth-oauth-btn__icon" aria-hidden="true">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="20" height="20" focusable="false">
@@ -31,31 +32,28 @@
 
           <div class="rd-auth-divider" role="separator" aria-label="or"><span>or</span></div>
 
-          <form id="login-form" class="rd-auth-form" action="/login" method="POST" novalidate="novalidate">
-            <div class="mb-3">
+          <form id="login-form" action="/login" method="POST" novalidate="novalidate">
+            <div class="mb-4">
               <label for="email" class="form-label">Email</label>
-              <input class="form-control js-validate-email" id="email" name="email" type="email" value="" required autocomplete="username" placeholder="Enter your email">
+              <input class="form-control form-control-lg js-validate-email" id="email" name="email" type="email" value="" required autocomplete="username" placeholder="you@example.com">
             </div>
-            <div class="mb-2">
+            <div class="mb-3">
               <label for="password" class="form-label">Password</label>
               <div class="c-form-field-password rd-auth-password">
-                <input class="form-control" id="password" name="password" type="password" value="" required autocomplete="current-password" placeholder="Enter your password">
+                <input class="form-control form-control-lg" id="password" name="password" type="password" value="" required autocomplete="current-password">
                 <button type="button" class="c-form-field-password__toggle js-auth-password-toggle" aria-label="Show password" data-target="#password">
                   <i class="bi bi-eye" aria-hidden="true"></i>
                 </button>
               </div>
             </div>
             <div class="mb-4 text-end">
-              <a href="./forgot_password.html" class="rd-auth-forgot-link">Forgot password?</a>
+              <a href="./forgot_password.html" class="rd-auth-inline-link link-fade small">Forgot password?</a>
             </div>
-            <button type="submit" class="btn rd-auth-btn rd-auth-btn--primary">Login</button>
+            <button type="submit" class="btn btn-success w-100 fw-bold border-0 shadow-sm">Login</button>
           </form>
         </div>
       </div>
-
-      <p class="rd-auth-footer__text">
-        Don't have an account? <a href="./signup.html" class="rd-auth-footer__link">Sign up</a>
-      </p>
+      <a href="./signup.html" class="rd-auth-footer-link link-fade">Sign Up</a>
     </div>
   </main>
 

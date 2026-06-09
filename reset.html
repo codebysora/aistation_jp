@@ -12,19 +12,20 @@
 <body class="h-100 rd-auth-page">
   <main class="rd-auth-shell">
     <div class="rd-auth-panel">
-      <div class="rd-auth-card">
-        <div class="rd-auth-card__header">
-          <h1 class="rd-auth-card__title mb-0">AIStation Dashboard</h1>
+      <div class="card rounded-0 border-0 p-card__login rd-auth-card">
+        <div class="rd-auth-card__header text-white text-center fw-bold bg-primary py-4">
+          <h1 class="rd-auth-card__title fs-2 mb-1">AIStation Dashboard</h1>
+          <p class="rd-auth-card__subtitle mb-0">Reset Password</p>
         </div>
-        <div class="rd-auth-card__body">
-          <p class="rd-auth-card__lead mb-4">
+        <div class="card-body p-5">
+          <p class="rd-auth-card__lead text-muted small mb-4">
             Open this page from the authentication link in your email, then choose a new password (at least 8 characters).
           </p>
 
           <div id="password-reset-invalid" class="rd-alert rd-alert--error mb-4 rd-is-hidden">
             <div class="rd-alert__body">
               This authentication link is invalid or has expired.
-              <a href="./forgot_password.html" class="rd-auth-forgot-link">Request a new reset link</a>.
+              <a href="./forgot_password.html" class="alert-link">Request a new reset link</a>.
             </div>
           </div>
 
@@ -33,40 +34,39 @@
               <i class="bi bi-check-circle-fill rd-alert__icon" aria-hidden="true"></i>
               <div class="rd-alert__body">Your password has been updated. You can now sign in with your new password.</div>
             </div>
-            <p class="rd-auth-footer__text mb-0">
-              <a href="./login.html" class="rd-auth-footer__link">Go to Login</a>
-            </p>
+            <a href="./login.html" class="btn btn-success w-100 fw-bold border-0 shadow-sm">Go to Login</a>
           </div>
 
-          <form id="password-reset-form" class="rd-auth-form" action="/reset" method="POST" novalidate="novalidate">
+          <form id="password-reset-form" action="/reset" method="POST" novalidate="novalidate">
             <input type="hidden" id="reset-token" name="token" value="">
-            <div class="mb-3">
+            <div class="mb-4">
               <label for="password-new" class="form-label">New password</label>
               <div class="c-form-field-password rd-auth-password">
-                <input class="form-control" id="password-new" name="new_password" type="password" required autocomplete="new-password" minlength="8" placeholder="Enter your new password">
+                <input class="form-control form-control-lg" id="password-new" name="new_password" type="password" required autocomplete="new-password" minlength="8">
                 <button type="button" class="c-form-field-password__toggle js-auth-password-toggle" aria-label="Show password" data-target="#password-new">
                   <i class="bi bi-eye" aria-hidden="true"></i>
                 </button>
               </div>
-              <div class="form-text rd-auth-hint">At least 8 characters</div>
+              <div class="form-text">At least 8 characters</div>
             </div>
             <div class="mb-4">
               <label for="password-confirm" class="form-label">Confirm new password</label>
               <div class="c-form-field-password rd-auth-password">
-                <input class="form-control" id="password-confirm" name="confirm_password" type="password" required autocomplete="new-password" minlength="8" placeholder="Enter your new password again">
+                <input class="form-control form-control-lg" id="password-confirm" name="confirm_password" type="password" required autocomplete="new-password" minlength="8">
                 <button type="button" class="c-form-field-password__toggle js-auth-password-toggle" aria-label="Show password" data-target="#password-confirm">
                   <i class="bi bi-eye" aria-hidden="true"></i>
                 </button>
               </div>
             </div>
-            <button type="submit" class="btn rd-auth-btn rd-auth-btn--primary">Reset Password</button>
+            <button type="submit" class="btn btn-success w-100 fw-bold border-0 shadow-sm">
+              Reset Password
+            </button>
           </form>
         </div>
       </div>
-
-      <p class="rd-auth-footer__text js-auth-footer-back">
-        Remember your password? <a href="./login.html" class="rd-auth-footer__link">Login</a>
-      </p>
+      <a href="./login.html" class="rd-auth-footer-link link-fade">
+        <i class="bi bi-arrow-left" aria-hidden="true"></i> Back to Login
+      </a>
     </div>
   </main>
 
