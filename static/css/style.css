@@ -45,7 +45,7 @@
     --rd-sidebar-width: 260px;
     --rd-header-height: 56px;
     /* Auth pages — fixed width; adjust for message copy length */
-    --rd-auth-width: 446px;
+    --rd-auth-width: 480px;
     --rd-shadow-card: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.06);
     --rd-shadow-card-hover: 0 4px 12px rgba(0,0,0,0.10);
     --rd-shadow-modal: 0 20px 60px rgba(0,0,0,0.15);
