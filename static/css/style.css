@@ -45,7 +45,9 @@
     --rd-sidebar-width: 260px;
     --rd-header-height: 56px;
     /* Auth pages — fixed width; adjust for message copy length */
-    --rd-auth-width: 480px;
+    --rd-auth-width: 420px;
+    --rd-auth-surface: #e8ecf2;
+    --rd-auth-input-border: #c8ced8;
     --rd-shadow-card: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.06);
     --rd-shadow-card-hover: 0 4px 12px rgba(0,0,0,0.10);
     --rd-shadow-modal: 0 20px 60px rgba(0,0,0,0.15);
@@ -1000,7 +1002,7 @@ table.rd-table--border tbody tr:last-child {
 
 /* Auth pages (login / signup / forgot & reset password) */
 .rd-auth-page {
-    background-color: var(--bs-tertiary);
+    background-color: var(--bs-body-bg);
 }
 
 .rd-auth-shell {
@@ -1012,54 +1014,170 @@ table.rd-table--border tbody tr:last-child {
     padding: 2rem 1rem;
 }
 
-/* Fixed-width column: card + footer link share --rd-auth-width */
 .rd-auth-panel {
     width: var(--rd-auth-width);
     max-width: 100%;
     flex-shrink: 0;
 }
 
-.p-card__login,
 .rd-auth-card {
     width: 100%;
-    box-shadow: var(--rd-shadow-card);
-}
-
-.rd-auth-card .card-body {
-    overflow-wrap: anywhere;
+    border: none;
+    box-shadow: none;
+    border-radius: var(--rd-radius-md);
+    overflow: hidden;
+    background: transparent;
 }
 
 .rd-auth-card__header {
-    border-radius: 0;
+    background-color: var(--bs-primary);
+    color: var(--bs-white);
+    text-align: center;
+    padding: 1.125rem 1.5rem;
 }
 
 .rd-auth-card__title {
-    line-height: 1.2;
+    font-size: 1.375rem;
+    font-weight: 500;
+    line-height: 1.3;
+    letter-spacing: -0.01em;
 }
 
-.rd-auth-card__subtitle {
-    font-size: 1rem;
-    font-weight: 600;
-    opacity: 0.92;
+.rd-auth-card__body {
+    background-color: var(--rd-auth-surface);
+    padding: 1.75rem 2rem 2rem;
+    overflow-wrap: anywhere;
 }
 
 .rd-auth-card__lead {
-    line-height: 1.5;
+    font-size: 0.9375rem;
+    font-weight: 400;
+    line-height: 1.55;
+    color: rgba(27, 27, 27, 0.72);
+    margin: 0;
 }
 
-.rd-auth-footer-link {
+.rd-auth-form .form-label {
+    font-size: 0.9375rem;
+    font-weight: 400;
+    color: var(--bs-body-color);
+    margin-bottom: 0.35rem;
+}
+
+.rd-auth-form .form-control {
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.5;
+    min-height: 2.75rem;
+    padding: 0.5rem 0.875rem;
+    border: 1px solid var(--rd-auth-input-border);
+    border-radius: var(--rd-radius-sm);
+    background-color: var(--bs-white);
+    box-shadow: none;
+}
+
+.rd-auth-form .form-control:focus {
+    border-color: var(--bs-primary);
+    box-shadow: 0 0 0 3px rgba(var(--bs-primary-rgb), 0.12);
+}
+
+.rd-auth-form .form-control::placeholder {
+    color: rgba(27, 27, 27, 0.38);
+}
+
+.rd-auth-hint {
+    font-size: 0.8125rem;
+    font-weight: 400;
+    color: rgba(27, 27, 27, 0.55);
+    margin-top: 0.35rem;
+}
+
+.rd-auth-btn {
     display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: 0.35rem;
     width: 100%;
-    margin-top: 1.25rem;
-    font-size: 1.0625rem;
-    color: var(--bs-white);
-    text-decoration: underline;
+    min-height: 2.75rem;
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+    font-weight: 500;
+    line-height: 1.25;
+    border-radius: var(--rd-radius-sm);
+    border: none;
+    box-shadow: none !important;
+    text-decoration: none;
+    transition: background-color var(--rd-transition), border-color var(--rd-transition), color var(--rd-transition);
 }
 
-.rd-auth-inline-link {
+.rd-auth-btn--primary {
+    background-color: var(--bs-primary);
+    color: var(--bs-white);
+}
+
+.rd-auth-btn--primary:hover,
+.rd-auth-btn--primary:focus-visible {
+    background-color: #0c58c4;
+    color: var(--bs-white);
+}
+
+.rd-auth-btn--signup {
+    background-color: var(--bs-success);
+    color: var(--bs-white);
+}
+
+.rd-auth-btn--signup:hover,
+.rd-auth-btn--signup:focus-visible {
+    background-color: #68b33a;
+    color: var(--bs-white);
+}
+
+.rd-auth-btn--outline {
+    background-color: var(--bs-white);
+    color: var(--bs-primary);
+    border: 1px solid rgba(var(--bs-primary-rgb), 0.35);
+}
+
+.rd-auth-btn--outline:hover,
+.rd-auth-btn--outline:focus-visible {
+    background-color: rgba(var(--bs-primary-rgb), 0.06);
+    color: var(--bs-primary);
+    border-color: rgba(var(--bs-primary-rgb), 0.5);
+}
+
+.rd-auth-footer {
+    margin-top: 1.25rem;
+    text-align: center;
+}
+
+.rd-auth-footer__text {
+    font-size: 1rem;
+    font-weight: 400;
+    color: var(--bs-body-color);
+    margin: 1.25rem 0 0;
+    line-height: 1.5;
+    text-align: center;
+}
+
+.rd-auth-footer__link {
+    font-weight: 600;
+    color: var(--bs-body-color);
+    text-decoration: none;
+}
+
+.rd-auth-footer__link:hover {
+    color: var(--bs-primary);
+    text-decoration: none;
+}
+
+.rd-auth-forgot-link {
+    font-size: 0.875rem;
+    font-weight: 400;
+    color: rgba(27, 27, 27, 0.55);
+    text-decoration: none;
+}
+
+.rd-auth-forgot-link:hover {
     color: var(--bs-primary);
     text-decoration: underline;
 }
@@ -1069,9 +1187,51 @@ table.rd-table--border tbody tr:last-child {
     display: block;
 }
 
-.rd-auth-password.c-form-field-password .form-control-lg {
+.rd-auth-password.c-form-field-password .form-control {
     width: 100%;
     padding-right: 2.75rem;
+}
+
+/* Error state: border only — no background ! icon (conflicts with eye toggle) */
+.rd-auth-password .form-control.rd-field-error {
+    background-image: none;
+    padding-right: 2.75rem !important;
+    border-color: var(--bs-danger) !important;
+    box-shadow: 0 0 0 3px rgba(218, 80, 80, 0.1) !important;
+}
+
+/* Hide browser-native password reveal (duplicates custom eye toggle) */
+.rd-auth-password input::-ms-reveal,
+.rd-auth-password input::-ms-clear {
+    display: none;
+}
+
+.rd-auth-password input::-webkit-credentials-auto-fill-button,
+.rd-auth-password input::-webkit-strong-password-auto-fill-button {
+    display: none !important;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+.rd-auth-password .c-form-field-password__toggle {
+    position: absolute;
+    top: 50%;
+    right: 0.625rem;
+    transform: translateY(-50%);
+    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    margin: 0;
+    padding: 0;
+    color: rgba(27, 27, 27, 0.45);
+}
+
+.rd-auth-password .c-form-field-password__toggle:hover {
+    color: var(--bs-body-color);
+    background: rgba(255, 255, 255, 0.8);
 }
 
 .rd-auth-card .rd-alert,
@@ -1082,6 +1242,8 @@ table.rd-table--border tbody tr:last-child {
 .rd-auth-card .rd-alert__body {
     line-height: 1.45;
     overflow-wrap: anywhere;
+    font-size: 0.9375rem;
+    font-weight: 400;
 }
 
 .rd-auth-oauth-btn {
@@ -1090,25 +1252,24 @@ table.rd-table--border tbody tr:last-child {
     justify-content: center;
     gap: 0.75rem;
     width: 100%;
-    min-height: 2.5rem;
+    min-height: 2.75rem;
     padding: 0.5rem 1rem;
-    border: 1px solid #747775;
+    border: 1px solid var(--rd-auth-input-border);
     border-radius: var(--rd-radius-sm);
     background: var(--bs-white);
-    color: #1f1f1f;
-    font-size: 0.875rem;
-    font-weight: 500;
+    color: var(--bs-body-color);
+    font-size: 0.9375rem;
+    font-weight: 400;
     line-height: 1.25;
-    letter-spacing: 0.01em;
     text-decoration: none;
-    transition: background var(--rd-transition), border-color var(--rd-transition), box-shadow var(--rd-transition);
+    transition: background var(--rd-transition), border-color var(--rd-transition);
 }
 
 .rd-auth-oauth-btn:hover {
-    background: #f7f8f8;
-    border-color: #747775;
-    color: #1f1f1f;
-    box-shadow: 0 1px 2px rgba(60, 64, 67, 0.15);
+    background: var(--bs-white);
+    border-color: rgba(var(--bs-primary-rgb), 0.45);
+    color: var(--bs-body-color);
+    box-shadow: none;
 }
 
 .rd-auth-oauth-btn:focus-visible {
@@ -1139,9 +1300,10 @@ table.rd-table--border tbody tr:last-child {
     display: flex;
     align-items: center;
     gap: 0.875rem;
-    margin: 1.5rem 0;
-    color: rgba(27, 27, 27, 0.55);
-    font-size: 0.8125rem;
+    margin: 1.25rem 0;
+    color: rgba(27, 27, 27, 0.5);
+    font-size: 0.875rem;
+    font-weight: 400;
     line-height: 1;
     text-transform: lowercase;
 }
@@ -1151,14 +1313,14 @@ table.rd-table--border tbody tr:last-child {
     content: "";
     flex: 1;
     height: 1px;
-    background: var(--rd-border-subtle);
+    background: rgba(27, 27, 27, 0.12);
 }
 
 .rd-auth-link-preview {
     margin-top: 1rem;
     padding: 0.75rem 1rem;
-    background: var(--rd-bg-subtle);
-    border: 1px solid var(--rd-border-subtle);
+    background: var(--bs-white);
+    border: 1px solid var(--rd-auth-input-border);
     border-radius: var(--rd-radius-sm);
     font-size: 0.8125rem;
     line-height: 1.45;
@@ -1166,8 +1328,9 @@ table.rd-table--border tbody tr:last-child {
 
 .rd-auth-link-preview__label {
     display: block;
-    color: rgba(27, 27, 27, 0.6);
+    color: rgba(27, 27, 27, 0.55);
     margin-bottom: 0.35rem;
+    font-weight: 400;
 }
 
 .rd-auth-link-preview__url {
@@ -4287,6 +4450,10 @@ table.rd-table--border > tbody > tr {
     outline-offset: 2px;
 }
 
+.c-form-field-password .form-control.rd-field-error {
+    background-image: none;
+}
+
 .rd-auth-password .c-form-field-password__toggle {
     position: absolute;
     top: 50%;
@@ -5230,6 +5397,20 @@ table.rd-table--border > tbody > tr {
     display: flex;
     flex-direction: column;
     gap: 0.75rem;
+}
+
+.rd-model-detail-modal-body .rd-model-detail-section {
+    padding: 1rem 1.125rem;
+    margin-bottom: 0.75rem;
+}
+
+.rd-model-detail-modal-body .rd-model-detail-section:last-child {
+    margin-bottom: 0;
+}
+
+.rd-model-detail-modal-body .rd-model-detail-section__title {
+    font-size: 1rem;
+    margin-bottom: 0.75rem;
 }
 
 .rd-form-error-text {

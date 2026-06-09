@@ -855,6 +855,108 @@ function buildDeployedModelDetailPageHtml(data) {
   return html;
 }
 
+function isLocalDeployModel(data) {
+  if (!data) return false;
+  if (data.model_kind === 'external') return false;
+  if (data.model_kind === 'local_deploy') return true;
+  return !!(data.engine && data.engine !== 'external');
+}
+
+function buildModelManagementModalHtml(data) {
+  var statusClass = getModelStatusCssClass(data.status);
+  var html = '';
+
+  html += buildModelDetailSection('Model Information',
+    buildModelDetailSubsection('Basic', buildModelDetailFields([
+      { label: 'Model Name', value: data.model_name, mono: true },
+      { label: 'Model Source', value: data.model_source, mono: true },
+      { label: 'Label', value: data.label },
+      { label: 'Description', value: data.description },
+      { label: 'Status', value: '<span class="' + statusClass + '">' + escapeHtml(data.status) + '</span>', raw: true }
+    ]))
+  );
+
+  if (data.model_kind === 'external') {
+    html += buildModelDetailSection('Connection',
+      buildModelDetailSubsection('Provider', buildModelDetailFields([
+        { label: 'Provider', value: data.provider || data.engine },
+        { label: 'API Base', value: data.api_base, mono: true }
+      ]))
+    );
+  } else {
+    html += buildModelDetailSection('Deploy Summary',
+      buildModelDetailSubsection('Runtime', buildModelDetailFields([
+        { label: 'Engine', value: data.engine },
+        { label: 'Version', value: data.version },
+        { label: 'API Base', value: data.api_base, mono: true },
+        { label: 'CPU Count', value: data.cpu_count },
+        { label: 'CPU Memory (GB)', value: data.cpu_memory }
+      ]))
+    );
+  }
+
+  return html;
+}
+
+function buildUserModelDetailModalHtml(data) {
+  var statusClass = getModelStatusCssClass(data.status);
+  return buildModelDetailSection('Model Information',
+    buildModelDetailSubsection('Basic', buildModelDetailFields([
+      { label: 'Model Name', value: data.model_name, mono: true },
+      { label: 'Team', value: data.team_name },
+      { label: 'Status', value: '<span class="' + statusClass + '">' + escapeHtml(data.status) + '</span>', raw: true },
+      { label: 'API Base', value: data.api_base, mono: true },
+      { label: 'Model Source', value: data.model_source, mono: true }
+    ]))
+  );
+}
+
+function showModelManagementModal(data) {
+  var modalEl = document.getElementById('model-detail-modal');
+  if (!modalEl) return;
+
+  $('#model-detail-modal-label').text(data.model_name || data.label || 'Model Detail');
+  $('#model-detail-body').html(buildModelManagementModalHtml(data));
+
+  var $deployLink = $('#model-detail-deploy-link');
+  if (isLocalDeployModel(data)) {
+    $deployLink.removeClass('rd-is-hidden').off('click.rdDeployDetail').on('click.rdDeployDetail', function (e) {
+      e.preventDefault();
+      var modal = bootstrap.Modal.getInstance(modalEl);
+      if (modal) modal.hide();
+      openModelDetailPage(data, {
+        type: 'deployed',
+        backUrl: './model_management.html',
+        backLabel: 'Model Management'
+      });
+    });
+  } else {
+    $deployLink.addClass('rd-is-hidden').off('click.rdDeployDetail');
+  }
+
+  bootstrap.Modal.getOrCreateInstance(modalEl).show();
+}
+
+function showUserModelDetailModal(data) {
+  var modalEl = document.getElementById('model-detail-modal');
+  if (!modalEl) return;
+
+  $('#model-detail-modal-label').text(data.model_name || 'Model Detail');
+  $('#model-detail-body').html(buildUserModelDetailModalHtml(data));
+  $('#model-detail-deploy-link').addClass('rd-is-hidden').off('click.rdDeployDetail');
+  bootstrap.Modal.getOrCreateInstance(modalEl).show();
+}
+
+function showModelDetail(data) {
+  if ($('#model-management-table').length) {
+    showModelManagementModal(data);
+    return;
+  }
+  if ($('#models-table').length) {
+    showUserModelDetailModal(data);
+  }
+}
+
 function openModelDetailPage(data, options) {
   options = options || {};
   try {
@@ -866,16 +968,6 @@ function openModelDetailPage(data, options) {
     }));
   } catch (e) { /* sessionStorage unavailable */ }
   location.href = './model_detail.html';
-}
-
-function showModelDetail(data) {
-  var backUrl = './model_management.html';
-  var backLabel = 'Model Management';
-  if ($('#models-table').length) {
-    backUrl = './userRole_models.html';
-    backLabel = 'Models';
-  }
-  openModelDetailPage(data, { type: 'deployed', backUrl: backUrl, backLabel: backLabel });
 }
 
 function initModelDetailPage() {
@@ -897,6 +989,7 @@ function initModelDetailPage() {
       backLabel: 'Model Management',
       data: {
         status: 'Active',
+        model_kind: 'local_deploy',
         label: 'Qwen3 0.6B (VLLM, GPU)',
         description: 'Sample config',
         model_name: 'sample-Qwen3-0.6b-gpu',
@@ -2555,7 +2648,7 @@ function initAuthPages() {
         $form.addClass('rd-is-hidden');
         $('.rd-auth-card__lead').addClass('rd-is-hidden');
         $('#password-reset-success').removeClass('rd-is-hidden');
-        $('.rd-auth-footer-link').addClass('rd-is-hidden');
+        $('.js-auth-footer-back').addClass('rd-is-hidden');
       }, 700);
     });
   }
@@ -2573,6 +2666,7 @@ function initAuthPages() {
   });
 
   $(document).on('blur', '#email-confirm', function () {
+    if (!$('#forgot-password-form').length) return;
     var $confirm = $(this);
     var emailVal = ($('#email').val() || '').trim();
     var confirmVal = ($confirm.val() || '').trim();
@@ -2586,10 +2680,30 @@ function initAuthPages() {
     }
   });
 
-  $(document).on('input', '#email', function () {
+  $(document).on('input', '#forgot-password-form #email', function () {
     var $confirm = $('#email-confirm');
-    if (!$confirm.val().trim()) return;
+    if (!$confirm.length || !$confirm.val().trim()) return;
     if (($confirm.val() || '').trim() === ($(this).val() || '').trim()) {
+      clearFieldError($confirm);
+    }
+  });
+
+  $(document).on('blur', '#signup-form #password-confirm', function () {
+    var $confirm = $(this);
+    var passwordVal = ($('#signup-form #password').val() || '');
+    var confirmVal = ($confirm.val() || '');
+    if (!confirmVal) return;
+    if (passwordVal && confirmVal !== passwordVal) {
+      showFieldError($confirm, 'Passwords do not match.');
+      return;
+    }
+    clearFieldError($confirm);
+  });
+
+  $(document).on('input', '#signup-form #password', function () {
+    var $confirm = $('#signup-form #password-confirm');
+    if (!$confirm.val()) return;
+    if ($confirm.val() === $(this).val()) {
       clearFieldError($confirm);
     }
   });
@@ -2614,15 +2728,14 @@ function initAuthPages() {
     });
 
     if ($form.is('#signup-form')) {
-      var $email = $('#email');
-      var $emailConfirm = $('#email-confirm');
-      var $password = $('#password');
-      if ($email.val().trim() && $emailConfirm.val().trim() && $email.val().trim() !== $emailConfirm.val().trim()) {
-        showFieldError($emailConfirm, 'Email addresses do not match.');
-        valid = false;
-      }
+      var $password = $('#signup-form #password');
+      var $passwordConfirm = $('#signup-form #password-confirm');
       if ($password.val().trim() && ($password.val() || '').length < 8) {
         showFieldError($password, 'Password must be at least 8 characters.');
+        valid = false;
+      }
+      if ($password.val() && $passwordConfirm.val() && $password.val() !== $passwordConfirm.val()) {
+        showFieldError($passwordConfirm, 'Passwords do not match.');
         valid = false;
       }
     }
