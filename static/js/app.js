@@ -272,6 +272,10 @@ function historyTimeFormatter(value) {
   return escapeHtml(String(value).replace(/\.\d+$/, ''));
 }
 
+function historyEmailFormatter(value, row) {
+  return escapeHtml(historyRowUsername(row) || value || '-');
+}
+
 function historyNumberFormatter(value) {
   if (value == null) return '-';
   return Number(value).toLocaleString();

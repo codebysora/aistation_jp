@@ -4817,25 +4817,24 @@ table.rd-table--border > tbody > tr {
     min-height: 2.375rem;
 }
 
-/* Row 1: Status */
-.rd-histories-search__status-row {
+/* Status: label above bordered option box */
+.rd-histories-search__status {
     display: flex;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 0.75rem 1.25rem;
-    margin: 0;
-    padding: 0.625rem 1rem;
-    border: 1px solid var(--rd-border-subtle);
-    border-radius: var(--rd-radius-md);
-    background: var(--bs-white);
+    flex-direction: column;
+    min-width: 0;
 }
 
-.rd-histories-search__status-label {
-    float: none;
-    width: auto;
-    margin: 0;
-    padding: 0;
-    line-height: 1.2;
+.rd-histories-search__status > .form-label {
+    display: block;
+}
+
+.rd-histories-search__status-box {
+    display: flex;
+    align-items: center;
+    min-height: 2.375rem;
+    padding: 0.5rem 1rem;
+    border: 1px solid var(--rd-border-subtle);
+    border-radius: var(--rd-radius-md);
 }
 
 .rd-histories-search__status-options {
@@ -4851,12 +4850,13 @@ table.rd-table--border > tbody > tr {
     color: var(--bs-secondary-color);
 }
 
-/* Row 2: Username, model, period, search — single line on wide screens */
+/* Row 2: From, To, Email, model, Apply — single line on wide screens */
 .rd-histories-search__fields-row {
     display: flex;
     flex-wrap: nowrap;
     align-items: flex-end;
     gap: 0.75rem;
+    min-width: 0;
 }
 
 .rd-histories-search__field {
@@ -4868,12 +4868,50 @@ table.rd-table--border > tbody > tr {
     flex: 1.15 1 0;
 }
 
+.rd-histories-search__field--datetime .form-control {
+    width: 100%;
+    min-width: 0;
+}
+
 .rd-histories-search__field--submit {
     flex: 0 0 7.25rem;
 }
 
 .rd-histories-search__field--submit .btn {
     white-space: nowrap;
+}
+
+@media (min-width: 1600px) {
+    .rd-histories-search {
+        flex-direction: row;
+        flex-wrap: nowrap;
+        align-items: flex-end;
+        gap: 0.75rem;
+    }
+
+    .rd-histories-search__status {
+        flex: 0 0 auto;
+    }
+
+    .rd-histories-search__fields-row {
+        flex: 1 1 auto;
+        min-width: 0;
+    }
+
+    .rd-histories-search__field:not(.rd-histories-search__field--submit) {
+        flex: 1 1 0;
+        min-width: 0;
+    }
+
+    .rd-histories-search__field--datetime .form-control {
+        font-size: 0.8125rem;
+        padding-left: 0.5rem;
+        padding-right: 0.375rem;
+    }
+
+    .rd-histories-search__field--submit {
+        flex: 0 0 6.5rem;
+    }
 }
 
 @media (max-width: 1199.98px) {
