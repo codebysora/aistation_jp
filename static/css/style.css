@@ -4832,9 +4832,10 @@ table.rd-table--border > tbody > tr {
     display: flex;
     align-items: center;
     min-height: 2.375rem;
-    padding: 0.5rem 1rem;
-    border: 1px solid var(--rd-border-subtle);
+    padding: 0.3rem 1rem;
+    border: 1px solid var(--bs-border-color);
     border-radius: var(--rd-radius-md);
+    background: var(--bs-white);
 }
 
 .rd-histories-search__status-options {
